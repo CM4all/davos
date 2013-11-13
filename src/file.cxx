@@ -70,7 +70,7 @@ copy_from_fd(was_simple *was, int in_fd, uint64_t remaining)
 
     const int out_fd = was_simple_output_fd(was);
     while (remaining > 0) {
-        constexpr size_t max = std::numeric_limits<size_t>::max();
+        constexpr uint64_t max = std::numeric_limits<size_t>::max();
         size_t length = std::min(remaining, max);
         ssize_t nbytes = splice(in_fd, nullptr, out_fd, nullptr,
                                 length,
