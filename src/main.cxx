@@ -29,6 +29,29 @@ static size_t mountpoint_length;
 
 static const char *document_root;
 
+/**
+ * Extract the URI path from an absolute URL.
+ */
+static const char *
+get_uri_path(const char *p)
+{
+    assert(p != nullptr);
+
+    if (memcmp(p, "http://", 7) == 0)
+        p += 7;
+    else if (memcmp(p, "https://", 8) == 0)
+        p += 8;
+    else
+        return p;
+
+    const char *slash = strchr(p, '/');
+    if (slash == nullptr)
+        /* there is no URI path - assume it's just "/" */
+        return "/";
+
+    return slash;
+}
+
 static std::string
 map_uri(const char *uri)
 {
@@ -143,6 +166,26 @@ run(was_simple *was, const char *uri)
 
     case HTTP_METHOD_MKCOL:
         mkcol(was, path.c_str());
+        break;
+
+    case HTTP_METHOD_MOVE: {
+        const char *p = was_simple_get_header(was, "destination");
+        if (p == nullptr) {
+            was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+            return;
+        }
+
+        p = get_uri_path(p);
+
+        std::string destination = map_uri(p);
+        if (destination.empty()) {
+            /* can't move the file out of its site */
+            was_simple_status(was, HTTP_STATUS_FORBIDDEN);
+            return;
+        }
+
+        handle_move(was, path.c_str(), destination.c_str());
+    }
         break;
 
     default:

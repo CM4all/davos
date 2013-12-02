@@ -15,4 +15,7 @@ handle_options(was_simple *was, const char *path);
 void
 handle_delete(was_simple *was, const char *path);
 
+void
+handle_move(was_simple *w, const char *path, const char *destination_path);
+
 #endif

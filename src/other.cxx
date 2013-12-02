@@ -14,6 +14,7 @@ extern "C" {
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
 
 void
 handle_options(was_simple *was, const char *path)
@@ -50,4 +51,13 @@ handle_delete(was_simple *w, const char *path)
     }
 
     errno_respones(w);
+}
+
+void
+handle_move(was_simple *w, const char *path, const char *destination_path)
+{
+    if (rename(path, destination_path) < 0) {
+        errno_respones(w);
+        return;
+    }
 }
