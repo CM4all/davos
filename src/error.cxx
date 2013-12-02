@@ -20,6 +20,20 @@ errno_respones(was_simple *was, int e)
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
         break;
 
+    case EACCES:
+    case EPERM:
+    case EROFS:
+        was_simple_status(was, HTTP_STATUS_FORBIDDEN);
+        break;
+
+    case ENAMETOOLONG:
+        was_simple_status(was, HTTP_STATUS_REQUEST_URI_TOO_LONG);
+        break;
+
+    case ENOSPC:
+        was_simple_status(was, HTTP_STATUS_REQUEST_ENTITY_TOO_LARGE);
+        break;
+
     default:
         was_simple_status(was, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         break;
