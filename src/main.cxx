@@ -6,6 +6,7 @@
 
 #include "error.hxx"
 #include "file.hxx"
+#include "put.hxx"
 #include "propfind.hxx"
 
 extern "C" {
@@ -145,6 +146,10 @@ run(was_simple *was, const char *uri)
 
     case HTTP_METHOD_GET:
         get(was, path.c_str());
+        break;
+
+    case HTTP_METHOD_PUT:
+        put(was, path.c_str());
         break;
 
     case HTTP_METHOD_PROPFIND:
