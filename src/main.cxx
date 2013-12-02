@@ -9,6 +9,7 @@
 #include "file.hxx"
 #include "put.hxx"
 #include "propfind.hxx"
+#include "other.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -151,6 +152,10 @@ run(was_simple *was, const char *uri)
 
     case HTTP_METHOD_PUT:
         put(was, path.c_str());
+        break;
+
+    case HTTP_METHOD_DELETE:
+        handle_delete(was, path.c_str());
         break;
 
     case HTTP_METHOD_PROPFIND:
