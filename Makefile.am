@@ -9,6 +9,7 @@ src_davos_SOURCES = \
 	src/format.c src/format.h \
 	src/wxml.hxx \
 	src/error.cxx src/error.hxx \
+	src/directory.cxx src/directory.hxx \
 	src/file.cxx src/file.hxx \
 	src/put.cxx src/put.hxx \
 	src/propfind.cxx src/propfind.hxx \

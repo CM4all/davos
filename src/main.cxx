@@ -5,6 +5,7 @@
  */
 
 #include "error.hxx"
+#include "directory.hxx"
 #include "file.hxx"
 #include "put.hxx"
 #include "propfind.hxx"
@@ -154,6 +155,10 @@ run(was_simple *was, const char *uri)
 
     case HTTP_METHOD_PROPFIND:
         propfind(was, uri, path.c_str());
+        break;
+
+    case HTTP_METHOD_MKCOL:
+        mkcol(was, path.c_str());
         break;
 
     default:
