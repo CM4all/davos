@@ -67,7 +67,7 @@ configure_umask(was_simple *w)
 {
     const char *p = was_simple_get_parameter(w, "DAVOS_UMASK");
     if (p == nullptr)
-        p = "0755";
+        p = "0022";
 
     char *endptr;
     unsigned long value = strtoul(p, &endptr, 8);
