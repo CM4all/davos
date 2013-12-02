@@ -17,6 +17,7 @@ errno_respones(was_simple *was, int e)
 {
     switch (e) {
     case ENOENT:
+    case ENOTDIR:
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
         break;
 
@@ -31,7 +32,16 @@ errno_respones(was_simple *was, int e)
         break;
 
     case ENOSPC:
-        was_simple_status(was, HTTP_STATUS_REQUEST_ENTITY_TOO_LARGE);
+        was_simple_status(was, HTTP_STATUS_INSUFFICIENT_STORAGE);
+        break;
+
+    case ENOTEMPTY:
+    case EBUSY:
+        was_simple_status(was, HTTP_STATUS_FAILED_DEPENDENCY);
+        break;
+
+    case EINVAL:
+        was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
         break;
 
     default:
