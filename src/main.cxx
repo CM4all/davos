@@ -139,12 +139,12 @@ run(was_simple *was, const char *uri)
         options(was, path.c_str());
         break;
 
-    case HTTP_METHOD_GET:
-        get(was, path.c_str());
-        break;
-
     case HTTP_METHOD_HEAD:
         head(was, path.c_str());
+        break;
+
+    case HTTP_METHOD_GET:
+        get(was, path.c_str());
         break;
 
     case HTTP_METHOD_PROPFIND:
