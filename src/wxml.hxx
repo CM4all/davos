@@ -8,6 +8,8 @@ extern "C" {
 #include <was/simple.h>
 }
 
+#include <inline/compiler.h>
+
 static bool
 wxml_declaration(was_simple *w)
 {
@@ -45,12 +47,14 @@ wxml_close_element(was_simple *w, const char *name)
         wxml_end_tag(w);
 }
 
+gcc_unused
 static bool
 wxml_short_element(was_simple *w, const char *name)
 {
     return wxml_begin_tag(w, name) && wxml_end_short_tag(w);
 }
 
+gcc_unused
 static bool
 wxml_string_element(was_simple *w, const char *name, const char *value)
 {

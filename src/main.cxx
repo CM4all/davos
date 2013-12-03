@@ -9,6 +9,7 @@
 #include "file.hxx"
 #include "put.hxx"
 #include "propfind.hxx"
+#include "lock.hxx"
 #include "other.hxx"
 
 extern "C" {
@@ -219,6 +220,14 @@ run(was_simple *was, const char *uri)
 
         handle_move(was, path.c_str(), destination.c_str());
     }
+        break;
+
+    case HTTP_METHOD_LOCK:
+        handle_lock(was, path.c_str());
+        break;
+
+    case HTTP_METHOD_UNLOCK:
+        /* no-op */
         break;
 
     default:

@@ -14,6 +14,7 @@ src_davos_SOURCES = \
 	src/file.cxx src/file.hxx \
 	src/put.cxx src/put.hxx \
 	src/propfind.cxx src/propfind.hxx \
+	src/lock.cxx src/lock.hxx \
 	src/other.cxx src/other.hxx \
 	src/main.cxx
 src_davos_CPPFLAGS = $(AM_CPPFLAGS) \
