@@ -29,27 +29,6 @@ static size_t mountpoint_length;
 
 static const char *document_root;
 
-static void
-options(was_simple *was, const char *path)
-{
-    const char *allow_new = "OPTIONS,MKCOL,PUT,LOCK";
-    const char *allow_file =
-        "OPTIONS,GET,HEAD,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
-    const char *allow_directory =
-        "OPTIONS,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
-
-    const char *allow;
-    struct stat st;
-    if (stat(path, &st) < 0)
-        allow = allow_new;
-    else if (S_ISDIR(st.st_mode))
-        allow = allow_directory;
-    else
-        allow = allow_file;
-
-    was_simple_set_header(was, "allow", allow);
-}
-
 static std::string
 map_uri(const char *uri)
 {
@@ -139,7 +118,7 @@ run(was_simple *was, const char *uri)
     const http_method_t method = was_simple_get_method(was);
     switch (method) {
     case HTTP_METHOD_OPTIONS:
-        options(was, path.c_str());
+        handle_options(was, path.c_str());
         break;
 
     case HTTP_METHOD_HEAD:
