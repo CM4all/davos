@@ -57,13 +57,26 @@ map_uri(const char *uri)
 {
     assert(uri != nullptr);
 
-    if (memcmp(uri, "/dav/", 5) != 0 ||
-        strstr(uri, "/../") != nullptr)
+    if (strstr(uri, "/../") != nullptr)
+        return std::string();
+
+    if (memcmp(uri, mountpoint, mountpoint_length) == 0)
+        uri += mountpoint_length;
+    else if (memcmp(uri, mountpoint, mountpoint_length - 1) == 0 &&
+             uri[mountpoint_length - 1] == 0)
+        /* special case for clients that remove the trailing slash
+           (e.g. Microsoft) */
+        uri = "";
+    else
         return std::string();
 
     std::string path(document_root);
-    path.push_back('/');
-    path.append(uri + 5);
+
+    if (*uri != 0) {
+        path.push_back('/');
+        path.append(uri);
+    }
+
     return path;
 }
 
