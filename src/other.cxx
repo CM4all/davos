@@ -9,6 +9,7 @@
 
 extern "C" {
 #include <was/simple.h>
+#include <fox/unlink.h>
 }
 
 #include <errno.h>
@@ -40,17 +41,12 @@ handle_options(was_simple *was, const char *path)
 void
 handle_delete(was_simple *w, const char *path)
 {
-    if (unlink(path) == 0)
+    fox_error_t error;
+    fox_status_t status = fox_unlink(path, 0, &error);
+    if (status != FOX_STATUS_SUCCESS) {
+        errno_respones(w, status);
         return;
-
-    if (errno == EISDIR) {
-        if (rmdir(path) == 0)
-            return;
-
-        // TODO: recursive delete on errno==ENOTEMPTY
     }
-
-    errno_respones(w);
 }
 
 void

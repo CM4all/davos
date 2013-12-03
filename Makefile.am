@@ -15,5 +15,5 @@ src_davos_SOURCES = \
 	src/propfind.cxx src/propfind.hxx \
 	src/other.cxx src/other.hxx \
 	src/main.cxx
-src_davos_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCM4ALL_INLINE_CFLAGS) $(LIBWAS_CFLAGS)
-src_davos_LDADD = $(LIBWAS_LIBS)
+src_davos_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCM4ALL_INLINE_CFLAGS) $(LIBWAS_CFLAGS) $(LIBFOX_CFLAGS)
+src_davos_LDADD = $(LIBWAS_LIBS) $(LIBFOX_LIBS)
