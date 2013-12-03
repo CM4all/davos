@@ -168,6 +168,26 @@ run(was_simple *was, const char *uri)
         mkcol(was, path.c_str());
         break;
 
+    case HTTP_METHOD_COPY: {
+        const char *p = was_simple_get_header(was, "destination");
+        if (p == nullptr) {
+            was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+            return;
+        }
+
+        p = get_uri_path(p);
+
+        std::string destination = map_uri(p);
+        if (destination.empty()) {
+            /* can't copy the file out of its site */
+            was_simple_status(was, HTTP_STATUS_FORBIDDEN);
+            return;
+        }
+
+        handle_copy(was, path.c_str(), destination.c_str());
+    }
+        break;
+
     case HTTP_METHOD_MOVE: {
         const char *p = was_simple_get_header(was, "destination");
         if (p == nullptr) {
