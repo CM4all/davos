@@ -68,6 +68,9 @@ copy_from_fd(was_simple *was, int in_fd, uint64_t remaining)
     if (!was_simple_set_length(was, remaining))
         return;
 
+    if (remaining == 0)
+        return;
+
     const int out_fd = was_simple_output_fd(was);
     while (remaining > 0) {
         constexpr uint64_t max = std::numeric_limits<size_t>::max();
