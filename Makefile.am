@@ -7,6 +7,7 @@ src_davos_SOURCES = \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
+	src/expat.hxx src/expat.cxx \
 	src/wxml.hxx \
 	src/error.cxx src/error.hxx \
 	src/directory.cxx src/directory.hxx \
@@ -15,5 +16,12 @@ src_davos_SOURCES = \
 	src/propfind.cxx src/propfind.hxx \
 	src/other.cxx src/other.hxx \
 	src/main.cxx
-src_davos_CPPFLAGS = $(AM_CPPFLAGS) $(LIBCM4ALL_INLINE_CFLAGS) $(LIBWAS_CFLAGS) $(LIBFOX_CFLAGS)
-src_davos_LDADD = $(LIBWAS_LIBS) $(LIBFOX_LIBS)
+src_davos_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(EXPAT_CFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS) \
+	$(LIBFOX_CFLAGS) \
+	$(LIBWAS_CFLAGS)
+src_davos_LDADD = \
+	$(EXPAT_LIBS) \
+	$(LIBFOX_LIBS) \
+	$(LIBWAS_LIBS)

@@ -14,6 +14,9 @@ dnl
 dnl Checks for libraries.
 dnl
 
+PKG_CHECK_MODULES([EXPAT], [expat],,
+	[AC_MSG_ERROR([expat not found])])
+
 PKG_CHECK_MODULES([LIBCM4ALL_INLINE], [libcm4all-inline >= 0.3.3],,
 	[AC_MSG_ERROR([libcm4all-inline not found])])
 
