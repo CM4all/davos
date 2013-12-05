@@ -42,7 +42,10 @@ splice_from_was(was_simple *w, int out_fd)
             nbytes = splice(in_fd, nullptr, out_fd, nullptr,
                             1 << 30,
                             SPLICE_F_MOVE|SPLICE_F_NONBLOCK|SPLICE_F_MORE);
-            if (nbytes < 0 && errno != EAGAIN) {
+            if (nbytes < 0) {
+                if (errno == EAGAIN)
+                    continue;
+
                 fprintf(stderr, "Error copying HTTP request body: %s\n",
                         strerror(errno));
                 return false;
