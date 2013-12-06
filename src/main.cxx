@@ -9,6 +9,7 @@
 #include "file.hxx"
 #include "put.hxx"
 #include "propfind.hxx"
+#include "proppatch.hxx"
 #include "lock.hxx"
 #include "other.hxx"
 
@@ -176,6 +177,10 @@ run(was_simple *was, const char *uri)
 
     case HTTP_METHOD_PROPFIND:
         propfind(was, uri, path.c_str());
+        break;
+
+    case HTTP_METHOD_PROPPATCH:
+        handle_proppatch(was, uri, path.c_str());
         break;
 
     case HTTP_METHOD_MKCOL:
