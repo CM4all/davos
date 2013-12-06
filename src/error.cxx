@@ -12,42 +12,41 @@ extern "C" {
 
 #include <errno.h>
 
-void
-errno_respones(was_simple *was, int e)
+http_status_t
+errno_status(int e)
 {
     switch (e) {
     case ENOENT:
     case ENOTDIR:
-        was_simple_status(was, HTTP_STATUS_NOT_FOUND);
-        break;
+        return HTTP_STATUS_NOT_FOUND;
 
     case EACCES:
     case EPERM:
     case EROFS:
-        was_simple_status(was, HTTP_STATUS_FORBIDDEN);
-        break;
+        return HTTP_STATUS_FORBIDDEN;
 
     case ENAMETOOLONG:
-        was_simple_status(was, HTTP_STATUS_REQUEST_URI_TOO_LONG);
-        break;
+        return HTTP_STATUS_REQUEST_URI_TOO_LONG;
 
     case ENOSPC:
-        was_simple_status(was, HTTP_STATUS_INSUFFICIENT_STORAGE);
-        break;
+        return HTTP_STATUS_INSUFFICIENT_STORAGE;
 
     case ENOTEMPTY:
     case EBUSY:
-        was_simple_status(was, HTTP_STATUS_FAILED_DEPENDENCY);
-        break;
+        return HTTP_STATUS_FAILED_DEPENDENCY;
 
     case EINVAL:
-        was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
-        break;
+        return HTTP_STATUS_BAD_REQUEST;
 
     default:
-        was_simple_status(was, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        break;
+        return HTTP_STATUS_INTERNAL_SERVER_ERROR;
     }
+}
+
+void
+errno_respones(was_simple *was, int e)
+{
+    was_simple_status(was, errno_status(e));
 }
 
 void
