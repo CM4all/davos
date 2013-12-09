@@ -29,7 +29,87 @@ extern "C" {
 static const char *mountpoint;
 static size_t mountpoint_length;
 
-static const char *document_root;
+class SimpleBackend {
+    const char *document_root;
+
+public:
+    typedef std::string Resource;
+
+    bool Setup(was_simple *w);
+
+    gcc_pure
+    Resource Map(const char *uri) const;
+
+    void HandleOptions(was_simple *w, const Resource &path) {
+        handle_options(w, path.c_str());
+    }
+
+    void HandleHead(was_simple *w, const Resource &path) {
+        handle_head(w, path.c_str());
+    }
+
+    void HandleGet(was_simple *w, const Resource &path) {
+        handle_get(w, path.c_str());
+    }
+
+    void HandlePut(was_simple *w, const Resource &path) {
+        handle_put(w, path.c_str());
+    }
+
+    void HandleDelete(was_simple *w, const Resource &path) {
+        handle_delete(w, path.c_str());
+    }
+
+    void HandlePropfind(was_simple *w, const char *uri, const Resource &path) {
+        handle_propfind(w, uri, path.c_str());
+    }
+
+    void HandleProppatch(was_simple *w, const char *uri,
+                         const Resource &path) {
+        handle_proppatch(w, uri, path.c_str());
+    }
+
+    void HandleMkcol(was_simple *w, const Resource &path) {
+        handle_mkcol(w, path.c_str());
+    }
+
+    void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {
+        handle_copy(w, src.c_str(), dest.c_str());
+    }
+
+    void HandleMove(was_simple *w, const Resource &src, const Resource &dest) {
+        handle_move(w, src.c_str(), dest.c_str());
+    }
+
+    void HandleLock(was_simple *w, const Resource &path) {
+        handle_lock(w, path.c_str());
+    }
+};
+
+inline bool
+SimpleBackend::Setup(was_simple *w)
+{
+    document_root = was_simple_get_parameter(w, "DAVOS_DOCUMENT_ROOT");
+    if (document_root == nullptr) {
+        fprintf(stderr, "No DAVOS_DOCUMENT_ROOT\n");
+        return false;
+    }
+
+    return true;
+}
+
+inline SimpleBackend::Resource
+SimpleBackend::Map(const char *uri) const
+{
+    Resource path(document_root);
+
+    if (*uri != 0) {
+        path.push_back('/');
+        path.append(uri);
+    }
+
+    return path;
+}
 
 /**
  * Extract the URI path from an absolute URL.
@@ -54,13 +134,14 @@ get_uri_path(const char *p)
     return slash;
 }
 
-static std::string
-map_uri(const char *uri)
+template<class Backend>
+static typename Backend::Resource
+map_uri(const Backend &backend, const char *uri)
 {
     assert(uri != nullptr);
 
     if (strstr(uri, "/../") != nullptr)
-        return std::string();
+        return typename Backend::Resource();
 
     if (memcmp(uri, mountpoint, mountpoint_length) == 0)
         uri += mountpoint_length;
@@ -70,16 +151,9 @@ map_uri(const char *uri)
            (e.g. Microsoft) */
         uri = "";
     else
-        return std::string();
+        return typename Backend::Resource();
 
-    std::string path(document_root);
-
-    if (*uri != 0) {
-        path.push_back('/');
-        path.append(uri);
-    }
-
-    return path;
+    return backend.Map(uri);
 }
 
 static bool
@@ -124,30 +198,27 @@ configure_mapper(was_simple *w)
         return false;
     }
 
-    document_root = was_simple_get_parameter(w, "DAVOS_DOCUMENT_ROOT");
-    if (document_root == nullptr) {
-        fprintf(stderr, "No DAVOS_DOCUMENT_ROOT\n");
-        return false;
-    }
-
     return true;
 }
 
+template<typename Backend>
 static bool
-configure(was_simple *w)
+configure(Backend &backend, was_simple *w)
 {
-    return configure_umask(w) && configure_mapper(w);
+    return configure_umask(w) && configure_mapper(w) &&
+        backend.Setup(w);
 }
 
+template<typename Backend>
 static void
-run(was_simple *was, const char *uri)
+run(Backend &backend, was_simple *was, const char *uri)
 {
-    if (!configure(was)) {
+    if (!configure(backend, was)) {
         was_simple_status(was, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         return;
     }
 
-    std::string path = map_uri(uri);
+    const auto path = map_uri(backend, uri);
     if (path.empty()) {
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
         return;
@@ -156,35 +227,35 @@ run(was_simple *was, const char *uri)
     const http_method_t method = was_simple_get_method(was);
     switch (method) {
     case HTTP_METHOD_OPTIONS:
-        handle_options(was, path.c_str());
+        backend.HandleOptions(was, path);
         break;
 
     case HTTP_METHOD_HEAD:
-        handle_head(was, path.c_str());
+        backend.HandleHead(was, path);
         break;
 
     case HTTP_METHOD_GET:
-        handle_get(was, path.c_str());
+        backend.HandleGet(was, path);
         break;
 
     case HTTP_METHOD_PUT:
-        handle_put(was, path.c_str());
+        backend.HandlePut(was, path);
         break;
 
     case HTTP_METHOD_DELETE:
-        handle_delete(was, path.c_str());
+        backend.HandleDelete(was, path);
         break;
 
     case HTTP_METHOD_PROPFIND:
-        handle_propfind(was, uri, path.c_str());
+        backend.HandlePropfind(was, uri, path);
         break;
 
     case HTTP_METHOD_PROPPATCH:
-        handle_proppatch(was, uri, path.c_str());
+        backend.HandleProppatch(was, uri, path);
         break;
 
     case HTTP_METHOD_MKCOL:
-        handle_mkcol(was, path.c_str());
+        backend.HandleMkcol(was, path);
         break;
 
     case HTTP_METHOD_COPY: {
@@ -196,14 +267,14 @@ run(was_simple *was, const char *uri)
 
         p = get_uri_path(p);
 
-        std::string destination = map_uri(p);
+        const auto destination = map_uri(backend, p);
         if (destination.empty()) {
             /* can't copy the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);
             return;
         }
 
-        handle_copy(was, path.c_str(), destination.c_str());
+        backend.HandleCopy(was, path, destination);
     }
         break;
 
@@ -216,19 +287,19 @@ run(was_simple *was, const char *uri)
 
         p = get_uri_path(p);
 
-        std::string destination = map_uri(p);
+        const auto destination = map_uri(backend, p);
         if (destination.empty()) {
             /* can't move the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);
             return;
         }
 
-        handle_move(was, path.c_str(), destination.c_str());
+        backend.HandleMove(was, path, destination);
     }
         break;
 
     case HTTP_METHOD_LOCK:
-        handle_lock(was, path.c_str());
+        backend.HandleLock(was, path);
         break;
 
     case HTTP_METHOD_UNLOCK:
@@ -240,18 +311,26 @@ run(was_simple *was, const char *uri)
    }
 }
 
+template<typename Backend>
+static void
+run(Backend &backend)
+{
+    was_simple *was = was_simple_new();
+    const char *uri;
+
+    while ((uri = was_simple_accept(was)) != nullptr)
+        run(backend, was, uri);
+
+    was_simple_free(was);
+}
+
 int
 main(int argc, const char *const*argv)
 {
     (void)argc;
     (void)argv;
 
-    was_simple *was = was_simple_new();
-    const char *uri;
-
-    while ((uri = was_simple_accept(was)) != nullptr)
-        run(was, uri);
-
-    was_simple_free(was);
+    SimpleBackend backend;
+    run(backend);
     return EXIT_SUCCESS;
 }
