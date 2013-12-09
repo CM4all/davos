@@ -160,15 +160,15 @@ run(was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_HEAD:
-        head(was, path.c_str());
+        handle_head(was, path.c_str());
         break;
 
     case HTTP_METHOD_GET:
-        get(was, path.c_str());
+        handle_get(was, path.c_str());
         break;
 
     case HTTP_METHOD_PUT:
-        put(was, path.c_str());
+        handle_put(was, path.c_str());
         break;
 
     case HTTP_METHOD_DELETE:
@@ -176,7 +176,7 @@ run(was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_PROPFIND:
-        propfind(was, uri, path.c_str());
+        handle_propfind(was, uri, path.c_str());
         break;
 
     case HTTP_METHOD_PROPPATCH:
@@ -184,7 +184,7 @@ run(was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_MKCOL:
-        mkcol(was, path.c_str());
+        handle_mkcol(was, path.c_str());
         break;
 
     case HTTP_METHOD_COPY: {

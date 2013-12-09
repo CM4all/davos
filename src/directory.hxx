@@ -10,6 +10,6 @@
 struct was_simple;
 
 void
-mkcol(was_simple *was, const char *path);
+handle_mkcol(was_simple *was, const char *path);
 
 #endif

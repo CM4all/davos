@@ -15,7 +15,7 @@ extern "C" {
 #include <sys/stat.h>
 
 void
-mkcol(was_simple *w, const char *path)
+handle_mkcol(was_simple *w, const char *path)
 {
     if (mkdir(path, 0777) < 0) {
         const int e = errno;

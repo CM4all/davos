@@ -10,6 +10,6 @@
 struct was_simple;
 
 void
-put(was_simple *was, const char *path);
+handle_put(was_simple *was, const char *path);
 
 #endif

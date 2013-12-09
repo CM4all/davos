@@ -10,9 +10,9 @@
 struct was_simple;
 
 void
-get(was_simple *was, const char *path);
+handle_get(was_simple *was, const char *path);
 
 void
-head(was_simple *was, const char *path);
+handle_head(was_simple *was, const char *path);
 
 #endif

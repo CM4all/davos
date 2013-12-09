@@ -137,7 +137,7 @@ propfind_file(was_simple *was, std::string &uri, std::string &path,
 }
 
 void
-propfind(was_simple *was, const char *uri, const char *path)
+handle_propfind(was_simple *was, const char *uri, const char *path)
 {
     struct stat st;
     if (stat(path, &st) < 0) {

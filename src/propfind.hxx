@@ -10,6 +10,6 @@
 struct was_simple;
 
 void
-propfind(was_simple *was, const char *uri, const char *path);
+handle_propfind(was_simple *was, const char *uri, const char *path);
 
 #endif

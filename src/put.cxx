@@ -77,7 +77,7 @@ splice_from_was(was_simple *w, int out_fd)
 }
 
 void
-put(was_simple *w, const char *path)
+handle_put(was_simple *w, const char *path)
 {
     if (!was_simple_has_body(w)) {
         was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
