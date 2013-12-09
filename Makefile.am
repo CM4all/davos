@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign 1.11 subdir-objects
 
 wasdir = $(pkglibdir)/was-bin
-was_PROGRAMS = src/davos
+was_PROGRAMS = src/davos src/davos-od
 
 src_davos_SOURCES = \
 	src/gmtime.c src/gmtime.h \
@@ -29,4 +29,23 @@ src_davos_CPPFLAGS = $(AM_CPPFLAGS) \
 src_davos_LDADD = \
 	$(EXPAT_LIBS) \
 	$(LIBFOX_LIBS) \
+	$(LIBWAS_LIBS)
+
+src_davos_od_SOURCES = \
+	src/gmtime.c src/gmtime.h \
+	src/date.c src/date.h \
+	src/format.c src/format.h \
+	src/expat.hxx src/expat.cxx \
+	src/wxml.hxx \
+	src/splice.cxx src/splice.hxx \
+	src/frontend.hxx \
+	src/od_main.cxx
+src_davos_od_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(EXPAT_CFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS) \
+	$(LIBOD_CFLAGS) \
+	$(LIBWAS_CFLAGS)
+src_davos_od_LDADD = \
+	$(EXPAT_LIBS) \
+	$(LIBOD_LIBS) \
 	$(LIBWAS_LIBS)

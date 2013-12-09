@@ -17,3 +17,4 @@ aclocal.m4
 perf.data*
 
 src/davos
+src/davos-od

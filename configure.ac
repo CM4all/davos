@@ -26,6 +26,9 @@ PKG_CHECK_MODULES([LIBWAS], [libcm4all-was-simple >= 0.3],,
 PKG_CHECK_MODULES([LIBFOX], [libcm4all-fox >= 0.2.1],,
 	[AC_MSG_ERROR([libfox not found])])
 
+PKG_CHECK_MODULES([LIBOD], [libcm4all-od-setup >= 0.2.1],,
+	[AC_MSG_ERROR([libod not found])])
+
 dnl
 dnl CFLAGS
 dnl
