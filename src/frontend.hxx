@@ -98,9 +98,9 @@ configure_umask(was_simple *w)
         return false;
     }
 
-    static unsigned long old_umask = -1;
-    if (value != old_umask) {
-        old_umask = value;
+    static unsigned long old = -1;
+    if (value != old) {
+        old = value;
         umask(value);
     }
 
