@@ -27,6 +27,7 @@ public:
     typedef FileResource Resource;
 
     bool Setup(was_simple *w);
+    void TearDown() {}
 
     gcc_pure
     Resource Map(const char *uri) const;

@@ -144,13 +144,8 @@ configure(Backend &backend, was_simple *w)
 
 template<typename Backend>
 static void
-run(Backend &backend, was_simple *was, const char *uri)
+run2(Backend &backend, was_simple *was, const char *uri)
 {
-    if (!configure(backend, was)) {
-        was_simple_status(was, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
     const auto resource = map_uri(backend, uri);
     if (resource.IsNull()) {
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
@@ -242,6 +237,19 @@ run(Backend &backend, was_simple *was, const char *uri)
     default:
         was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
    }
+}
+
+template<typename Backend>
+static void
+run(Backend &backend, was_simple *was, const char *uri)
+{
+    if (!configure(backend, was)) {
+        was_simple_status(was, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+        return;
+    }
+
+    run2(backend, was, uri);
+    backend.TearDown();
 }
 
 template<typename Backend>
