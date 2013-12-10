@@ -58,7 +58,7 @@ public:
     }
 
     void HandleMkcol(was_simple *w, const Resource &resource) {
-        handle_mkcol(w, resource.GetPath());
+        handle_mkcol(w, resource);
     }
 
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {

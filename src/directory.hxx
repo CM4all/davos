@@ -8,8 +8,9 @@
 #define DAVOS_DIRECTORY_HXX
 
 struct was_simple;
+class FileResource;
 
 void
-handle_mkcol(was_simple *was, const char *path);
+handle_mkcol(was_simple *was, const FileResource &resource);
 
 #endif
