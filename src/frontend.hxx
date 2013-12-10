@@ -125,8 +125,8 @@ run(Backend &backend, was_simple *was, const char *uri)
         return;
     }
 
-    const auto path = map_uri(backend, uri);
-    if (path.empty()) {
+    const auto resource = map_uri(backend, uri);
+    if (resource.IsNull()) {
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
         return;
     }
@@ -134,35 +134,35 @@ run(Backend &backend, was_simple *was, const char *uri)
     const http_method_t method = was_simple_get_method(was);
     switch (method) {
     case HTTP_METHOD_OPTIONS:
-        backend.HandleOptions(was, path);
+        backend.HandleOptions(was, resource);
         break;
 
     case HTTP_METHOD_HEAD:
-        backend.HandleHead(was, path);
+        backend.HandleHead(was, resource);
         break;
 
     case HTTP_METHOD_GET:
-        backend.HandleGet(was, path);
+        backend.HandleGet(was, resource);
         break;
 
     case HTTP_METHOD_PUT:
-        backend.HandlePut(was, path);
+        backend.HandlePut(was, resource);
         break;
 
     case HTTP_METHOD_DELETE:
-        backend.HandleDelete(was, path);
+        backend.HandleDelete(was, resource);
         break;
 
     case HTTP_METHOD_PROPFIND:
-        backend.HandlePropfind(was, uri, path);
+        backend.HandlePropfind(was, uri, resource);
         break;
 
     case HTTP_METHOD_PROPPATCH:
-        backend.HandleProppatch(was, uri, path);
+        backend.HandleProppatch(was, uri, resource);
         break;
 
     case HTTP_METHOD_MKCOL:
-        backend.HandleMkcol(was, path);
+        backend.HandleMkcol(was, resource);
         break;
 
     case HTTP_METHOD_COPY: {
@@ -175,13 +175,13 @@ run(Backend &backend, was_simple *was, const char *uri)
         p = get_uri_path(p);
 
         const auto destination = map_uri(backend, p);
-        if (destination.empty()) {
+        if (destination.IsNull()) {
             /* can't copy the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);
             return;
         }
 
-        backend.HandleCopy(was, path, destination);
+        backend.HandleCopy(was, resource, destination);
     }
         break;
 
@@ -195,18 +195,18 @@ run(Backend &backend, was_simple *was, const char *uri)
         p = get_uri_path(p);
 
         const auto destination = map_uri(backend, p);
-        if (destination.empty()) {
+        if (destination.IsNull()) {
             /* can't move the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);
             return;
         }
 
-        backend.HandleMove(was, path, destination);
+        backend.HandleMove(was, resource, destination);
     }
         break;
 
     case HTTP_METHOD_LOCK:
-        backend.HandleLock(was, path);
+        backend.HandleLock(was, resource);
         break;
 
     case HTTP_METHOD_UNLOCK:

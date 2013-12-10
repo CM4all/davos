@@ -18,63 +18,105 @@
 
 #include <string>
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 class SimpleBackend {
     const char *document_root;
 
 public:
-    typedef std::string Resource;
+    struct Resource {
+        std::string path;
+
+        int error;
+
+        struct stat st;
+
+        Resource():error(-1) {}
+
+        explicit Resource(std::string &&_path)
+            :path(std::move(_path)), error(0) {
+            if (stat(path.c_str(), &st) < 0)
+                error = errno;
+        }
+
+        bool IsNull() const {
+            return error == -1;
+        }
+
+        bool Exists() const {
+            assert(!IsNull());
+
+            return error == 0;
+        }
+
+        bool IsFile() const {
+            assert(!IsNull());
+            assert(Exists());
+
+            return S_ISREG(st.st_mode);
+        }
+
+        bool IsDirectory() const {
+            assert(!IsNull());
+            assert(Exists());
+
+            return S_ISDIR(st.st_mode);
+        }
+    };
 
     bool Setup(was_simple *w);
 
     gcc_pure
     Resource Map(const char *uri) const;
 
-    void HandleOptions(was_simple *w, const Resource &path) {
-        handle_options(w, path.c_str());
+    void HandleOptions(was_simple *w, const Resource &resource) {
+        handle_options(w, resource.path.c_str());
     }
 
-    void HandleHead(was_simple *w, const Resource &path) {
-        handle_head(w, path.c_str());
+    void HandleHead(was_simple *w, const Resource &resource) {
+        handle_head(w, resource.path.c_str());
     }
 
-    void HandleGet(was_simple *w, const Resource &path) {
-        handle_get(w, path.c_str());
+    void HandleGet(was_simple *w, const Resource &resource) {
+        handle_get(w, resource.path.c_str());
     }
 
-    void HandlePut(was_simple *w, const Resource &path) {
-        handle_put(w, path.c_str());
+    void HandlePut(was_simple *w, const Resource &resource) {
+        handle_put(w, resource.path.c_str());
     }
 
-    void HandleDelete(was_simple *w, const Resource &path) {
-        handle_delete(w, path.c_str());
+    void HandleDelete(was_simple *w, const Resource &resource) {
+        handle_delete(w, resource.path.c_str());
     }
 
-    void HandlePropfind(was_simple *w, const char *uri, const Resource &path) {
-        handle_propfind(w, uri, path.c_str());
+    void HandlePropfind(was_simple *w, const char *uri,
+                        const Resource &resource) {
+        handle_propfind(w, uri, resource.path.c_str());
     }
 
     void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &path) {
-        handle_proppatch(w, uri, path.c_str());
+                         const Resource &resource) {
+        handle_proppatch(w, uri, resource.path.c_str());
     }
 
-    void HandleMkcol(was_simple *w, const Resource &path) {
-        handle_mkcol(w, path.c_str());
+    void HandleMkcol(was_simple *w, const Resource &resource) {
+        handle_mkcol(w, resource.path.c_str());
     }
 
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_copy(w, src.c_str(), dest.c_str());
+        handle_copy(w, src.path.c_str(), dest.path.c_str());
     }
 
     void HandleMove(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_move(w, src.c_str(), dest.c_str());
+        handle_move(w, src.path.c_str(), dest.path.c_str());
     }
 
-    void HandleLock(was_simple *w, const Resource &path) {
-        handle_lock(w, path.c_str());
+    void HandleLock(was_simple *w, const Resource &resource) {
+        handle_lock(w, resource.path.c_str());
     }
 };
 
@@ -93,14 +135,14 @@ SimpleBackend::Setup(was_simple *w)
 inline SimpleBackend::Resource
 SimpleBackend::Map(const char *uri) const
 {
-    Resource path(document_root);
+    std::string path(document_root);
 
     if (*uri != 0) {
         path.push_back('/');
         path.append(uri);
     }
 
-    return path;
+    return Resource(std::move(path));
 }
 
 int
