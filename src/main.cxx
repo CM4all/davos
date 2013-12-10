@@ -44,7 +44,7 @@ public:
     }
 
     void HandleDelete(was_simple *w, const Resource &resource) {
-        handle_delete(w, resource.GetPath());
+        handle_delete(w, resource);
     }
 
     void HandlePropfind(was_simple *w, const char *uri,
@@ -62,11 +62,11 @@ public:
     }
 
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_copy(w, src.GetPath(), dest.GetPath());
+        handle_copy(w, src, dest);
     }
 
     void HandleMove(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_move(w, src.GetPath(), dest.GetPath());
+        handle_move(w, src, dest);
     }
 
     void HandleLock(was_simple *w, const Resource &resource) {

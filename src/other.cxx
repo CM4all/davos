@@ -6,6 +6,7 @@
 
 #include "other.hxx"
 #include "error.hxx"
+#include "file.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -14,16 +15,15 @@ extern "C" {
 }
 
 #include <errno.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 
 void
-handle_delete(was_simple *w, const char *path)
+handle_delete(was_simple *w, const FileResource &resource)
 {
     fox_error_t error;
-    fox_status_t status = fox_unlink(path, 0, &error);
+    fox_status_t status = fox_unlink(resource.GetPath(), 0, &error);
     if (status != FOX_STATUS_SUCCESS) {
         errno_respones(w, status);
         return;
@@ -31,7 +31,7 @@ handle_delete(was_simple *w, const char *path)
 }
 
 void
-handle_copy(was_simple *w, const char *path, const char *destination_path)
+handle_copy(was_simple *w, const FileResource &src, const FileResource &dest)
 {
     // TODO: support "Depth: 0"
     // TODO: overwriting an existing directory?
@@ -43,7 +43,8 @@ handle_copy(was_simple *w, const char *path, const char *destination_path)
         options |= FOX_CP_EXCL;
 
     fox_error_t error;
-    fox_status_t status = fox_copy(path, destination_path, options, &error);
+    fox_status_t status = fox_copy(src.GetPath(), dest.GetPath(), options,
+                                   &error);
     if (status != FOX_STATUS_SUCCESS) {
         errno_respones(w, status);
         return;
@@ -51,11 +52,11 @@ handle_copy(was_simple *w, const char *path, const char *destination_path)
 }
 
 void
-handle_move(was_simple *w, const char *path, const char *destination_path)
+handle_move(was_simple *w, const FileResource &src, const FileResource &dest)
 {
     // TODO: support "Overwrite"
 
-    if (rename(path, destination_path) < 0) {
+    if (rename(src.GetPath(), dest.GetPath()) < 0) {
         errno_respones(w);
         return;
     }
