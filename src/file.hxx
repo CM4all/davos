@@ -63,6 +63,10 @@ public:
         return path.c_str();
     }
 
+    const struct stat &GetStat() const {
+        return st;
+    }
+
     time_t GetAccessTime() const {
         return st.st_atime;
     }

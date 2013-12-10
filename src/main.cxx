@@ -49,7 +49,7 @@ public:
 
     void HandlePropfind(was_simple *w, const char *uri,
                         const Resource &resource) {
-        handle_propfind(w, uri, resource.GetPath());
+        handle_propfind(w, uri, resource);
     }
 
     void HandleProppatch(was_simple *w, const char *uri,

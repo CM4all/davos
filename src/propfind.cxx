@@ -7,6 +7,7 @@
 #include "propfind.hxx"
 #include "wxml.hxx"
 #include "error.hxx"
+#include "file.hxx"
 
 extern "C" {
 #include "date.h"
@@ -23,8 +24,6 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <sys/stat.h>
 #include <dirent.h>
 
 static bool
@@ -69,7 +68,7 @@ ListDirectory(const char *path)
 
 static bool
 propfind_file(was_simple *was, std::string &uri, std::string &path,
-              struct stat &st,
+              const struct stat &st,
               unsigned depth)
 {
     bool success = wxml_open_element(was, "D:response") &&
@@ -137,11 +136,10 @@ propfind_file(was_simple *was, std::string &uri, std::string &path,
 }
 
 void
-handle_propfind(was_simple *was, const char *uri, const char *path)
+handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
 {
-    struct stat st;
-    if (stat(path, &st) < 0) {
-        errno_respones(was);
+    if (!resource.Exists()) {
+        errno_respones(was, resource.GetError());
         return;
     }
 
@@ -159,8 +157,8 @@ handle_propfind(was_simple *was, const char *uri, const char *path)
         return;
 
     std::string uri2(uri);
-    std::string path2(path);
-    if (!propfind_file(was, uri2, path2, st, depth))
+    std::string path2(resource.GetPath());
+    if (!propfind_file(was, uri2, path2, resource.GetStat(), depth))
         return;
 
     end_multistatus(was);
