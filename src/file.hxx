@@ -33,6 +33,10 @@ public:
         return error == -1;
     }
 
+    int GetError() const {
+        return error;
+    }
+
     bool Exists() const {
         assert(!IsNull());
 
@@ -57,6 +61,14 @@ public:
         assert(!IsNull());
 
         return path.c_str();
+    }
+
+    time_t GetAccessTime() const {
+        return st.st_atime;
+    }
+
+    time_t GetModificationTime() const {
+        return st.st_mtime;
     }
 };
 

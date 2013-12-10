@@ -8,6 +8,7 @@
 #include "wxml.hxx"
 #include "expat.hxx"
 #include "error.hxx"
+#include "file.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -23,7 +24,6 @@ extern "C" {
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <sys/time.h>
 #include <dirent.h>
 
@@ -174,11 +174,10 @@ parse_win32_timestamp(const char *s, struct timeval &tv)
 }
 
 void
-handle_proppatch(was_simple *w, const char *uri, const char *path)
+handle_proppatch(was_simple *w, const char *uri, const FileResource &resource)
 {
-    struct stat st;
-    if (stat(path, &st) < 0) {
-        errno_respones(w);
+    if (!resource.Exists()) {
+        errno_respones(w, resource.GetError());
         return;
     }
 
@@ -203,9 +202,9 @@ handle_proppatch(was_simple *w, const char *uri, const char *path)
         return;
 
     struct timeval times[2];
-    times[0].tv_sec = st.st_atime;
+    times[0].tv_sec = resource.GetAccessTime();
     times[0].tv_usec = 0;
-    times[1].tv_sec = st.st_mtime;
+    times[1].tv_sec = resource.GetModificationTime();
     times[1].tv_usec = 0;
 
     bool times_enabled = false;
@@ -230,7 +229,7 @@ handle_proppatch(was_simple *w, const char *uri, const char *path)
     }
 
     if (times_enabled)
-        times_status = utimes(path, times) == 0
+        times_status = utimes(resource.GetPath(), times) == 0
             ? HTTP_STATUS_OK
             : errno_status(errno);
 

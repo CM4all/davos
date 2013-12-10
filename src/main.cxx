@@ -54,7 +54,7 @@ public:
 
     void HandleProppatch(was_simple *w, const char *uri,
                          const Resource &resource) {
-        handle_proppatch(w, uri, resource.GetPath());
+        handle_proppatch(w, uri, resource);
     }
 
     void HandleMkcol(was_simple *w, const Resource &resource) {
