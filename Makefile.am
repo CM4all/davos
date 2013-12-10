@@ -17,6 +17,7 @@ src_davos_SOURCES = \
 	src/proppatch.cxx src/proppatch.hxx \
 	src/lock.cxx src/lock.hxx \
 	src/other.cxx src/other.hxx \
+	src/file.hxx \
 	src/frontend.hxx \
 	src/main.cxx
 src_davos_CPPFLAGS = $(AM_CPPFLAGS) \

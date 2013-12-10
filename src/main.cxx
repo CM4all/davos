@@ -13,60 +13,18 @@
 #include "proppatch.hxx"
 #include "lock.hxx"
 #include "other.hxx"
+#include "file.hxx"
 
 #include <inline/compiler.h>
 
-#include <string>
-
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 class SimpleBackend {
     const char *document_root;
 
 public:
-    struct Resource {
-        std::string path;
-
-        int error;
-
-        struct stat st;
-
-        Resource():error(-1) {}
-
-        explicit Resource(std::string &&_path)
-            :path(std::move(_path)), error(0) {
-            if (stat(path.c_str(), &st) < 0)
-                error = errno;
-        }
-
-        bool IsNull() const {
-            return error == -1;
-        }
-
-        bool Exists() const {
-            assert(!IsNull());
-
-            return error == 0;
-        }
-
-        bool IsFile() const {
-            assert(!IsNull());
-            assert(Exists());
-
-            return S_ISREG(st.st_mode);
-        }
-
-        bool IsDirectory() const {
-            assert(!IsNull());
-            assert(Exists());
-
-            return S_ISDIR(st.st_mode);
-        }
-    };
+    typedef FileResource Resource;
 
     bool Setup(was_simple *w);
 
