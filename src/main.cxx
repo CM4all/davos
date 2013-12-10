@@ -32,45 +32,45 @@ public:
     Resource Map(const char *uri) const;
 
     void HandleHead(was_simple *w, const Resource &resource) {
-        handle_head(w, resource.path.c_str());
+        handle_head(w, resource.GetPath());
     }
 
     void HandleGet(was_simple *w, const Resource &resource) {
-        handle_get(w, resource.path.c_str());
+        handle_get(w, resource.GetPath());
     }
 
     void HandlePut(was_simple *w, const Resource &resource) {
-        handle_put(w, resource.path.c_str());
+        handle_put(w, resource.GetPath());
     }
 
     void HandleDelete(was_simple *w, const Resource &resource) {
-        handle_delete(w, resource.path.c_str());
+        handle_delete(w, resource.GetPath());
     }
 
     void HandlePropfind(was_simple *w, const char *uri,
                         const Resource &resource) {
-        handle_propfind(w, uri, resource.path.c_str());
+        handle_propfind(w, uri, resource.GetPath());
     }
 
     void HandleProppatch(was_simple *w, const char *uri,
                          const Resource &resource) {
-        handle_proppatch(w, uri, resource.path.c_str());
+        handle_proppatch(w, uri, resource.GetPath());
     }
 
     void HandleMkcol(was_simple *w, const Resource &resource) {
-        handle_mkcol(w, resource.path.c_str());
+        handle_mkcol(w, resource.GetPath());
     }
 
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_copy(w, src.path.c_str(), dest.path.c_str());
+        handle_copy(w, src.GetPath(), dest.GetPath());
     }
 
     void HandleMove(was_simple *w, const Resource &src, const Resource &dest) {
-        handle_move(w, src.path.c_str(), dest.path.c_str());
+        handle_move(w, src.GetPath(), dest.GetPath());
     }
 
     void HandleLock(was_simple *w, const Resource &resource) {
-        handle_lock(w, resource.path.c_str());
+        handle_lock(w, resource.GetPath());
     }
 };
 

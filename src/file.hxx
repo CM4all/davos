@@ -13,13 +13,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-struct FileResource {
+class FileResource {
     std::string path;
 
     int error;
 
     struct stat st;
 
+public:
     FileResource():error(-1) {}
 
     explicit FileResource(std::string &&_path)
@@ -50,6 +51,12 @@ struct FileResource {
         assert(Exists());
 
         return S_ISDIR(st.st_mode);
+    }
+
+    const char *GetPath() const {
+        assert(!IsNull());
+
+        return path.c_str();
     }
 };
 
