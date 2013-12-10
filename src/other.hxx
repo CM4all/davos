@@ -10,9 +10,6 @@
 struct was_simple;
 
 void
-handle_options(was_simple *was, const char *path);
-
-void
 handle_delete(was_simple *was, const char *path);
 
 void

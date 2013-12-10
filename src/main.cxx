@@ -73,10 +73,6 @@ public:
     gcc_pure
     Resource Map(const char *uri) const;
 
-    void HandleOptions(was_simple *w, const Resource &resource) {
-        handle_options(w, resource.path.c_str());
-    }
-
     void HandleHead(was_simple *w, const Resource &resource) {
         handle_head(w, resource.path.c_str());
     }

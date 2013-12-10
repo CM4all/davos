@@ -18,6 +18,27 @@ extern "C" {
 static const char *mountpoint;
 static size_t mountpoint_length;
 
+template<typename Backend>
+static void
+handle_options(was_simple *was, const typename Backend::Resource &resource)
+{
+    const char *allow_new = "OPTIONS,MKCOL,PUT,LOCK";
+    const char *allow_file =
+        "OPTIONS,GET,HEAD,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
+    const char *allow_directory =
+        "OPTIONS,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
+
+    const char *allow;
+    if (!resource.Exists())
+        allow = allow_new;
+    else if (resource.IsDirectory())
+        allow = allow_directory;
+    else
+        allow = allow_file;
+
+    was_simple_set_header(was, "allow", allow);
+}
+
 /**
  * Extract the URI path from an absolute URL.
  */
@@ -134,7 +155,7 @@ run(Backend &backend, was_simple *was, const char *uri)
     const http_method_t method = was_simple_get_method(was);
     switch (method) {
     case HTTP_METHOD_OPTIONS:
-        backend.HandleOptions(was, resource);
+        handle_options<Backend>(was, resource);
         break;
 
     case HTTP_METHOD_HEAD:
