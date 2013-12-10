@@ -32,11 +32,11 @@ public:
     Resource Map(const char *uri) const;
 
     void HandleHead(was_simple *w, const Resource &resource) {
-        handle_head(w, resource.GetPath());
+        handle_head(w, resource);
     }
 
     void HandleGet(was_simple *w, const Resource &resource) {
-        handle_get(w, resource.GetPath());
+        handle_get(w, resource);
     }
 
     void HandlePut(was_simple *w, const Resource &resource) {

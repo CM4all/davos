@@ -6,6 +6,7 @@
 
 #include "get.hxx"
 #include "error.hxx"
+#include "file.hxx"
 
 extern "C" {
 #include "format.h"
@@ -21,40 +22,39 @@ extern "C" {
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
 
 static void
-static_etag(char *p, const struct stat *st)
+static_etag(char *p, const struct stat &st)
 {
     *p++ = '"';
 
-    p += format_uint32_hex(p, (uint32_t)st->st_dev);
+    p += format_uint32_hex(p, (uint32_t)st.st_dev);
 
     *p++ = '-';
 
-    p += format_uint32_hex(p, (uint32_t)st->st_ino);
+    p += format_uint32_hex(p, (uint32_t)st.st_ino);
 
     *p++ = '-';
 
-    p += format_uint32_hex(p, (uint32_t)st->st_mtime);
+    p += format_uint32_hex(p, (uint32_t)st.st_mtime);
 
     *p++ = '"';
     *p = 0;
 }
 
 static bool
-static_response_headers(was_simple *was, const struct stat *st)
+static_response_headers(was_simple *was, const FileResource &resource)
 {
     const char *content_type = "application/octet-stream";
 
     if (!was_simple_set_header(was, "content-type", content_type) ||
         !was_simple_set_header(was, "last-modified",
-                               http_date_format(st->st_mtime)))
+                               http_date_format(resource.GetModificationTime())))
         return false;
 
     {
         char buffer[128];
-        static_etag(buffer, st);
+        static_etag(buffer, resource.GetStat());
         if (!was_simple_set_header(was, "etag", buffer))
             return false;
     }
@@ -92,13 +92,13 @@ copy_from_fd(was_simple *was, int in_fd, uint64_t remaining)
 }
 
 void
-handle_get(was_simple *was, const char *path)
+handle_get(was_simple *was, const FileResource &resource)
 {
     // TODO: range, if-modified-since, if-match, ...
 
     was_simple_input_close(was);
 
-    const int fd = open(path, O_RDONLY|O_NOCTTY);
+    const int fd = open(resource.GetPath(), O_RDONLY|O_NOCTTY);
     if (fd < 0) {
         errno_respones(was);
         close(fd);
@@ -118,34 +118,33 @@ handle_get(was_simple *was, const char *path)
         return;
     }
 
-    if (static_response_headers(was, &st))
-        copy_from_fd(was, fd, st.st_size);
+    if (static_response_headers(was, resource))
+        copy_from_fd(was, fd, resource.GetSize());
 
     close(fd);
 }
 
 void
-handle_head(was_simple *was, const char *path)
+handle_head(was_simple *was, const FileResource &resource)
 {
     was_simple_input_close(was);
 
-    struct stat st;
-    if (stat(path, &st) < 0) {
-        errno_respones(was);
+    if (!resource.Exists()) {
+        errno_respones(was, resource.GetError());
         return;
     }
 
-    if (!S_ISREG(st.st_mode)) {
+    if (!resource.IsFile()) {
         was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
         return;
     }
 
     {
         char buffer[64];
-        sprintf(buffer, "%llu", (unsigned long long)st.st_size);
+        sprintf(buffer, "%llu", (unsigned long long)resource.GetSize());
         if (!was_simple_set_header(was, "content-length", buffer))
             return;
     }
 
-    static_response_headers(was, &st);
+    static_response_headers(was, resource);
 }

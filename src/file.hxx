@@ -67,6 +67,10 @@ public:
         return st;
     }
 
+    off_t GetSize() const {
+        return st.st_size;
+    }
+
     time_t GetAccessTime() const {
         return st.st_atime;
     }
