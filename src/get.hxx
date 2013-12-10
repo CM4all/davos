@@ -4,8 +4,8 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_FILE_HXX
-#define DAVOS_FILE_HXX
+#ifndef DAVOS_GET_HXX
+#define DAVOS_GET_HXX
 
 struct was_simple;
 

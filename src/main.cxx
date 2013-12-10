@@ -7,7 +7,7 @@
 #include "frontend.hxx"
 #include "error.hxx"
 #include "directory.hxx"
-#include "file.hxx"
+#include "get.hxx"
 #include "put.hxx"
 #include "propfind.hxx"
 #include "proppatch.hxx"

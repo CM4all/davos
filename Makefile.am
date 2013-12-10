@@ -11,7 +11,7 @@ src_davos_SOURCES = \
 	src/wxml.hxx \
 	src/error.cxx src/error.hxx \
 	src/directory.cxx src/directory.hxx \
-	src/file.cxx src/file.hxx \
+	src/get.cxx src/get.hxx \
 	src/put.cxx src/put.hxx \
 	src/propfind.cxx src/propfind.hxx \
 	src/proppatch.cxx src/proppatch.hxx \
