@@ -8,8 +8,9 @@
 #define DAVOS_PUT_HXX
 
 struct was_simple;
+class FileResource;
 
 void
-handle_put(was_simple *was, const char *path);
+handle_put(was_simple *was, const FileResource &resource);
 
 #endif

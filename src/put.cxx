@@ -6,6 +6,7 @@
 
 #include "put.hxx"
 #include "error.hxx"
+#include "file.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -17,7 +18,6 @@ extern "C" {
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
 
 static std::string
 make_tmp_path(const char *path)
@@ -77,14 +77,14 @@ splice_from_was(was_simple *w, int out_fd)
 }
 
 void
-handle_put(was_simple *w, const char *path)
+handle_put(was_simple *w, const FileResource &resource)
 {
     if (!was_simple_has_body(w)) {
         was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
         return;
     }
 
-    const std::string tmp_path = make_tmp_path(path);
+    const std::string tmp_path = make_tmp_path(resource.GetPath());
 
     int file_fd = open(tmp_path.c_str(), O_CREAT|O_EXCL|O_WRONLY, 0666);
     if (file_fd < 0) {
@@ -109,8 +109,9 @@ handle_put(was_simple *w, const char *path)
         return;
     }
 
-    if (rename(tmp_path.c_str(), path) < 0) {
-        fprintf(stderr, "Failed to commit %s: %s\n", path, strerror(errno));
+    if (rename(tmp_path.c_str(), resource.GetPath()) < 0) {
+        fprintf(stderr, "Failed to commit %s: %s\n",
+                resource.GetPath(), strerror(errno));
         unlink(tmp_path.c_str());
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         return;

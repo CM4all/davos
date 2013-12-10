@@ -40,7 +40,7 @@ public:
     }
 
     void HandlePut(was_simple *w, const Resource &resource) {
-        handle_put(w, resource.GetPath());
+        handle_put(w, resource);
     }
 
     void HandleDelete(was_simple *w, const Resource &resource) {
