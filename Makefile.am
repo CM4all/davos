@@ -10,6 +10,7 @@ src_davos_SOURCES = \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.hxx \
 	src/error.cxx src/error.hxx \
+	src/splice.cxx src/splice.hxx \
 	src/directory.cxx src/directory.hxx \
 	src/get.cxx src/get.hxx \
 	src/put.cxx src/put.hxx \
