@@ -27,29 +27,6 @@ extern "C" {
 #include <sys/time.h>
 #include <dirent.h>
 
-static bool
-begin_multistatus(was_simple *w)
-{
-    return wxml_declaration(w) &&
-        wxml_begin_tag(w, "D:multistatus") &&
-        wxml_attribute(w, "xmlns:D", "DAV:") &&
-        wxml_end_tag(w);
-}
-
-static bool
-end_multistatus(was_simple *w)
-{
-    return wxml_close_element(w, "D:multistatus");
-}
-
-static bool
-href(was_simple *w, const char *uri)
-{
-    return wxml_open_element(w, "D:href") &&
-        was_simple_puts(w, uri) &&
-        wxml_close_element(w, "D:href");
-}
-
 struct PropNameValue {
     std::string name;
     std::string value;

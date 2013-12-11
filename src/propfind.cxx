@@ -26,29 +26,6 @@ extern "C" {
 #include <fcntl.h>
 #include <dirent.h>
 
-static bool
-begin_multistatus(was_simple *w)
-{
-    return wxml_declaration(w) &&
-        wxml_begin_tag(w, "D:multistatus") &&
-        wxml_attribute(w, "xmlns:D", "DAV:") &&
-        wxml_end_tag(w);
-}
-
-static bool
-end_multistatus(was_simple *w)
-{
-    return wxml_close_element(w, "D:multistatus");
-}
-
-static bool
-href(was_simple *w, const char *uri)
-{
-    return wxml_open_element(w, "D:href") &&
-        was_simple_puts(w, uri) &&
-        wxml_close_element(w, "D:href");
-}
-
 static std::forward_list<std::string>
 ListDirectory(const char *path)
 {
@@ -71,38 +48,23 @@ propfind_file(was_simple *was, std::string &uri, std::string &path,
               const struct stat &st,
               unsigned depth)
 {
-    bool success = wxml_open_element(was, "D:response") &&
-        href(was, uri.c_str()) &&
-        wxml_open_element(was, "D:propstat") &&
-        wxml_string_element(was, "D:status", "HTTP/1.1 200 OK") &&
-        wxml_open_element(was, "D:prop");
-    if (!success)
+    if (!open_response_prop(was, uri.c_str(), "HTTP/1.1 200 OK"))
         return false;
 
     if (S_ISDIR(st.st_mode)) {
-        success = wxml_open_element(was, "D:resourcetype") &&
-            wxml_short_element(was, "D:collection") &&
-            wxml_close_element(was, "D:resourcetype");
-        if (!success)
+        if (!resourcetype_collection(was))
             return false;
     } else if (S_ISREG(st.st_mode)) {
-        success = wxml_open_element(was, "D:getcontentlength") &&
-            was_simple_printf(was, "%llu", (unsigned long long)st.st_size) &&
-            wxml_close_element(was, "D:getcontentlength");
-        if (!success)
+        if (!wxml_format_element(was, "D:getcontentlength", "%llu",
+                                 (unsigned long long)st.st_size))
             return false;
     }
 
-    success = wxml_open_element(was, "D:getlastmodified") &&
-        was_simple_puts(was, http_date_format(st.st_mtime)) &&
-        wxml_close_element(was, "D:getlastmodified");
-    if (!success)
-            return false;
+    if (!wxml_string_element(was, "D:getlastmodified",
+                             http_date_format(st.st_mtime)))
+        return false;
 
-    success = wxml_close_element(was, "D:prop") &&
-        wxml_close_element(was, "D:propstat") &&
-        wxml_close_element(was, "D:response");
-    if (!success)
+    if (!close_response_prop(was))
         return false;
 
     const auto uri_length = uri.length();
@@ -119,7 +81,7 @@ propfind_file(was_simple *was, std::string &uri, std::string &path,
             path.append(name);
 
             struct stat st2;
-            success = true;
+            bool success = true;
             if (stat(path.c_str(), &st2) == 0) {
                 success = propfind_file(was, uri, path, st2, depth);
             }

@@ -44,12 +44,6 @@ end_prop(was_simple *w)
 }
 
 static bool
-href(was_simple *w, const char *uri)
-{
-    return wxml_string_element(w, "D:href", uri);
-}
-
-static bool
 locktoken_href(was_simple *w, const char *token)
 {
     return wxml_open_element(w, "D:locktoken") &&
