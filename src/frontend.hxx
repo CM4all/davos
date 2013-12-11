@@ -10,6 +10,8 @@ extern "C" {
 
 #include <inline/compiler.h>
 
+#include <string>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -81,7 +83,12 @@ map_uri(const Backend &backend, const char *uri)
     else
         return typename Backend::Resource();
 
-    return backend.Map(uri);
+    /* strip trailing slash */
+    std::string uri2(uri);
+    if (!uri2.empty() && uri2.back() == '/')
+        uri2.pop_back();
+
+    return backend.Map(uri2.c_str());
 }
 
 static bool
