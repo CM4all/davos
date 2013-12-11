@@ -20,7 +20,7 @@ handle_mkcol(was_simple *w, const FileResource &resource)
 {
     if (mkdir(resource.GetPath(), 0777) < 0) {
         const int e = errno;
-        if (errno == EEXIST || errno == ENOTDIR)
+        if (errno == ENOTDIR)
             was_simple_status(w, HTTP_STATUS_CONFLICT);
         else
             errno_respones(w, e);

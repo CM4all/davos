@@ -38,6 +38,10 @@ errno_status(int e)
     case EINVAL:
         return HTTP_STATUS_BAD_REQUEST;
 
+    case EEXIST:
+    case EISDIR:
+        return HTTP_STATUS_CONFLICT;
+
     default:
         return HTTP_STATUS_INTERNAL_SERVER_ERROR;
     }
