@@ -162,14 +162,23 @@ run2(Backend &backend, was_simple *was, const char *uri)
     const http_method_t method = was_simple_get_method(was);
     switch (method) {
     case HTTP_METHOD_OPTIONS:
+        if (!was_simple_input_close(was))
+            return;
+
         handle_options<Backend>(was, resource);
         break;
 
     case HTTP_METHOD_HEAD:
+        if (!was_simple_input_close(was))
+            return;
+
         backend.HandleHead(was, resource);
         break;
 
     case HTTP_METHOD_GET:
+        if (!was_simple_input_close(was))
+            return;
+
         backend.HandleGet(was, resource);
         break;
 
@@ -183,6 +192,9 @@ run2(Backend &backend, was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_DELETE:
+        if (!was_simple_input_close(was))
+            return;
+
         backend.HandleDelete(was, resource);
         break;
 
@@ -195,10 +207,16 @@ run2(Backend &backend, was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_MKCOL:
+        if (!was_simple_input_close(was))
+            return;
+
         backend.HandleMkcol(was, resource);
         break;
 
     case HTTP_METHOD_COPY: {
+        if (!was_simple_input_close(was))
+            return;
+
         const char *p = was_simple_get_header(was, "destination");
         if (p == nullptr) {
             was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
@@ -219,6 +237,9 @@ run2(Backend &backend, was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_MOVE: {
+        if (!was_simple_input_close(was))
+            return;
+
         const char *p = was_simple_get_header(was, "destination");
         if (p == nullptr) {
             was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
