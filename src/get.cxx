@@ -7,6 +7,7 @@
 #include "get.hxx"
 #include "error.hxx"
 #include "file.hxx"
+#include "splice.hxx"
 
 extern "C" {
 #include "format.h"
@@ -15,13 +16,8 @@ extern "C" {
 #include <was/simple.h>
 }
 
-#include <algorithm>
-#include <limits>
-
 #include <unistd.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <string.h>
 
 static void
 static_etag(char *p, const struct stat &st)
@@ -62,35 +58,6 @@ static_response_headers(was_simple *was, const FileResource &resource)
     return true;
 }
 
-static void
-copy_from_fd(was_simple *was, int in_fd, uint64_t remaining)
-{
-    if (!was_simple_set_length(was, remaining))
-        return;
-
-    if (remaining == 0)
-        return;
-
-    const int out_fd = was_simple_output_fd(was);
-    while (remaining > 0) {
-        constexpr uint64_t max = std::numeric_limits<size_t>::max();
-        size_t length = std::min(remaining, max);
-        ssize_t nbytes = splice(in_fd, nullptr, out_fd, nullptr,
-                                length,
-                                SPLICE_F_MOVE|SPLICE_F_MORE);
-        if (nbytes <= 0) {
-            if (nbytes < 0)
-                fprintf(stderr, "splice() failed: %s\n", strerror(errno));
-            break;
-        }
-
-        if (!was_simple_sent(was, nbytes))
-            break;
-
-        remaining -= nbytes;
-    }
-}
-
 void
 handle_get(was_simple *was, const FileResource &resource)
 {
@@ -119,7 +86,7 @@ handle_get(was_simple *was, const FileResource &resource)
     }
 
     if (static_response_headers(was, resource))
-        copy_from_fd(was, fd, resource.GetSize());
+        splice_to_was(was, fd, resource.GetSize());
 
     close(fd);
 }

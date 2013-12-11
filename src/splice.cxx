@@ -10,6 +10,9 @@ extern "C" {
 #include <was/simple.h>
 }
 
+#include <limits>
+#include <algorithm>
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -62,4 +65,35 @@ splice_from_was(was_simple *w, int out_fd)
             return false;
         }
     }
+}
+
+bool
+splice_to_was(was_simple *w, int in_fd, uint64_t remaining)
+{
+    if (!was_simple_set_length(w, remaining))
+        return false;
+
+    if (remaining == 0)
+        return true;
+
+    const int out_fd = was_simple_output_fd(w);
+    while (remaining > 0) {
+        constexpr uint64_t max = std::numeric_limits<size_t>::max();
+        size_t length = std::min(remaining, max);
+        ssize_t nbytes = splice(in_fd, nullptr, out_fd, nullptr,
+                                length,
+                                SPLICE_F_MOVE|SPLICE_F_MORE);
+        if (nbytes <= 0) {
+            if (nbytes < 0)
+                fprintf(stderr, "splice() failed: %s\n", strerror(errno));
+            return false;
+        }
+
+        if (!was_simple_sent(w, nbytes))
+            return false;
+
+        remaining -= nbytes;
+    }
+
+    return true;
 }
