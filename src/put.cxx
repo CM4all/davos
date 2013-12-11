@@ -79,10 +79,7 @@ splice_from_was(was_simple *w, int out_fd)
 void
 handle_put(was_simple *w, const FileResource &resource)
 {
-    if (!was_simple_has_body(w)) {
-        was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
-        return;
-    }
+    assert(was_simple_has_body(w));
 
     const std::string tmp_path = make_tmp_path(resource.GetPath());
 

@@ -167,6 +167,11 @@ run2(Backend &backend, was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_PUT:
+        if (!was_simple_has_body(was)) {
+            was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+            return;
+        }
+
         backend.HandlePut(was, resource);
         break;
 
