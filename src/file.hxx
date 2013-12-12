@@ -11,7 +11,6 @@
 
 #include <assert.h>
 #include <sys/stat.h>
-#include <errno.h>
 
 class FileResource {
     std::string path;
@@ -23,11 +22,7 @@ class FileResource {
 public:
     FileResource():error(-1) {}
 
-    explicit FileResource(std::string &&_path)
-        :path(std::move(_path)), error(0) {
-        if (stat(path.c_str(), &st) < 0)
-            error = errno;
-    }
+    explicit FileResource(std::string &&_path);
 
     bool IsNull() const {
         return error == -1;
