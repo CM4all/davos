@@ -20,13 +20,7 @@ extern "C" {
 #include <string>
 #include <forward_list>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 static bool
 begin_prop(was_simple *w)
@@ -58,18 +52,6 @@ owner_href(was_simple *w, const char *token)
         href(w, token) &&
         wxml_close_element(w, "D:owner");
 }
-
-struct LockParserData {
-    enum State {
-        ROOT,
-        OWNER,
-        OWNER_HREF,
-    } state;
-
-    std::string owner_href;
-
-    LockParserData():state(ROOT) {}
-};
 
 static void XMLCALL
 start_element(void *userData, const XML_Char *name,
@@ -130,60 +112,28 @@ char_data(void *userData, const XML_Char *s, int len)
     }
 }
 
-void
-handle_lock(was_simple *w, const char *path)
+bool
+LockMethod::ParseRequest(was_simple *w)
 {
     if (was_simple_get_header(w, "if") != nullptr)
         /* lock refresh, no XML request body */
-        return;
+        return false;
 
-    LockParserData data;
-
-    {
-        ExpatParser expat(&data);
-        expat.SetElementHandler(start_element, end_element);
-        expat.SetCharacterDataHandler(char_data);
-        if (!expat.Parse(w)) {
-            was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
-            return;
-        }
+    ExpatParser expat(&data);
+    expat.SetElementHandler(start_element, end_element);
+    expat.SetCharacterDataHandler(char_data);
+    if (!expat.Parse(w)) {
+        was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
+        return false;
     }
 
-    http_status_t status = HTTP_STATUS_OK;
+    return true;
+}
 
-    struct stat st;
-    if (stat(path, &st) < 0) {
-        int e = errno;
-        if (e == ENOENT) {
-            /* RFC4918 9.10.4: "A successful LOCK method MUST result
-               in the creation of an empty resource that is locked
-               (and that is not a collection) when a resource did not
-               previously exist at that URL". */
-            int fd = open(path, O_CREAT|O_EXCL|O_WRONLY|O_NOCTTY, 0666);
-            if (fd < 0) {
-                e = errno;
-                if (e == EEXIST || e == EISDIR) {
-                    /* the file/directory has been created by somebody
-                       else meanwhile */
-                } else if (e == ENOENT || e == ENOTDIR) {
-                    was_simple_status(w, HTTP_STATUS_CONFLICT);
-                    return;
-                } else {
-                    errno_respones(w, e);
-                    return;
-                }
-            } else {
-                close(fd);
-                status = HTTP_STATUS_CREATED;
-            }
-        } else if (e == ENOTDIR) {
-            was_simple_status(w, HTTP_STATUS_CONFLICT);
-            return;
-        } else {
-            errno_respones(w, e);
-            return;
-        }
-    }
+void
+LockMethod::Run(was_simple *w, bool created)
+{
+    http_status_t status = created ? HTTP_STATUS_CREATED : HTTP_STATUS_OK;
 
     const char *token = "opaquelocktoken:dummy";
     const char *token2 = "<opaquelocktoken:dummy>";

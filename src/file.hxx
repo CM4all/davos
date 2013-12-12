@@ -73,6 +73,13 @@ public:
     time_t GetModificationTime() const {
         return st.st_mtime;
     }
+
+    /**
+     * Create the file with O_EXCL.
+     *
+     * @return 0 on success, an errno value on error
+     */
+    int CreateExclusive() const;
 };
 
 #endif

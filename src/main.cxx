@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 class SimpleBackend {
     const char *document_root;
@@ -70,9 +72,7 @@ public:
         handle_move(w, src, dest);
     }
 
-    void HandleLock(was_simple *w, const Resource &resource) {
-        handle_lock(w, resource.GetPath());
-    }
+    void HandleLock(was_simple *w, const Resource &resource);
 };
 
 inline bool
@@ -98,6 +98,49 @@ SimpleBackend::Map(const char *uri) const
     }
 
     return Resource(std::move(path));
+}
+
+void
+SimpleBackend::HandleLock(was_simple *w, const Resource &resource)
+{
+    LockMethod method;
+    if (!method.ParseRequest(w))
+        return;
+
+    bool created = false;
+
+    if (!resource.Exists()) {
+        int e = resource.GetError();
+        if (e == ENOENT) {
+            /* RFC4918 9.10.4: "A successful LOCK method MUST result
+               in the creation of an empty resource that is locked
+               (and that is not a collection) when a resource did not
+               previously exist at that URL". */
+            e = resource.CreateExclusive();
+            if (e != 0) {
+                if (e == EEXIST || e == EISDIR) {
+                    /* the file/directory has been created by somebody
+                       else meanwhile */
+                } else if (e == ENOENT || e == ENOTDIR) {
+                    was_simple_status(w, HTTP_STATUS_CONFLICT);
+                    return;
+                } else {
+                    errno_respones(w, e);
+                    return;
+                }
+            } else {
+                created = true;
+            }
+        } else if (e == ENOTDIR) {
+            was_simple_status(w, HTTP_STATUS_CONFLICT);
+            return;
+        } else {
+            errno_respones(w, e);
+            return;
+        }
+    }
+
+    method.Run(w, created);
 }
 
 int
