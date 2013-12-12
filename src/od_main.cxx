@@ -8,6 +8,7 @@
 #include "frontend.hxx"
 #include "wxml.hxx"
 #include "splice.hxx"
+#include "lock.hxx"
 
 extern "C" {
 #include "date.h"
@@ -79,12 +80,7 @@ public:
     void HandleMkcol(was_simple *w, const Resource &resource);
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest);
     void HandleMove(was_simple *w, const Resource &src, const Resource &dest);
-
-    void HandleLock(was_simple *w, const Resource &resource) {
-        (void)w;
-        (void)resource;
-        //handle_lock(w, path.c_str());
-    }
+    void HandleLock(was_simple *w, const Resource &resource);
 };
 
 bool
@@ -527,6 +523,22 @@ OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         return;
     }
+}
+
+void
+OnlineDriveBackend::HandleLock(was_simple *w, const Resource &resource)
+{
+    LockMethod method;
+    if (!method.ParseRequest(w))
+        return;
+
+    bool created = false;
+
+    if (!resource.Exists()) {
+        // TODO: create empty resource, see RFC4918 9.10.4
+    }
+
+    method.Run(w, created);
 }
 
 static od_setup *

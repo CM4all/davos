@@ -38,6 +38,7 @@ src_davos_od_SOURCES = \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.hxx \
 	src/splice.cxx src/splice.hxx \
+	src/lock.cxx src/lock.hxx \
 	src/frontend.hxx \
 	src/od_resource.cxx src/od_resource.hxx \
 	src/od_main.cxx
