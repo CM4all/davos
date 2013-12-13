@@ -8,6 +8,7 @@
 #include "frontend.hxx"
 #include "wxml.hxx"
 #include "splice.hxx"
+#include "proppatch.hxx"
 #include "lock.hxx"
 
 extern "C" {
@@ -68,14 +69,8 @@ public:
 
     void HandlePropfind(was_simple *w, const char *uri,
                         const Resource &resource);
-
     void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &resource) {
-        (void)w;
-        (void)uri;
-        (void)resource;
-        //handle_proppatch(w, uri, path.c_str());
-    }
+                         const Resource &resource);
 
     void HandleMkcol(was_simple *w, const Resource &resource);
     void HandleCopy(was_simple *w, const Resource &src, const Resource &dest);
@@ -523,6 +518,50 @@ OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         return;
     }
+}
+
+void
+OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
+                                    const Resource &resource)
+{
+    if (!resource.Exists()) {
+        was_simple_status(w, HTTP_STATUS_NOT_FOUND);
+        return;
+    }
+
+    ProppatchMethod method;
+    if (!method.ParseRequest(w))
+        return;
+
+    od_stat st = resource.GetStat();
+    bool st_modified;
+    http_status_t st_status = HTTP_STATUS_NOT_FOUND;
+
+    for (auto &prop : method.GetProps()) {
+        if (prop.IsWin32LastModifiedTime()) {
+            timeval tv;
+            if (!prop.ParseWin32Timestamp(tv)) {
+                prop.status = HTTP_STATUS_BAD_REQUEST;
+                continue;
+            }
+
+            st.mtime = tv.tv_sec;
+            st_modified = true;
+        }
+    }
+
+    if (st_modified)
+        st_status = resource.SetStat(st, nullptr)
+            ? HTTP_STATUS_OK
+            : HTTP_STATUS_INTERNAL_SERVER_ERROR;
+
+    for (auto &prop : method.GetProps()) {
+        if (prop.IsWin32LastModifiedTime() &&
+            prop.status == HTTP_STATUS_NOT_FOUND)
+            prop.status = st_status;
+    }
+
+    method.SendResponse(w, uri);
 }
 
 void

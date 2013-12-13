@@ -103,6 +103,12 @@ public:
         return *od_resource_stat(resource);
     }
 
+    bool SetStat(const od_stat &st, GError **error_r) const {
+        assert(Exists());
+
+        return od_resource_update(resource, &st, error_r);
+    }
+
     od_resource_list *GetChildren(GError **error_r) const {
         assert(Exists());
 
