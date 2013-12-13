@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 class SimpleBackend {
     const char *document_root;
@@ -56,9 +57,7 @@ public:
     }
 
     void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &resource) {
-        handle_proppatch(w, uri, resource);
-    }
+                         const Resource &resource);
 
     void HandleMkcol(was_simple *w, const Resource &resource) {
         handle_mkcol(w, resource);
@@ -98,6 +97,60 @@ SimpleBackend::Map(const char *uri) const
     }
 
     return Resource(std::move(path));
+}
+
+void
+SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
+                               const Resource &resource)
+{
+    if (!resource.Exists()) {
+        errno_respones(w, resource.GetError());
+        return;
+    }
+
+    ProppatchMethod method;
+    if (!method.ParseRequest(w))
+        return;
+
+    struct timeval times[2];
+    times[0].tv_sec = resource.GetAccessTime();
+    times[0].tv_usec = 0;
+    times[1].tv_sec = resource.GetModificationTime();
+    times[1].tv_usec = 0;
+
+    bool times_enabled = false;
+    http_status_t times_status = HTTP_STATUS_NOT_FOUND;
+
+    for (auto &prop : method.GetProps()) {
+        if (prop.IsWin32LastAccessTime()) {
+            if (!prop.ParseWin32Timestamp(times[0])) {
+                prop.status = HTTP_STATUS_BAD_REQUEST;
+                continue;
+            }
+
+            times_enabled = true;
+        } else if (prop.IsWin32LastModifiedTime()) {
+            if (!prop.ParseWin32Timestamp(times[1])) {
+                prop.status = HTTP_STATUS_BAD_REQUEST;
+                continue;
+            }
+
+            times_enabled = true;
+        }
+    }
+
+    if (times_enabled)
+        times_status = utimes(resource.GetPath(), times) == 0
+            ? HTTP_STATUS_OK
+            : errno_status(errno);
+
+    for (auto &prop : method.GetProps()) {
+        if ((prop.IsWin32LastAccessTime() || prop.IsWin32LastModifiedTime()) &&
+            prop.status == HTTP_STATUS_NOT_FOUND)
+            prop.status = times_status;
+    }
+
+    method.SendResponse(w, uri);
 }
 
 void

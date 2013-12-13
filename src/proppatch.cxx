@@ -8,46 +8,13 @@
 #include "wxml.hxx"
 #include "expat.hxx"
 #include "error.hxx"
-#include "file.hxx"
 
 extern "C" {
 #include <was/simple.h>
 }
 
-#include <inline/compiler.h>
-
-#include <string>
-#include <list>
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <sys/time.h>
-#include <dirent.h>
-
-struct PropNameValue {
-    std::string name;
-    std::string value;
-    http_status_t status;
-
-    PropNameValue(const char *_name)
-        :name(_name),
-         status(HTTP_STATUS_NOT_FOUND) {}
-};
-
-struct ProppatchParserData {
-    enum State {
-        ROOT,
-        PROP,
-        PROP_NAME,
-    } state;
-
-    std::list<PropNameValue> props;
-
-    ProppatchParserData():state(ROOT) {}
-};
 
 static void XMLCALL
 start_element(void *userData, const XML_Char *name,
@@ -150,79 +117,41 @@ parse_win32_timestamp(const char *s, struct timeval &tv)
     return true;
 }
 
-void
-handle_proppatch(was_simple *w, const char *uri, const FileResource &resource)
+bool
+PropNameValue::ParseWin32Timestamp(timeval &tv) const
 {
-    if (!resource.Exists()) {
-        errno_respones(w, resource.GetError());
-        return;
+    return parse_win32_timestamp(value.c_str(), tv);
+}
+
+bool
+ProppatchMethod::ParseRequest(was_simple *w)
+{
+    ExpatParser expat(&data);
+    expat.SetElementHandler(start_element, end_element);
+    expat.SetCharacterDataHandler(char_data);
+    if (!expat.Parse(w)) {
+        was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
+        return false;
     }
 
-    ProppatchParserData data;
+    return true;
+}
 
-    {
-        ExpatParser expat(&data);
-        expat.SetElementHandler(start_element, end_element);
-        expat.SetCharacterDataHandler(char_data);
-        if (!expat.Parse(w)) {
-            was_simple_status(w, HTTP_STATUS_BAD_REQUEST);
-            return;
-        }
-    }
-
+bool
+ProppatchMethod::SendResponse(was_simple *w, const char *uri)
+{
     if (!was_simple_status(w, HTTP_STATUS_MULTI_STATUS) ||
         !was_simple_set_header(w, "content-type",
                                "text/xml; charset=\"utf-8\"") ||
         !begin_multistatus(w) ||
         !wxml_open_element(w, "D:response") ||
         !href(w, uri))
-        return;
+        return false;
 
-    struct timeval times[2];
-    times[0].tv_sec = resource.GetAccessTime();
-    times[0].tv_usec = 0;
-    times[1].tv_sec = resource.GetModificationTime();
-    times[1].tv_usec = 0;
+    for (auto prop : data.props)
+        if (!propstat(w, prop.name.c_str(),
+                      http_status_to_string(prop.status)))
+            return false;
 
-    bool times_enabled = false;
-    http_status_t times_status = HTTP_STATUS_NOT_FOUND;
-
-    for (auto prop : data.props) {
-        if (prop.name == "urn:schemas-microsoft-com:|Win32LastAccessTime") {
-            if (!parse_win32_timestamp(prop.value.c_str(), times[0])) {
-                prop.status = HTTP_STATUS_BAD_REQUEST;
-                continue;
-            }
-
-            times_enabled = true;
-        } else if (prop.name == "urn:schemas-microsoft-com:|Win32LastModifiedTime") {
-            if (!parse_win32_timestamp(prop.value.c_str(), times[1])) {
-                prop.status = HTTP_STATUS_BAD_REQUEST;
-                continue;
-            }
-
-            times_enabled = true;
-        }
-    }
-
-    if (times_enabled)
-        times_status = utimes(resource.GetPath(), times) == 0
-            ? HTTP_STATUS_OK
-            : errno_status(errno);
-
-    for (auto prop : data.props) {
-        http_status_t status = prop.status;
-
-        if (prop.name == "urn:schemas-microsoft-com:|Win32LastAccessTime" ||
-            prop.name == "urn:schemas-microsoft-com:|Win32LastModifiedTime") {
-            if (status == HTTP_STATUS_NOT_FOUND)
-                status = times_status;
-        }
-
-        if (!propstat(w, prop.name.c_str(), http_status_to_string(status)))
-            return;
-    }
-
-    wxml_close_element(w, "D:response") &&
-        end_multistatus(w);
+    return wxml_close_element(w, "D:response") && end_multistatus(w);
 }
