@@ -22,6 +22,7 @@ extern "C" {
 #include <od/list.h>
 #include <od/stream.h>
 #include <od/create.h>
+#include <od/error.h>
 }
 
 #include <string>
@@ -221,6 +222,42 @@ OnlineDriveBackend::HandleGet(was_simple *w, const Resource &resource)
     }
 }
 
+static bool
+rc_set_location_overwrite(struct od_resource_create *rc,
+                          struct od_resource *parent, const char *name,
+                          GError **error_r)
+{
+    GError *error = nullptr;
+
+    if (od_resource_create_set_location(rc, parent, name, &error))
+        return true;
+
+    if (error->domain == od_error_domain() &&
+        error->code == OD_ERROR_CONFLICT) {
+        /* already exists */
+        od_resource *existing = od_resource_get_child(parent, name, nullptr);
+        if (existing == nullptr) {
+            g_propagate_error(error_r, error);
+            return false;
+        }
+
+        /* delete it */
+        g_error_free(error);
+        error = nullptr;
+        bool deleted = od_resource_delete(existing, &error);
+        od_resource_free(existing);
+        if (deleted)
+            /* try again */
+            return od_resource_create_set_location(c, parent, name, error_r);
+
+        /*  TODO: implement overwriting properly, atomically; this
+            requires API changes to libod */
+    }
+
+    g_propagate_error(error_r, error);
+    return false;
+}
+
 void
 OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
 {
@@ -253,9 +290,8 @@ OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
         return;
     }
 
-    bool success =
-        od_resource_create_set_location(c, parent.first, parent.second,
-                                        &error);
+    bool success = rc_set_location_overwrite(c, parent.first, parent.second,
+                                             &error);
     od_resource_free(parent.first);
     if (!success) {
         od_resource_create_abort(c);
