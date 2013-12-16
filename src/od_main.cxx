@@ -248,7 +248,7 @@ rc_set_location_overwrite(struct od_resource_create *rc,
         od_resource_free(existing);
         if (deleted)
             /* try again */
-            return od_resource_create_set_location(c, parent, name, error_r);
+            return od_resource_create_set_location(rc, parent, name, error_r);
 
         /*  TODO: implement overwriting properly, atomically; this
             requires API changes to libod */
