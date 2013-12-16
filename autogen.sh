@@ -7,7 +7,7 @@ mkdir build
 aclocal
 automake --add-missing --foreign
 autoconf
-CFLAGS="-O0 -ggdb" ./configure \
+CFLAGS="-O0 -ggdb" CXXFLAGS="-O0 -ggdb" ./configure \
         --prefix=/usr/local/stow/cm4all-filters \
 	--enable-debug \
 	--enable-silent-rules \
