@@ -16,5 +16,5 @@ aclocal.m4
 .dirstamp
 perf.data*
 
-src/davos
+src/davos-plain
 src/davos-od
