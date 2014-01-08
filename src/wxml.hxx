@@ -56,12 +56,16 @@ wxml_short_element(was_simple *w, const char *name)
     return wxml_begin_tag(w, name) && wxml_end_short_tag(w);
 }
 
+gcc_nonnull_all
+bool
+wxml_cdata(was_simple *w, const char *data);
+
 gcc_unused
 static bool
 wxml_string_element(was_simple *w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
-        was_simple_puts(w, value) &&
+        wxml_cdata(w, value) &&
         wxml_close_element(w, name);
 }
 
@@ -79,7 +83,7 @@ static bool
 wxml_attribute(was_simple *w, const char *name, const char *value)
 {
     return was_simple_puts(w, " ") && was_simple_puts(w, name) &&
-        was_simple_puts(w, "=\"") && was_simple_puts(w, value) &&
+        was_simple_puts(w, "=\"") && wxml_cdata(w, value) &&
         was_simple_puts(w, "\"");
 }
 
@@ -104,9 +108,7 @@ gcc_unused
 static bool
 href(was_simple *w, const char *uri)
 {
-    return wxml_open_element(w, "D:href") &&
-        was_simple_puts(w, uri) &&
-        wxml_close_element(w, "D:href");
+    return wxml_string_element(w, "D:href", uri);
 }
 
 gcc_unused

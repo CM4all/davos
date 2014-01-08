@@ -8,7 +8,7 @@ src_davos_plain_SOURCES = \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
 	src/expat.hxx src/expat.cxx \
-	src/wxml.hxx \
+	src/wxml.cxx src/wxml.hxx \
 	src/error.cxx src/error.hxx \
 	src/splice.cxx src/splice.hxx \
 	src/directory.cxx src/directory.hxx \
@@ -36,7 +36,7 @@ src_davos_od_SOURCES = \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
 	src/expat.hxx src/expat.cxx \
-	src/wxml.hxx \
+	src/wxml.cxx src/wxml.hxx \
 	src/splice.cxx src/splice.hxx \
 	src/proppatch.cxx src/proppatch.hxx \
 	src/lock.cxx src/lock.hxx \
