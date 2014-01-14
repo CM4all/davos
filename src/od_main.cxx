@@ -577,7 +577,7 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
         return;
 
     od_stat st = resource.GetStat();
-    bool st_modified;
+    bool st_modified = false;
     http_status_t st_status = HTTP_STATUS_NOT_FOUND;
 
     for (auto &prop : method.GetProps()) {
