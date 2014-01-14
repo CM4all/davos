@@ -296,6 +296,42 @@ OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
     was_simple_status(w, HTTP_STATUS_CREATED);
 }
 
+static bool
+RecursiveDelete(od_resource *resource, GError **error_r)
+{
+    GError *error = nullptr;
+    if (od_resource_delete(resource, false, &error))
+        return true;
+
+    if (error->domain != od_error_domain() ||
+        error->code != OD_ERROR_NOT_EMPTY ||
+        od_resource_get_type(resource) != OD_TYPE_DIRECTORY) {
+        g_propagate_error(error_r, error);
+        return false;
+    }
+
+    g_error_free(error);
+
+    const auto list = od_resource_get_children(resource, error_r);
+    if (list == nullptr)
+        return false;
+
+    bool success = true;
+    od_resource *child;
+    while (success &&
+           (child = od_resource_list_next(list, nullptr)) != nullptr) {
+        success = RecursiveDelete(child, error_r);
+        od_resource_free(child);
+    }
+
+    od_resource_list_free(list);
+
+    if (success)
+        success = od_resource_delete(resource, false, error_r);
+
+    return success;
+}
+
 void
 OnlineDriveBackend::HandleDelete(was_simple *w, const Resource &resource)
 {
@@ -304,10 +340,8 @@ OnlineDriveBackend::HandleDelete(was_simple *w, const Resource &resource)
         return;
     }
 
-    // TODO: recursive delete for non-empty directories
-
     GError *error = nullptr;
-    if (!resource.Delete(&error)) {
+    if (!RecursiveDelete(resource.Get(), &error)) {
         fprintf(stderr, "%s\n", error->message);
         g_error_free(error);
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);

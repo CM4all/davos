@@ -69,6 +69,12 @@ public:
         return resource != nullptr;
     }
 
+    od_resource *Get() const {
+        assert(Exists());
+
+        return resource;
+    }
+
     bool IsFile() const {
         assert(Exists());
 
