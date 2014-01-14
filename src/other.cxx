@@ -7,6 +7,7 @@
 #include "other.hxx"
 #include "error.hxx"
 #include "file.hxx"
+#include "util.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -17,7 +18,6 @@ extern "C" {
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <string.h>
 
 void
 handle_delete(was_simple *w, const FileResource &resource)
@@ -38,8 +38,7 @@ handle_copy(was_simple *w, const FileResource &src, const FileResource &dest)
 
     unsigned options = FOX_CP_DEVICE|FOX_CP_INODE|FOX_CP_PRESERVE_XATTR;
 
-    const char *overwrite = was_simple_get_header(w, "overwrite");
-    if (strcmp(overwrite, "f") == 0)
+    if (!get_overwrite_header(w))
         options |= FOX_CP_EXCL;
 
     fox_error_t error;

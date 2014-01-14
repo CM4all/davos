@@ -4,6 +4,7 @@ wasdir = $(pkglibdir)/was-bin
 was_PROGRAMS = src/davos-plain src/davos-od
 
 src_davos_plain_SOURCES = \
+	src/util.cxx src/util.hxx \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
