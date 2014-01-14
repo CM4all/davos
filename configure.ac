@@ -29,6 +29,10 @@ PKG_CHECK_MODULES([LIBFOX], [libcm4all-fox >= 0.2.1],,
 PKG_CHECK_MODULES([LIBOD], [libcm4all-od-setup >= 1.0],,
 	[AC_MSG_ERROR([libod not found])])
 
+dnl work around compiler warnings in GLib headers
+LIBWAS_CFLAGS=$(echo ${LIBWAS_CFLAGS} |sed -e 's,-I,-isystem ,g')
+LIBOD_CFLAGS=$(echo ${LIBOD_CFLAGS} |sed -e 's,-I,-isystem ,g')
+
 dnl
 dnl CFLAGS
 dnl
