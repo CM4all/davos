@@ -117,23 +117,24 @@ public:
 
     std::pair<od_resource *, const char *> GetParent(GError **error_r) const;
 
-    od_resource *Copy(od_resource *parent, const char *name,
+    od_resource *Copy(od_resource *parent, const char *name, bool replace,
                       GError **error_r) const {
         assert(Exists());
 
-        return od_resource_copy(resource, parent, name, error_r);
+        return od_resource_copy(resource, parent, name, replace, error_r);
     }
 
-    bool Move(od_resource *parent, const char *name, GError **error_r) const {
+    bool Move(od_resource *parent, const char *name, bool replace,
+              GError **error_r) const {
         assert(Exists());
 
-        return od_resource_move(resource, parent, name, error_r);
+        return od_resource_move(resource, parent, name, replace, error_r);
     }
 
     bool Delete(GError **error_r) const {
         assert(Exists());
 
-        return od_resource_delete(resource, error_r);
+        return od_resource_delete(resource, false, error_r);
     }
 
     gcc_pure

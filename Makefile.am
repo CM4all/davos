@@ -33,6 +33,7 @@ src_davos_plain_LDADD = \
 	$(LIBWAS_LIBS)
 
 src_davos_od_SOURCES = \
+	src/util.cxx src/util.hxx \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h \

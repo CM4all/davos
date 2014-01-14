@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 8), autoconf (>= 2.60), automake (>= 1.11),
  libexpat1-dev,
  libcm4all-inline-dev (>= 0.3.3),
  libcm4all-fox-dev (>= 0.2.1), libcm4all-was-dev (>= 0.3),
- libcm4all-od-dev (>= 0.2.1)
+ libcm4all-od1-dev (>= 1.0~)
 Standards-Version: 3.9.1
 XS-Python-Standards-Version: 0.4
 XS-Python-Version: all

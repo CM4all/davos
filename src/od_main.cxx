@@ -10,6 +10,7 @@
 #include "splice.hxx"
 #include "proppatch.hxx"
 #include "lock.hxx"
+#include "util.hxx"
 
 extern "C" {
 #include "date.h"
@@ -222,42 +223,6 @@ OnlineDriveBackend::HandleGet(was_simple *w, const Resource &resource)
     }
 }
 
-static bool
-rc_set_location_overwrite(struct od_resource_create *rc,
-                          struct od_resource *parent, const char *name,
-                          GError **error_r)
-{
-    GError *error = nullptr;
-
-    if (od_resource_create_set_location(rc, parent, name, &error))
-        return true;
-
-    if (error->domain == od_error_domain() &&
-        error->code == OD_ERROR_CONFLICT) {
-        /* already exists */
-        od_resource *existing = od_resource_get_child(parent, name, nullptr);
-        if (existing == nullptr) {
-            g_propagate_error(error_r, error);
-            return false;
-        }
-
-        /* delete it */
-        g_error_free(error);
-        error = nullptr;
-        bool deleted = od_resource_delete(existing, &error);
-        od_resource_free(existing);
-        if (deleted)
-            /* try again */
-            return od_resource_create_set_location(rc, parent, name, error_r);
-
-        /*  TODO: implement overwriting properly, atomically; this
-            requires API changes to libod */
-    }
-
-    g_propagate_error(error_r, error);
-    return false;
-}
-
 void
 OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
 {
@@ -290,8 +255,9 @@ OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
         return;
     }
 
-    bool success = rc_set_location_overwrite(c, parent.first, parent.second,
-                                             &error);
+    bool success = od_resource_create_set_location(c, parent.first,
+                                                   parent.second, true,
+                                                   &error);
     od_resource_free(parent.first);
     if (!success) {
         od_resource_create_abort(c);
@@ -487,12 +453,6 @@ OnlineDriveBackend::HandleCopy(was_simple *w, const Resource &src,
         return;
     }
 
-    // TODO: overwrite?
-    if (dest.Exists()) {
-        was_simple_status(w, HTTP_STATUS_CONFLICT);
-        return;
-    }
-
     GError *error = nullptr;
     auto parent = dest.GetParent(&error);
     if (parent.first == nullptr) {
@@ -506,12 +466,22 @@ OnlineDriveBackend::HandleCopy(was_simple *w, const Resource &src,
         return;
     }
 
-    od_resource *new_resource = src.Copy(parent.first, parent.second, &error);
+    const bool overwrite = get_overwrite_header(w);
+
+    od_resource *new_resource = src.Copy(parent.first, parent.second,
+                                         overwrite, &error);
     od_resource_free(parent.first);
     if (new_resource == nullptr) {
         fprintf(stderr, "%s\n", error->message);
+
+        http_status_t status = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+        if (error->domain == od_error_domain() &&
+            error->code == OD_ERROR_CONFLICT)
+            status = HTTP_STATUS_PRECONDITION_FAILED;
+
         g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+        was_simple_status(w, status);
         return;
     }
 
@@ -527,12 +497,6 @@ OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
         return;
     }
 
-    // TODO: overwrite?
-    if (dest.Exists()) {
-        was_simple_status(w, HTTP_STATUS_CONFLICT);
-        return;
-    }
-
     GError *error = nullptr;
     auto parent = dest.GetParent(&error);
     if (parent.first == nullptr) {
@@ -546,12 +510,21 @@ OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
         return;
     }
 
-    bool success = src.Move(parent.first, parent.second, &error);
+    const bool overwrite = get_overwrite_header(w);
+
+    bool success = src.Move(parent.first, parent.second, overwrite, &error);
     od_resource_free(parent.first);
     if (!success) {
         fprintf(stderr, "%s\n", error->message);
+
+        http_status_t status = HTTP_STATUS_INTERNAL_SERVER_ERROR;
+        if (error->domain == od_error_domain() &&
+            error->code == OD_ERROR_CONFLICT)
+            status = HTTP_STATUS_PRECONDITION_FAILED;
+
         g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+        was_simple_status(w, status);
         return;
     }
 }
