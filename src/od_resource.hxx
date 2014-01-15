@@ -92,8 +92,14 @@ public:
         return od_resource_get_id(resource);
     }
 
+    /**
+     * Returns the name of a resource, that is the "base" filename.
+     * May only be called for resources that exist already.
+     */
     gcc_pure
     const char *GetName() const {
+        assert(Exists());
+
         return od_resource_get_name(resource);
     }
 
