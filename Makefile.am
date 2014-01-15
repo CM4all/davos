@@ -57,3 +57,18 @@ src_davos_od_LDADD = \
 	$(EXPAT_LIBS) \
 	$(LIBOD_LIBS) \
 	$(LIBWAS_LIBS)
+
+#
+# documentation
+#
+
+MOSTLYCLEANFILES = doc/davos.html
+
+if DOCUMENTATION
+doc/davos.html: doc/davos.xml
+	$(XMLTO) -o $(@D) html-nochunks $<
+
+all-local: doc/davos.html
+
+doc_DATA = doc/davos.html
+endif

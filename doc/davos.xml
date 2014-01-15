@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "docbook/dtd/xml/4.2/docbookx.dtd">
+
+<book lang="en">
+  <title>Davos</title>
+
+  <bookinfo>
+    <author>
+      <firstname>Max</firstname>
+      <surname>Kellermann</surname>
+      <email>mk@cm4all.com</email>
+    </author>
+  </bookinfo>
+
+  <preface>
+    <title>
+      What is <filename>Davos</filename>?
+    </title>
+
+    <para>
+      <filename>Davos</filename> is a WebDAV server with a WAS (Web
+      Application Socket) frontend, to be run by
+      <filename>beng-proxy</filename>.  There are two backends: one
+      that stores in a plain filesystem (called "plain") and one for
+      CM4all OnlineDrive (called "od").
+    </para>
+  </preface>
+
+  <chapter>
+    <title>Installation and Configuration</title>
+
+    <section>
+      <title>Installation</title>
+
+      <para>
+        Depending on your choice of backend, install either
+        <filename>cm4all-davos-plain</filename> or
+        <filename>cm4all-davos-od</filename>.  Example:
+      </para>
+
+      <programlisting>apt-get install cm4all-davos-od</programlisting>
+    </section>
+
+    <section>
+      <title>Configuration</title>
+
+      <para>
+        The "plain" backend does not need any configuration.
+        Everything is controlled with WAS parameters.
+      </para>
+
+      <para>
+        The "od" backend requires a <filename>libod</filename>
+        configuration file.
+      </para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Reference</title>
+
+    <section>
+      <title>Common</title>
+
+      <para>
+        The following WAS parameters are understood by all backends:
+      </para>
+
+      <informaltable>
+        <tgroup cols="2">
+          <tbody>
+
+            <row>
+              <entry>
+                <varname>DAVOS_UMASK</varname>
+                <parameter>octal-mask</parameter>
+              </entry>
+
+              <entry>
+                Configure the <filename>umask</filename> for this
+                process.  Example: "0022".
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <varname>DAVOS_MOUNT</varname>
+                <parameter>uri</parameter>
+              </entry>
+
+              <entry>
+                Declare the location where Davos was "mounted".
+                Example: "/dav/".
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+
+    <section>
+      <title>Plain</title>
+
+      <para>
+        The following WAS parameters are understood by the "plain"
+        backend:
+      </para>
+
+      <informaltable>
+        <tgroup cols="2">
+          <tbody>
+
+            <row>
+              <entry>
+                <varname>DAVOS_DOCUMENT_ROOT</varname>
+                <parameter>path</parameter>
+              </entry>
+
+              <entry>
+                The base path that maps to the
+                <varname>DAVOS_MOUNT</varname>.  Files in this
+                directory will be served/edited by Davos.
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para>
+        Example translation response:
+      </para>
+
+      <programlisting>
+WAS "/usr/lib/cm4all/was/bin/davos-plain"
+PAIR "DAVOS_MOUNT=/dav/"
+PAIR "DAVOS_DOCUMENT_ROOT=/var/www"
+      </programlisting>
+    </section>
+
+    <section>
+      <title>Online-Drive</title>
+
+      <para>
+        The "od" backend expects two command-line arguments: the path
+        of the <filename>libod</filename> configuration file and the
+        name of the "group" within this file.
+      </para>
+
+      <para>
+        The following WAS parameters are understood by the "od"
+        backend:
+      </para>
+
+      <informaltable>
+        <tgroup cols="2">
+          <tbody>
+
+            <row>
+              <entry>
+                <varname>DAVOS_SITE</varname>
+                <parameter>name</parameter>
+              </entry>
+
+              <entry>
+                The site id.
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para>
+        Example translation response:
+      </para>
+
+      <programlisting>
+WAS "/usr/lib/cm4all/was/bin/davos-od"
+APPEND "/etc/cm4all/davos/od.conf"
+APPEND "foo"
+PAIR "DAVOS_MOUNT=/dav/abc/"
+PAIR "DAVOS_SITE=abc"
+      </programlisting>
+
+      <section>
+        <title><filename>libod</filename> Configuration</title>
+
+        <para>
+          <filename>libod</filename> is configured with an INI-style
+          text file containing at least 3 groups.  Example:
+        </para>
+
+        <programlisting>
+[foo]
+data = foo_data
+meta = foo_meta
+
+[foo_data]
+module = fs
+path = /var/www
+
+[foo_meta]
+module = sql
+uri = codb:postgresql:strict:dbname=od
+        </programlisting>
+
+        <para>
+          The first section is the one whose name you pass to
+          <filename>davos-od</filename>.  It chooses a "data" group
+          and a "meta" group.  These groups configure the according
+          module.  The "meta" module maintains file metadata
+          (directory structure, file names, attributes), and the
+          "data" module stores file contents.
+        </para>
+
+        <para>
+          The <filename>fs</filename> module stores file contents in
+          the local file system.  Each site has its own directory
+          inside the given <varname>path</varname>.  Instead of
+          <varname>path</varname>, you can specify
+          <varname>regex</varname> and <varname>expand_path</varname>:
+        </para>
+
+        <programlisting>
+[foo_data]
+module = fs
+regex = ^(..)(..)(........)$
+expand_path = /var/www/data/\1/\2/\3
+        </programlisting>
+
+        <para>
+          This assumes that site ids have 12 characters, and will
+          assume nested subdirectories.
+        </para>
+
+        <para>
+          The <filename>sql</filename> module uses
+          <filename>libcodb</filename> to store metadata in a
+          relational database.
+        </para>
+
+        <para>
+          For more information, read the <filename>libod</filename>
+          documentation.
+        </para>
+      </section>
+    </section>
+  </chapter>
+</book>

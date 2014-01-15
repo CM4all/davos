@@ -32,3 +32,12 @@ Description: WebDAV server for OnlineDrive
  frontend.
  .
  This package contains the OnlineDrive backend.
+
+Package: cm4all-davos-doc
+Section: non-free/doc
+Architecture: all
+Description: WebDAV server for OnlineDrive, documentation
+ Davos is a WebDAV server with a WAS (Web Application Socket)
+ frontend.
+ .
+ This package contains documentation.
