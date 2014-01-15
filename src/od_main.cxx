@@ -23,7 +23,6 @@ extern "C" {
 #include <od/stat.h>
 #include <od/list.h>
 #include <od/stream.h>
-#include <od/create.h>
 #include <od/error.h>
 }
 
@@ -199,79 +198,6 @@ OnlineDriveBackend::HandleGet(was_simple *w, const Resource &resource)
 
         od_stream_free(stream);
     }
-}
-
-void
-OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
-{
-    assert(was_simple_has_body(w));
-
-    if (resource.Exists() && !resource.IsFile()) {
-        was_simple_status(w, HTTP_STATUS_CONFLICT);
-        return;
-    }
-
-    GError *error = nullptr;
-    auto parent = resource.GetParent(&error);
-    if (parent.first == nullptr) {
-        // TODO: improve error handling
-        if (error != nullptr) {
-            fprintf(stderr, "%s\n", error->message);
-            g_error_free(error);
-        }
-
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    od_resource_create *c = od_resource_create_begin(site, &error);
-    if (c == nullptr) {
-        od_resource_free(parent.first);
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    bool success = od_resource_create_set_location(c, parent.first,
-                                                   parent.second, true,
-                                                   &error);
-    od_resource_free(parent.first);
-    if (!success) {
-        od_resource_create_abort(c);
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    // TODO: support slow mode
-    int fd = od_resource_create_open(c, &error);
-    if (fd < 0) {
-        od_resource_create_abort(c);
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    if (!splice_from_was(w, fd)) {
-        od_resource_create_abort(c);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    od_resource *new_resource = od_resource_create_commit(c, &error);
-    if (new_resource == nullptr) {
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    od_resource_free(new_resource);
-
-    was_simple_status(w, HTTP_STATUS_CREATED);
 }
 
 static bool
