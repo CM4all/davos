@@ -6,6 +6,8 @@
 
 #include "wxml.hxx"
 
+#include <glib.h> // TODO: eliminate GLib
+
 #include <assert.h>
 #include <string.h>
 
@@ -48,4 +50,16 @@ wxml_cdata(was_simple *w, const char *data)
         if (!was_simple_puts(w, wxml_escape_char(*data++)))
             return false;
     }
+}
+
+bool
+wxml_uri_escape(was_simple *w, const char *uri)
+{
+    char *escaped = g_uri_escape_string(uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH, true);
+    if (escaped == nullptr)
+        return false;
+
+    bool success = wxml_cdata(w, escaped);
+    g_free(escaped);
+    return success;
 }

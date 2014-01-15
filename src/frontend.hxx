@@ -10,6 +10,8 @@ extern "C" {
 
 #include <inline/compiler.h>
 
+#include <glib.h> // TODO: eliminate GLib
+
 #include <string>
 
 #include <stdio.h>
@@ -69,6 +71,15 @@ static typename Backend::Resource
 map_uri(const Backend &backend, const char *uri)
 {
     assert(uri != nullptr);
+
+    char *unescaped = g_uri_unescape_string(uri, "/");
+    if (unescaped == nullptr)
+        return typename Backend::Resource();
+
+    const std::string unescaped2(unescaped);
+    g_free(unescaped);
+
+    uri = unescaped2.c_str();
 
     if (strstr(uri, "/../") != nullptr)
         return typename Backend::Resource();

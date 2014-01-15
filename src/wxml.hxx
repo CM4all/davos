@@ -60,12 +60,25 @@ gcc_nonnull_all
 bool
 wxml_cdata(was_simple *w, const char *data);
 
+gcc_nonnull_all
+bool
+wxml_uri_escape(was_simple *w, const char *uri);
+
 gcc_unused
 static bool
 wxml_string_element(was_simple *w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
         wxml_cdata(w, value) &&
+        wxml_close_element(w, name);
+}
+
+gcc_unused
+static bool
+wxml_uri_element(was_simple *w, const char *name, const char *value)
+{
+    return wxml_open_element(w, name) &&
+        wxml_uri_escape(w, value) &&
         wxml_close_element(w, name);
 }
 
@@ -108,7 +121,7 @@ gcc_unused
 static bool
 href(was_simple *w, const char *uri)
 {
-    return wxml_string_element(w, "D:href", uri);
+    return wxml_uri_element(w, "D:href", uri);
 }
 
 gcc_unused
