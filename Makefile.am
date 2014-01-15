@@ -37,6 +37,7 @@ src_davos_od_SOURCES = \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
+	src/mime_types.cxx src/mime_types.hxx \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.cxx src/wxml.hxx \
 	src/splice.cxx src/splice.hxx \

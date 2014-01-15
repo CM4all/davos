@@ -25,7 +25,7 @@ Description: WebDAV server for plain filesystem
 
 Package: cm4all-davos-od
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, mime-support
 Recommends: cm4all-beng-proxy
 Description: WebDAV server for OnlineDrive
  Davos is a WebDAV server with a WAS (Web Application Socket)

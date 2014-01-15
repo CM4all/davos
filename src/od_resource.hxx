@@ -103,6 +103,20 @@ public:
         return od_resource_get_name(resource);
     }
 
+    /**
+     * Returns the name of a resource, that is the "base" filename.
+     * May only be called for resources that exist already.
+     */
+    gcc_pure
+    const char *GetName2() const {
+        assert(!uri.empty());
+
+        auto slash = uri.rfind('/');
+        return slash == uri.npos
+            ? uri.c_str()
+            : uri.c_str() + slash + 1;
+    }
+
     gcc_pure
     const char *GetURI() const {
         return uri.c_str();
