@@ -4,6 +4,7 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
+#include "od_backend.hxx"
 #include "od_resource.hxx"
 #include "frontend.hxx"
 #include "wxml.hxx"
@@ -34,51 +35,10 @@ extern "C" {
 #include <fcntl.h>
 #include <unistd.h>
 
-class OnlineDriveBackend {
-    od_setup *const setup;
-    od_site *site;
-
-public:
-    typedef OnlineDriveResource Resource;
-
-    OnlineDriveBackend(od_setup *_setup)
-        :setup(_setup), site(nullptr) {}
-    ~OnlineDriveBackend() {
-        od_setup_free(setup);
-    }
-
-    bool Setup(was_simple *w);
-
-    void TearDown() {
-        assert(site != nullptr);
-
-        od_site_free(site);
-        site = nullptr;
-    }
-
-    gcc_pure
-    Resource Map(const char *uri) const {
-        od_resource *root = od_site_get_root(site);
-
-        return OnlineDriveResource(root, uri,
-                                   od_resource_lookup(root, uri, nullptr));
-    }
-
-    void HandleHead(was_simple *w, const Resource &resource);
-    void HandleGet(was_simple *w, const Resource &resource);
-    void HandlePut(was_simple *w, const Resource &resource);
-    void HandleDelete(was_simple *w, const Resource &resource);
-
-    void HandlePropfind(was_simple *w, const char *uri,
-                        const Resource &resource);
-    void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &resource);
-
-    void HandleMkcol(was_simple *w, const Resource &resource);
-    void HandleCopy(was_simple *w, const Resource &src, const Resource &dest);
-    void HandleMove(was_simple *w, const Resource &src, const Resource &dest);
-    void HandleLock(was_simple *w, const Resource &resource);
-};
+OnlineDriveBackend::~OnlineDriveBackend()
+{
+    od_setup_free(setup);
+}
 
 bool
 OnlineDriveBackend::Setup(was_simple *w)
@@ -100,6 +60,24 @@ OnlineDriveBackend::Setup(was_simple *w)
     }
 
     return true;
+}
+
+void
+OnlineDriveBackend::TearDown()
+{
+    assert(site != nullptr);
+
+    od_site_free(site);
+    site = nullptr;
+}
+
+OnlineDriveBackend::Resource
+OnlineDriveBackend::Map(const char *uri) const
+{
+    od_resource *root = od_site_get_root(site);
+
+    return OnlineDriveResource(root, uri,
+                               od_resource_lookup(root, uri, nullptr));
 }
 
 static bool

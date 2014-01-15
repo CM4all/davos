@@ -44,6 +44,7 @@ src_davos_od_SOURCES = \
 	src/lock.cxx src/lock.hxx \
 	src/frontend.hxx \
 	src/od_resource.cxx src/od_resource.hxx \
+	src/od_backend.hxx \
 	src/od_main.cxx
 src_davos_od_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(EXPAT_CFLAGS) \
