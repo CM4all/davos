@@ -274,6 +274,10 @@ PropfindResource(was_simple *w, std::string &uri,
             !wxml_format_element(w, "D:getcontentlength", "%llu",
                                  (unsigned long long)st.size))
             return false;
+
+        if (st.content_type != nullptr &&
+            !wxml_string_element(w, "D:getcontenttype", st.content_type))
+            return false;
     }
 
     if (st.mtime > 0 &&
