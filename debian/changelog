@@ -1,6 +1,7 @@
 cm4all-davos (0.3) unstable; urgency=low
 
   * build with clang
+  * buffered XML responses
 
  --   
 
