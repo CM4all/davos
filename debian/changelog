@@ -3,7 +3,7 @@ cm4all-davos (0.3) unstable; urgency=low
   * build with clang
   * buffered XML responses
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Sat, 13 Sep 2014 15:30:15 -0000
 
 cm4all-davos (0.2) unstable; urgency=low
 
