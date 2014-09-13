@@ -33,27 +33,27 @@ wxml_escape_char(char ch)
 }
 
 bool
-wxml_cdata(was_simple *w, const char *data)
+wxml_cdata(Writer &w, const char *data)
 {
     while (true) {
         const char *p = strpbrk(data, "<>&\"");
         if (p == nullptr)
-            return was_simple_puts(w, data);
+            return w.Write(data);
 
         if (p > data) {
-            if (!was_simple_write(w, data, p - data))
+            if (!w.Write(data, p - data))
                 return false;
 
             data = p;
         }
 
-        if (!was_simple_puts(w, wxml_escape_char(*data++)))
+        if (!w.Write(wxml_escape_char(*data++)))
             return false;
     }
 }
 
 bool
-wxml_uri_escape(was_simple *w, const char *uri)
+wxml_uri_escape(Writer &w, const char *uri)
 {
     char *escaped = g_uri_escape_string(uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH, true);
     if (escaped == nullptr)

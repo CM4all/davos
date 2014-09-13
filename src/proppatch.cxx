@@ -76,7 +76,7 @@ char_data(void *userData, const XML_Char *s, int len)
 }
 
 static bool
-ns_short_element(was_simple *w, const char *name)
+ns_short_element(Writer &w, const char *name)
 {
     const char *pipe = strchr(name, '|');
     if (pipe == nullptr)
@@ -85,21 +85,21 @@ ns_short_element(was_simple *w, const char *name)
     const std::string ns(name, pipe);
     name = pipe + 1;
 
-    return was_simple_puts(w, "<") && was_simple_puts(w, "X:") &&
-        was_simple_puts(w, name) &&
+    return w.Write("<") && w.Write("X:") &&
+        w.Write(name) &&
         wxml_attribute(w, "xmlns:X", ns.c_str()) &&
         wxml_end_short_tag(w);
 }
 
 static bool
-propstat(was_simple *w, const char *name, const char *status)
+propstat(Writer &w, const char *name, const char *status)
 {
     return wxml_open_element(w, "D:propstat") &&
         wxml_open_element(w, "D:prop") &&
         ns_short_element(w, name) &&
         wxml_close_element(w, "D:prop") &&
         wxml_open_element(w, "D:status") &&
-        was_simple_puts(w, status) &&
+        w.Write(status) &&
         wxml_close_element(w, "D:status") &&
         wxml_close_element(w, "D:propstat");
 }
@@ -142,16 +142,19 @@ ProppatchMethod::SendResponse(was_simple *w, const char *uri)
 {
     if (!was_simple_status(w, HTTP_STATUS_MULTI_STATUS) ||
         !was_simple_set_header(w, "content-type",
-                               "text/xml; charset=\"utf-8\"") ||
-        !begin_multistatus(w) ||
-        !wxml_open_element(w, "D:response") ||
-        !href(w, uri))
+                               "text/xml; charset=\"utf-8\""))
+        return false;
+
+    Writer writer(w);
+    if (!begin_multistatus(writer) ||
+        !wxml_open_element(writer, "D:response") ||
+        !href(writer, uri))
         return false;
 
     for (auto prop : data.props)
-        if (!propstat(w, prop.name.c_str(),
+        if (!propstat(writer, prop.name.c_str(),
                       http_status_to_string(prop.status)))
             return false;
 
-    return wxml_close_element(w, "D:response") && end_multistatus(w);
+    return wxml_close_element(writer, "D:response") && end_multistatus(writer);
 }

@@ -44,27 +44,27 @@ ListDirectory(const char *path)
 }
 
 static bool
-propfind_file(was_simple *was, std::string &uri, std::string &path,
+propfind_file(Writer &writer, std::string &uri, std::string &path,
               const struct stat &st,
               unsigned depth)
 {
-    if (!open_response_prop(was, uri.c_str(), "HTTP/1.1 200 OK"))
+    if (!open_response_prop(writer, uri.c_str(), "HTTP/1.1 200 OK"))
         return false;
 
     if (S_ISDIR(st.st_mode)) {
-        if (!resourcetype_collection(was))
+        if (!resourcetype_collection(writer))
             return false;
     } else if (S_ISREG(st.st_mode)) {
-        if (!wxml_format_element(was, "D:getcontentlength", "%llu",
+        if (!wxml_format_element(writer, "D:getcontentlength", "%llu",
                                  (unsigned long long)st.st_size))
             return false;
     }
 
-    if (!wxml_string_element(was, "D:getlastmodified",
+    if (!wxml_string_element(writer, "D:getlastmodified",
                              http_date_format(st.st_mtime)))
         return false;
 
-    if (!close_response_prop(was))
+    if (!close_response_prop(writer))
         return false;
 
     const auto uri_length = uri.length();
@@ -83,7 +83,7 @@ propfind_file(was_simple *was, std::string &uri, std::string &path,
             struct stat st2;
             bool success = true;
             if (stat(path.c_str(), &st2) == 0) {
-                success = propfind_file(was, uri, path, st2, depth);
+                success = propfind_file(writer, uri, path, st2, depth);
             }
 
             uri.erase(uri_length);
@@ -115,13 +115,14 @@ handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
                                "text/xml; charset=\"utf-8\""))
         return;
 
-    if (!begin_multistatus(was))
+    Writer writer(was);
+    if (!begin_multistatus(writer))
         return;
 
     std::string uri2(uri);
     std::string path2(resource.GetPath());
-    if (!propfind_file(was, uri2, path2, resource.GetStat(), depth))
+    if (!propfind_file(writer, uri2, path2, resource.GetStat(), depth))
         return;
 
-    end_multistatus(was);
+    end_multistatus(writer);
 }

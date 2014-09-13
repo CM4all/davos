@@ -23,7 +23,7 @@ extern "C" {
 #include <string.h>
 
 static bool
-begin_prop(was_simple *w)
+begin_prop(Writer &w)
 {
     return wxml_declaration(w) &&
         wxml_begin_tag(w, "D:prop") &&
@@ -32,13 +32,13 @@ begin_prop(was_simple *w)
 }
 
 static bool
-end_prop(was_simple *w)
+end_prop(Writer &w)
 {
     return wxml_close_element(w, "D:prop");
 }
 
 static bool
-locktoken_href(was_simple *w, const char *token)
+locktoken_href(Writer &w, const char *token)
 {
     return wxml_open_element(w, "D:locktoken") &&
         href(w, token) &&
@@ -46,7 +46,7 @@ locktoken_href(was_simple *w, const char *token)
 }
 
 static bool
-owner_href(was_simple *w, const char *token)
+owner_href(Writer &w, const char *token)
 {
     return wxml_open_element(w, "D:owner") &&
         href(w, token) &&
@@ -138,27 +138,31 @@ LockMethod::Run(was_simple *w, bool created)
     const char *token = "opaquelocktoken:dummy";
     const char *token2 = "<opaquelocktoken:dummy>";
 
-    was_simple_status(w, status) &&
-        was_simple_set_header(w, "content-type",
-                              "text/xml; charset=\"utf-8\"") &&
-        was_simple_set_header(w, "lock-token", token2) &&
-        begin_prop(w) &&
-        wxml_open_element(w, "D:lockdiscovery") &&
-        wxml_open_element(w, "D:activelock") &&
+    if (!was_simple_status(w, status) ||
+        !was_simple_set_header(w, "content-type",
+                               "text/xml; charset=\"utf-8\"") ||
+        !was_simple_set_header(w, "lock-token", token2))
+        return;
 
-        wxml_open_element(w, "D:locktype") &&
-        wxml_short_element(w, "D:write") &&
-        wxml_close_element(w, "D:locktype") &&
+    Writer writer(w);
+    begin_prop(writer) &&
+        wxml_open_element(writer, "D:lockdiscovery") &&
+        wxml_open_element(writer, "D:activelock") &&
 
-        wxml_open_element(w, "D:lockscope") &&
-        wxml_short_element(w, "D:exclusive") &&
-        wxml_close_element(w, "D:lockscope") &&
+        wxml_open_element(writer, "D:locktype") &&
+        wxml_short_element(writer, "D:write") &&
+        wxml_close_element(writer, "D:locktype") &&
 
-        wxml_string_element(w, "D:depth", "infinity") &&
+        wxml_open_element(writer, "D:lockscope") &&
+        wxml_short_element(writer, "D:exclusive") &&
+        wxml_close_element(writer, "D:lockscope") &&
 
-        locktoken_href(w, token) &&
-        (data.owner_href.empty() || owner_href(w, data.owner_href.c_str())) &&
-        wxml_close_element(w, "D:activelock") &&
-        wxml_close_element(w, "D:lockdiscovery") &&
-        end_prop(w);
+        wxml_string_element(writer, "D:depth", "infinity") &&
+
+        locktoken_href(writer, token) &&
+        (data.owner_href.empty() ||
+         owner_href(writer, data.owner_href.c_str())) &&
+        wxml_close_element(writer, "D:activelock") &&
+        wxml_close_element(writer, "D:lockdiscovery") &&
+        end_prop(writer);
 }

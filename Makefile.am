@@ -20,6 +20,7 @@ src_davos_plain_SOURCES = \
 	src/lock.cxx src/lock.hxx \
 	src/other.cxx src/other.hxx \
 	src/file.cxx src/file.hxx \
+	src/writer.hxx \
 	src/frontend.hxx \
 	src/main.cxx
 src_davos_plain_CPPFLAGS = $(AM_CPPFLAGS) \
@@ -43,6 +44,7 @@ src_davos_od_SOURCES = \
 	src/splice.cxx src/splice.hxx \
 	src/proppatch.cxx src/proppatch.hxx \
 	src/lock.cxx src/lock.hxx \
+	src/writer.hxx \
 	src/frontend.hxx \
 	src/od_resource.cxx src/od_resource.hxx \
 	src/od_backend.hxx \

@@ -254,7 +254,7 @@ OnlineDriveBackend::HandleDelete(was_simple *w, const Resource &resource)
 }
 
 static bool
-PropfindResource(was_simple *w, std::string &uri,
+PropfindResource(Writer &w, std::string &uri,
                  const OnlineDriveResource &resource,
                  unsigned depth)
 {
@@ -339,15 +339,18 @@ OnlineDriveBackend::HandlePropfind(was_simple *w, const char *_uri,
 
     if (!was_simple_status(w, HTTP_STATUS_MULTI_STATUS) ||
         !was_simple_set_header(w, "content-type",
-                               "text/xml; charset=\"utf-8\"") ||
-        !begin_multistatus(w))
+                               "text/xml; charset=\"utf-8\""))
+        return;
+
+    Writer writer(w);
+    if (!begin_multistatus(writer))
         return;
 
     std::string uri(_uri);
-    if (!PropfindResource(w, uri, resource, depth))
+    if (!PropfindResource(writer, uri, resource, depth))
         return;
 
-    end_multistatus(w);
+    end_multistatus(writer);
 }
 
 void

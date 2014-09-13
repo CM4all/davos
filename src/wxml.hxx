@@ -4,69 +4,67 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-extern "C" {
-#include <was/simple.h>
-}
+#include "writer.hxx"
 
 #include <inline/compiler.h>
 
 #include <algorithm>
 
 static bool
-wxml_declaration(was_simple *w)
+wxml_declaration(Writer &w)
 {
-    return was_simple_puts(w, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    return w.Write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 }
 
 static bool
-wxml_begin_tag(was_simple *w, const char *name)
+wxml_begin_tag(Writer &w, const char *name)
 {
-    return was_simple_puts(w, "<") && was_simple_puts(w, name);
+    return w.Write("<") && w.Write(name);
 }
 
 static bool
-wxml_end_tag(was_simple *w)
+wxml_end_tag(Writer &w)
 {
-    return was_simple_puts(w, ">");
+    return w.Write(">");
 }
 
 static bool
-wxml_end_short_tag(was_simple *w)
+wxml_end_short_tag(Writer &w)
 {
-    return was_simple_puts(w, "/>");
+    return w.Write("/>");
 }
 
 static bool
-wxml_open_element(was_simple *w, const char *name)
+wxml_open_element(Writer &w, const char *name)
 {
     return wxml_begin_tag(w, name) && wxml_end_tag(w);
 }
 
 static bool
-wxml_close_element(was_simple *w, const char *name)
+wxml_close_element(Writer &w, const char *name)
 {
-    return was_simple_puts(w, "</") && was_simple_puts(w, name) &&
+    return w.Write("</") && w.Write(name) &&
         wxml_end_tag(w);
 }
 
 gcc_unused
 static bool
-wxml_short_element(was_simple *w, const char *name)
+wxml_short_element(Writer &w, const char *name)
 {
     return wxml_begin_tag(w, name) && wxml_end_short_tag(w);
 }
 
 gcc_nonnull_all
 bool
-wxml_cdata(was_simple *w, const char *data);
+wxml_cdata(Writer &w, const char *data);
 
 gcc_nonnull_all
 bool
-wxml_uri_escape(was_simple *w, const char *uri);
+wxml_uri_escape(Writer &w, const char *uri);
 
 gcc_unused
 static bool
-wxml_string_element(was_simple *w, const char *name, const char *value)
+wxml_string_element(Writer &w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
         wxml_cdata(w, value) &&
@@ -75,7 +73,7 @@ wxml_string_element(was_simple *w, const char *name, const char *value)
 
 gcc_unused
 static bool
-wxml_uri_element(was_simple *w, const char *name, const char *value)
+wxml_uri_element(Writer &w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
         wxml_uri_escape(w, value) &&
@@ -84,25 +82,25 @@ wxml_uri_element(was_simple *w, const char *name, const char *value)
 
 template<typename... Args>
 static bool
-wxml_format_element(was_simple *w, const char *name, const char *fmt,
+wxml_format_element(Writer &w, const char *name, const char *fmt,
                     Args... args)
 {
     return wxml_open_element(w, name) &&
-        was_simple_printf(w, fmt, std::forward<Args>(args)...) &&
+        w.Format(fmt, std::forward<Args>(args)...) &&
         wxml_close_element(w, name);
 }
 
 static bool
-wxml_attribute(was_simple *w, const char *name, const char *value)
+wxml_attribute(Writer &w, const char *name, const char *value)
 {
-    return was_simple_puts(w, " ") && was_simple_puts(w, name) &&
-        was_simple_puts(w, "=\"") && wxml_cdata(w, value) &&
-        was_simple_puts(w, "\"");
+    return w.Write(" ") && w.Write(name) &&
+        w.Write("=\"") && wxml_cdata(w, value) &&
+        w.Write("\"");
 }
 
 gcc_unused
 static bool
-begin_multistatus(was_simple *w)
+begin_multistatus(Writer &w)
 {
     return wxml_declaration(w) &&
         wxml_begin_tag(w, "D:multistatus") &&
@@ -112,21 +110,21 @@ begin_multistatus(was_simple *w)
 
 gcc_unused
 static bool
-end_multistatus(was_simple *w)
+end_multistatus(Writer &w)
 {
     return wxml_close_element(w, "D:multistatus");
 }
 
 gcc_unused
 static bool
-href(was_simple *w, const char *uri)
+href(Writer &w, const char *uri)
 {
     return wxml_uri_element(w, "D:href", uri);
 }
 
 gcc_unused
 static bool
-resourcetype_collection(was_simple *w)
+resourcetype_collection(Writer &w)
 {
     return wxml_open_element(w, "D:resourcetype") &&
         wxml_short_element(w, "D:collection") &&
@@ -135,7 +133,7 @@ resourcetype_collection(was_simple *w)
 
 gcc_unused
 static bool
-open_response_prop(was_simple *w, const char *uri, const char *status)
+open_response_prop(Writer &w, const char *uri, const char *status)
 {
     return wxml_open_element(w, "D:response") &&
         href(w, uri) &&
@@ -146,7 +144,7 @@ open_response_prop(was_simple *w, const char *uri, const char *status)
 
 gcc_unused
 static bool
-close_response_prop(was_simple *w)
+close_response_prop(Writer &w)
 {
     return wxml_close_element(w, "D:prop") &&
         wxml_close_element(w, "D:propstat") &&
