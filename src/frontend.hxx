@@ -160,6 +160,15 @@ configure(Backend &backend, was_simple *w)
         backend.Setup(w);
 }
 
+gcc_pure
+static bool
+HasTrailingSlash(const char *uri)
+{
+    const size_t length = strlen(uri);
+    assert(length > 0);
+    return uri[length - 1] == '/';
+}
+
 template<typename Backend>
 static void
 run2(Backend &backend, was_simple *was, const char *uri)
@@ -171,6 +180,21 @@ run2(Backend &backend, was_simple *was, const char *uri)
     }
 
     const http_method_t method = was_simple_get_method(was);
+
+    if (HasTrailingSlash(uri)) {
+        if (method == HTTP_METHOD_PUT) {
+            /* a trailing slash is not allowed for (new) regular
+               file */
+            was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
+            return;
+        } else if (resource.Exists() && !resource.IsDirectory()) {
+            /* trailing slash is only allowed (and obligatory) for
+               directories (collections) */
+            was_simple_status(was, HTTP_STATUS_NOT_FOUND);
+            return;
+        }
+    }
+
     switch (method) {
     case HTTP_METHOD_OPTIONS:
         if (!was_simple_input_close(was))
