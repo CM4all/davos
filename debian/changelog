@@ -5,7 +5,7 @@ cm4all-davos (0.4) unstable; urgency=low
   * fix double slash in PROPFIND response
   * implement PROPPATCH on "getlastmodified"
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 17 Sep 2014 14:54:59 -0000
 
 cm4all-davos (0.3) unstable; urgency=low
 
