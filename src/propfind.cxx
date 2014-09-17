@@ -83,6 +83,10 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
             struct stat st2;
             bool success = true;
             if (stat(path.c_str(), &st2) == 0) {
+                if (S_ISDIR(st2.st_mode))
+                    /* directory URIs should end with a slash */
+                    uri.push_back('/');
+
                 success = propfind_file(writer, uri, path, st2, depth);
             }
 

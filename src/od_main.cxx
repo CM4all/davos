@@ -304,6 +304,10 @@ PropfindResource(Writer &w, std::string &uri,
                 uri.resize(uri_length);
                 uri.append(child2.GetName());
 
+                if (child2.IsDirectory())
+                    /* directory URIs should end with a slash */
+                    uri.push_back('/');
+
                 if (!PropfindResource(w, uri, child2, depth)) {
                     od_resource_list_free(list);
                     return false;
