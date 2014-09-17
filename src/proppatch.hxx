@@ -28,6 +28,11 @@ struct PropNameValue {
          status(HTTP_STATUS_NOT_FOUND) {}
 
     gcc_pure
+    bool IsGetLastModified() const {
+        return name == "DAV:|getlastmodified";
+    }
+
+    gcc_pure
     bool IsWin32LastAccessTime() const {
         return name == "urn:schemas-microsoft-com:|Win32LastAccessTime";
     }

@@ -14,6 +14,7 @@
 #include "lock.hxx"
 #include "other.hxx"
 #include "file.hxx"
+#include "date.h"
 
 #include <inline/compiler.h>
 
@@ -136,6 +137,16 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
             }
 
             times_enabled = true;
+        } else if (prop.IsGetLastModified()) {
+            time_t t = http_date_parse(prop.value.c_str());
+            if (t == (time_t)-1) {
+                prop.status = HTTP_STATUS_BAD_REQUEST;
+                continue;
+            }
+
+            times[1].tv_sec = t;
+            times[1].tv_usec = 0;
+            times_enabled = true;
         }
     }
 
@@ -145,7 +156,8 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
             : errno_status(errno);
 
     for (auto &prop : method.GetProps()) {
-        if ((prop.IsWin32LastAccessTime() || prop.IsWin32LastModifiedTime()) &&
+        if ((prop.IsGetLastModified() ||
+             prop.IsWin32LastAccessTime() || prop.IsWin32LastModifiedTime()) &&
             prop.status == HTTP_STATUS_NOT_FOUND)
             prop.status = times_status;
     }

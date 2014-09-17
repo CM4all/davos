@@ -501,6 +501,7 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
     http_status_t st_status = HTTP_STATUS_NOT_FOUND;
 
     for (auto &prop : method.GetProps()) {
+        fprintf(stderr, "PROP '%s'\n", prop.name.c_str());
         if (prop.IsWin32LastModifiedTime()) {
             timeval tv;
             if (!prop.ParseWin32Timestamp(tv)) {
@@ -509,6 +510,15 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
             }
 
             st.mtime = tv.tv_sec;
+            st_modified = true;
+        } else if (prop.IsGetLastModified()) {
+            time_t t = http_date_parse(prop.value.c_str());
+            if (t == (time_t)-1) {
+                prop.status = HTTP_STATUS_BAD_REQUEST;
+                continue;
+            }
+
+            st.mtime = t;
             st_modified = true;
         }
     }
@@ -519,7 +529,8 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
             : HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
     for (auto &prop : method.GetProps()) {
-        if (prop.IsWin32LastModifiedTime() &&
+        if ((prop.IsWin32LastModifiedTime() ||
+             prop.IsGetLastModified()) &&
             prop.status == HTTP_STATUS_NOT_FOUND)
             prop.status = st_status;
     }
