@@ -2,6 +2,7 @@ cm4all-davos (0.4) unstable; urgency=low
 
   * disallow trailing slash on regular files
   * PROPFIND appends slash to directory URIs
+  * fix double slash in PROPFIND response
 
  --   
 

@@ -294,7 +294,12 @@ PropfindResource(Writer &w, std::string &uri,
         GError *error = nullptr;
         od_resource_list *list = resource.GetChildren(&error);
         if (list != nullptr) {
-            uri.push_back('/');
+            if (uri.back() != '/')
+                /* directory URIs should end with a slash - but we
+                   don't enforce that everywhere; fix up the URI the
+                   user-supplied URI doesn't */
+                uri.push_back('/');
+
             const auto uri_length = uri.length();
 
             od_resource *child;

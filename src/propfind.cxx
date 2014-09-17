@@ -70,7 +70,12 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
     if (depth > 0 && S_ISDIR(st.st_mode)) {
         --depth;
 
-        uri.push_back('/');
+        if (uri.back() != '/')
+            /* directory URIs should end with a slash - but we don't
+               enforce that everywhere; fix up the URI the
+               user-supplied URI doesn't */
+            uri.push_back('/');
+
         const auto uri_length = uri.length();
 
         const auto &children = ListDirectory(path.c_str());
