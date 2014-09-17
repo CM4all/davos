@@ -67,17 +67,19 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
     if (!close_response_prop(writer))
         return false;
 
-    const auto uri_length = uri.length();
-    const auto path_length = path.length();
-
     if (depth > 0 && S_ISDIR(st.st_mode)) {
         --depth;
 
+        uri.push_back('/');
+        const auto uri_length = uri.length();
+
         const auto &children = ListDirectory(path.c_str());
+
+        path.push_back('/');
+        const auto path_length = path.length();
+
         for (const std::string &name : children) {
-            uri.push_back('/');
             uri.append(name);
-            path.push_back('/');
             path.append(name);
 
             struct stat st2;
