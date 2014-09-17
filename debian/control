@@ -3,6 +3,7 @@ Section: non-free/web
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 8), autoconf (>= 2.60), automake (>= 1.11),
+ xmlto,
  clang-3.4 | cm4all-thirdparty-clang (>= 3.4),
  libc6-dev (>= 2.13),
  libexpat1-dev,
