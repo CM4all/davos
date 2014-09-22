@@ -1,3 +1,9 @@
+cm4all-davos (0.5) unstable; urgency=low
+
+  * 
+
+ --   
+
 cm4all-davos (0.4) unstable; urgency=low
 
   * disallow trailing slash on regular files
