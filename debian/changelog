@@ -1,6 +1,6 @@
 cm4all-davos (0.5) unstable; urgency=low
 
-  * 
+  * fix double escaping bug in PROPFIND respones
 
  --   
 

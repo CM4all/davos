@@ -8,6 +8,7 @@ src_davos_plain_SOURCES = \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
+	src/uri_escape.cxx src/uri_escape.hxx \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.cxx src/wxml.hxx \
 	src/error.cxx src/error.hxx \
@@ -39,6 +40,7 @@ src_davos_od_SOURCES = \
 	src/date.c src/date.h \
 	src/format.c src/format.h \
 	src/mime_types.cxx src/mime_types.hxx \
+	src/uri_escape.cxx src/uri_escape.hxx \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.cxx src/wxml.hxx \
 	src/splice.cxx src/splice.hxx \

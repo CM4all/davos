@@ -5,6 +5,7 @@
  */
 
 #include "propfind.hxx"
+#include "uri_escape.hxx"
 #include "wxml.hxx"
 #include "error.hxx"
 #include "file.hxx"
@@ -84,7 +85,7 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
         const auto path_length = path.length();
 
         for (const std::string &name : children) {
-            uri.append(name);
+            AppendUriEscape(uri, name.c_str());
             path.append(name);
 
             struct stat st2;

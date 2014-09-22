@@ -115,11 +115,14 @@ end_multistatus(Writer &w)
     return wxml_close_element(w, "D:multistatus");
 }
 
+/**
+ * @param uri an escaped URI
+ */
 gcc_unused
 static bool
 href(Writer &w, const char *uri)
 {
-    return wxml_uri_element(w, "D:href", uri);
+    return wxml_string_element(w, "D:href", uri);
 }
 
 gcc_unused

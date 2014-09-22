@@ -7,6 +7,7 @@
 #include "od_backend.hxx"
 #include "od_resource.hxx"
 #include "frontend.hxx"
+#include "uri_escape.hxx"
 #include "wxml.hxx"
 #include "splice.hxx"
 #include "proppatch.hxx"
@@ -307,7 +308,7 @@ PropfindResource(Writer &w, std::string &uri,
                 OnlineDriveResource child2(resource, child);
 
                 uri.resize(uri_length);
-                uri.append(child2.GetName());
+                AppendUriEscape(uri, child2.GetName());
 
                 if (child2.IsDirectory())
                     /* directory URIs should end with a slash */
