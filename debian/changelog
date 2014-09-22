@@ -2,7 +2,7 @@ cm4all-davos (0.5) unstable; urgency=low
 
   * fix double escaping bug in PROPFIND respones
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 22 Sep 2014 21:06:13 -0000
 
 cm4all-davos (0.4) unstable; urgency=low
 
