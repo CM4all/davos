@@ -72,7 +72,7 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
 
         if (uri.back() != '/')
             /* directory URIs should end with a slash - but we don't
-               enforce that everywhere; fix up the URI the
+               enforce that everywhere; fix up the URI if the
                user-supplied URI doesn't */
             uri.push_back('/');
 

@@ -296,8 +296,8 @@ PropfindResource(Writer &w, std::string &uri,
         if (list != nullptr) {
             if (uri.back() != '/')
                 /* directory URIs should end with a slash - but we
-                   don't enforce that everywhere; fix up the URI the
-                   user-supplied URI doesn't */
+                   don't enforce that everywhere; fix up the URI if
+                   the user-supplied URI doesn't */
                 uri.push_back('/');
 
             const auto uri_length = uri.length();
