@@ -41,6 +41,9 @@ handle_options(was_simple *was, const typename Backend::Resource &resource)
         allow = allow_file;
 
     was_simple_set_header(was, "allow", allow);
+
+    /* RFC 4918 10.1 */
+    was_simple_set_header(was, "dav", "1");
 }
 
 /**

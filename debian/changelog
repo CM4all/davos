@@ -1,6 +1,7 @@
 cm4all-davos (0.6) unstable; urgency=low
 
   * debian/control: improved clang build-dependency
+  * generate the DAV response header
 
  --   
 
