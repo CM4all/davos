@@ -9,6 +9,7 @@ dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_CC_C99
 AC_PROG_CXX
+AC_PROG_RANLIB
 
 dnl
 dnl Checks for libraries.

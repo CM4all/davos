@@ -1,13 +1,19 @@
 AUTOMAKE_OPTIONS = foreign 1.11 subdir-objects
 
+noinst_LIBRARIES = libutil.a
+
+libutil_a_SOURCES = \
+	src/gmtime.c src/gmtime.h \
+	src/date.c src/date.h \
+	src/format.c src/format.h
+libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS)
+
 wasdir = $(pkglibdir)/was-bin
 was_PROGRAMS = src/davos-plain src/davos-od
 
 src_davos_plain_SOURCES = \
 	src/util.cxx src/util.hxx \
-	src/gmtime.c src/gmtime.h \
-	src/date.c src/date.h \
-	src/format.c src/format.h \
 	src/uri_escape.cxx src/uri_escape.hxx \
 	src/expat.hxx src/expat.cxx \
 	src/wxml.cxx src/wxml.hxx \
@@ -30,15 +36,13 @@ src_davos_plain_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBFOX_CFLAGS) \
 	$(LIBWAS_CFLAGS)
 src_davos_plain_LDADD = \
+	libutil.a \
 	$(EXPAT_LIBS) \
 	$(LIBFOX_LIBS) \
 	$(LIBWAS_LIBS)
 
 src_davos_od_SOURCES = \
 	src/util.cxx src/util.hxx \
-	src/gmtime.c src/gmtime.h \
-	src/date.c src/date.h \
-	src/format.c src/format.h \
 	src/mime_types.cxx src/mime_types.hxx \
 	src/uri_escape.cxx src/uri_escape.hxx \
 	src/expat.hxx src/expat.cxx \
@@ -58,6 +62,7 @@ src_davos_od_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBOD_CFLAGS) \
 	$(LIBWAS_CFLAGS)
 src_davos_od_LDADD = \
+	libutil.a \
 	$(EXPAT_LIBS) \
 	$(LIBOD_LIBS) \
 	$(LIBWAS_LIBS)
