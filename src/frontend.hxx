@@ -19,6 +19,14 @@ extern "C" {
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef __linux
+#include <sys/prctl.h>
+
+#ifndef PR_SET_NO_NEW_PRIVS
+#define PR_SET_NO_NEW_PRIVS 38
+#endif
+#endif
+
 static const char *mountpoint;
 static size_t mountpoint_length;
 
@@ -327,6 +335,10 @@ template<typename Backend>
 static void
 run(Backend &backend)
 {
+#ifdef __linux
+    prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+#endif
+
     was_simple *was = was_simple_new();
     const char *uri;
 
