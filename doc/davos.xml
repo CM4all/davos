@@ -95,6 +95,22 @@
               </entry>
             </row>
 
+            <row>
+              <entry>
+                <varname>DAVOS_DAV_HEADER</varname>
+                <parameter>compliance-class</parameter>
+              </entry>
+
+              <entry>
+                Set the value of the <varname>DAV</varname> response
+                header after an <command>OPTIONS</command> request
+                (see RFC4918 10.1).  Even though this software
+                implements only class 1, some clients may require
+                faking class 2 in this header to work properly.
+                Defaults to "1".
+              </entry>
+            </row>
+
           </tbody>
         </tgroup>
       </informaltable>

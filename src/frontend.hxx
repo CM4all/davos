@@ -27,6 +27,8 @@ extern "C" {
 #endif
 #endif
 
+static const char *dav_header;
+
 static const char *mountpoint;
 static size_t mountpoint_length;
 
@@ -51,7 +53,7 @@ handle_options(was_simple *was, const typename Backend::Resource &resource)
     was_simple_set_header(was, "allow", allow);
 
     /* RFC 4918 10.1 */
-    was_simple_set_header(was, "dav", "1");
+    was_simple_set_header(was, "dav", dav_header);
 }
 
 /**
@@ -163,11 +165,22 @@ configure_mapper(was_simple *w)
     return true;
 }
 
+static bool
+configure_dav_header(was_simple *w)
+{
+    dav_header = was_simple_get_parameter(w, "DAVOS_DAV_HEADER");
+    if (dav_header == nullptr)
+        dav_header = "1";
+
+    return true;
+}
+
 template<typename Backend>
 static bool
 configure(Backend &backend, was_simple *w)
 {
     return configure_umask(w) && configure_mapper(w) &&
+        configure_dav_header(w) &&
         backend.Setup(w);
 }
 
