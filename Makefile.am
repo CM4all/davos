@@ -3,6 +3,9 @@ AUTOMAKE_OPTIONS = foreign 1.11 subdir-objects
 noinst_LIBRARIES = libutil.a
 
 libutil_a_SOURCES = \
+	src/util/CharUtil.hxx \
+	src/util/LightString.hxx \
+	src/util/UriEscape.cxx src/util/UriEscape.hxx \
 	src/gmtime.c src/gmtime.h \
 	src/date.c src/date.h \
 	src/format.c src/format.h
@@ -66,6 +69,16 @@ src_davos_od_LDADD = \
 	$(EXPAT_LIBS) \
 	$(LIBOD_LIBS) \
 	$(LIBWAS_LIBS)
+
+# unit tests
+
+TESTS = test/t_uri_escape
+noinst_PROGRAMS = test/t_uri_escape
+
+test_t_uri_escape_SOURCES = test/t_uri_escape.cxx
+test_t_uri_escape_CPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/src \
+	$(LIBCM4ALL_INLINE_CFLAGS)
+test_t_uri_escape_LDADD = libutil.a
 
 #
 # documentation

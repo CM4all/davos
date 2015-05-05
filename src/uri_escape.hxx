@@ -4,8 +4,8 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef URI_ESCAPE_HXX
-#define URI_ESCAPE_HXX
+#ifndef DAVOS_URI_ESCAPE_HXX
+#define DAVOS_URI_ESCAPE_HXX
 
 #include <inline/compiler.h>
 

@@ -5,8 +5,8 @@
  */
 
 #include "wxml.hxx"
-
-#include <glib.h> // TODO: eliminate GLib
+#include "util/UriEscape.hxx"
+#include "util/LightString.hxx"
 
 #include <assert.h>
 #include <string.h>
@@ -55,11 +55,6 @@ wxml_cdata(Writer &w, const char *data)
 bool
 wxml_uri_escape(Writer &w, const char *uri)
 {
-    char *escaped = g_uri_escape_string(uri, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH, true);
-    if (escaped == nullptr)
-        return false;
-
-    bool success = wxml_cdata(w, escaped);
-    g_free(escaped);
-    return success;
+    const auto escaped = UriEscapePath(uri);
+    return wxml_cdata(w, escaped.c_str());
 }

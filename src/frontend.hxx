@@ -4,13 +4,14 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
+#include "util/UriEscape.hxx"
+#include "util/LightString.hxx"
+
 extern "C" {
 #include <was/simple.h>
 }
 
 #include <inline/compiler.h>
-
-#include <glib.h> // TODO: eliminate GLib
 
 #include <string>
 
@@ -85,14 +86,11 @@ map_uri(const Backend &backend, const char *uri)
 {
     assert(uri != nullptr);
 
-    char *unescaped = g_uri_unescape_string(uri, "/");
-    if (unescaped == nullptr)
+    const LightString unescaped = UriUnescape(uri);
+    if (unescaped.IsNull())
         return typename Backend::Resource();
 
-    const std::string unescaped2(unescaped);
-    g_free(unescaped);
-
-    uri = unescaped2.c_str();
+    uri = unescaped.c_str();
 
     if (strstr(uri, "/../") != nullptr)
         return typename Backend::Resource();

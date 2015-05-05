@@ -5,17 +5,12 @@
  */
 
 #include "uri_escape.hxx"
-
-#include <glib.h>
+#include "util/UriEscape.hxx"
+#include "util/LightString.hxx"
 
 void
 AppendUriEscape(std::string &dest, const char *src)
 {
-    char *escaped =
-        g_uri_escape_string(src, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH, true);
-    if (escaped == nullptr)
-        return;
-
-    dest.append(escaped);
-    g_free(escaped);
+    const auto escaped = UriEscapePath(src);
+    dest.append(escaped.c_str());
 }
