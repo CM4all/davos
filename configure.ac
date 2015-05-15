@@ -21,7 +21,7 @@ PKG_CHECK_MODULES([EXPAT], [expat],,
 PKG_CHECK_MODULES([LIBCM4ALL_INLINE], [libcm4all-inline >= 0.3.3],,
 	[AC_MSG_ERROR([libcm4all-inline not found])])
 
-PKG_CHECK_MODULES([LIBWAS], [libcm4all-was-simple >= 0.8],,
+PKG_CHECK_MODULES([LIBWAS], [libcm4all-was-simple >= 1.0],,
 	[AC_MSG_ERROR([libwas not found])])
 
 PKG_CHECK_MODULES([LIBFOX], [libcm4all-fox >= 0.2.1],,
