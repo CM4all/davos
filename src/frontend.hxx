@@ -256,6 +256,10 @@ run2(Backend &backend, was_simple *was, const char *uri)
         break;
 
     case HTTP_METHOD_PROPFIND:
+        /* TODO: parse request body */
+        if (!was_simple_input_close(was))
+            return;
+
         backend.HandlePropfind(was, uri, resource);
         break;
 
