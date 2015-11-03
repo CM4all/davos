@@ -16,6 +16,8 @@ extern "C" {
 
 #include <assert.h>
 
+struct od_resource_create;
+
 class OnlineDriveResource {
     od_resource *root;
     std::string uri;
@@ -175,6 +177,8 @@ public:
 
         return od_resource_stream_open(resource, error_r);
     }
+
+    struct od_resource_create *CreateBegin(GError **error_r);
 };
 
 #endif

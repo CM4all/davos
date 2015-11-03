@@ -47,21 +47,8 @@ OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
     }
 
     GError *error = nullptr;
-    auto parent = resource.GetParent(&error);
-    if (parent.first == nullptr) {
-        // TODO: improve error handling
-        if (error != nullptr) {
-            fprintf(stderr, "%s\n", error->message);
-            g_error_free(error);
-        }
-
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    od_resource_create *c = od_resource_create_begin(site, &error);
+    auto c = resource.CreateBegin(&error);
     if (c == nullptr) {
-        od_resource_free(parent.first);
         fprintf(stderr, "%s\n", error->message);
         g_error_free(error);
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
@@ -69,19 +56,6 @@ OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
     }
 
     if (!SendStat(c, resource.GetName2(), &error)) {
-        od_resource_free(parent.first);
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    bool success = od_resource_create_set_location(c, parent.first,
-                                                   parent.second, true,
-                                                   &error);
-    od_resource_free(parent.first);
-    if (!success) {
-        od_resource_create_abort(c);
         fprintf(stderr, "%s\n", error->message);
         g_error_free(error);
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);

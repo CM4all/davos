@@ -56,6 +56,7 @@ src_davos_od_SOURCES = \
 	src/writer.hxx \
 	src/frontend.hxx \
 	src/od_resource.cxx src/od_resource.hxx \
+	src/od_create.cxx \
 	src/od_backend.hxx \
 	src/od_put.cxx \
 	src/od_main.cxx
