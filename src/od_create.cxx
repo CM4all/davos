@@ -39,3 +39,20 @@ OnlineDriveResource::CreateBegin(GError **error_r)
     return c;
 }
 
+bool
+OnlineDriveResource::CreateEmpty(GError **error_r)
+{
+    assert(!Exists());
+
+    auto *c = CreateBegin(error_r);
+    if (c == nullptr)
+        return false;
+
+    auto *r = od_resource_create_commit(c, error_r);
+    if (r == nullptr)
+        return false;
+
+    resource = r;
+    return true;
+}
+

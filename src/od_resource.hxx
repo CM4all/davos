@@ -179,6 +179,8 @@ public:
     }
 
     struct od_resource_create *CreateBegin(GError **error_r);
+
+    bool CreateEmpty(GError **error_r);
 };
 
 #endif
