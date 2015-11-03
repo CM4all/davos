@@ -548,7 +548,18 @@ OnlineDriveBackend::HandleLock(was_simple *w, Resource &resource)
     bool created = false;
 
     if (!resource.Exists()) {
-        // TODO: create empty resource, see RFC4918 9.10.4
+        /* RFC4918 9.10.4: "A successful LOCK method MUST result in
+           the creation of an empty resource that is locked (and that
+           is not a collection) when a resource did not previously
+           exist at that URL". */
+
+        GError *error = nullptr;
+        if (!resource.CreateEmpty(&error)) {
+            fprintf(stderr, "%s\n", error->message);
+            g_error_free(error);
+            was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
+            return;
+        }
     }
 
     method.Run(w, created);

@@ -1,6 +1,7 @@
 cm4all-davos (0.8) unstable; urgency=low
 
   * explicitly discard the PROPFIND request body
+  * od: LOCK auto-creates empty resource
 
  --   
 
