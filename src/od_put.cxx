@@ -36,6 +36,21 @@ SendStat(od_resource_create *c, const char *name, GError **error_r)
     return od_resource_create_set_stat(c, &st, error_r);
 }
 
+static bool
+PutData(struct od_resource_create *c, struct was_simple *w)
+{
+    // TODO: support slow mode
+    GError *error = nullptr;
+    int fd = od_resource_create_open(c, &error);
+    if (fd < 0) {
+        fprintf(stderr, "%s\n", error->message);
+        g_error_free(error);
+        return false;
+    }
+
+    return splice_from_was(w, fd);
+}
+
 void
 OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
 {
@@ -62,17 +77,7 @@ OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
         return;
     }
 
-    // TODO: support slow mode
-    int fd = od_resource_create_open(c, &error);
-    if (fd < 0) {
-        od_resource_create_abort(c);
-        fprintf(stderr, "%s\n", error->message);
-        g_error_free(error);
-        was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    if (!splice_from_was(w, fd)) {
+    if (!PutData(c, w)) {
         od_resource_create_abort(c);
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
         return;
