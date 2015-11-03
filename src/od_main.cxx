@@ -238,7 +238,7 @@ RecursiveDelete(od_resource *resource, GError **error_r)
 }
 
 void
-OnlineDriveBackend::HandleDelete(was_simple *w, const Resource &resource)
+OnlineDriveBackend::HandleDelete(was_simple *w, Resource &resource)
 {
     if (!resource.Exists()) {
         was_simple_status(w, HTTP_STATUS_NOT_FOUND);
@@ -364,7 +364,7 @@ OnlineDriveBackend::HandlePropfind(was_simple *w, const char *_uri,
 }
 
 void
-OnlineDriveBackend::HandleMkcol(was_simple *w, const Resource &resource)
+OnlineDriveBackend::HandleMkcol(was_simple *w, Resource &resource)
 {
     if (resource.Exists()) {
         was_simple_status(w, HTTP_STATUS_CONFLICT);
@@ -401,7 +401,7 @@ OnlineDriveBackend::HandleMkcol(was_simple *w, const Resource &resource)
 
 void
 OnlineDriveBackend::HandleCopy(was_simple *w, const Resource &src,
-                               const Resource &dest)
+                               Resource &dest)
 {
     if (!src.Exists()) {
         was_simple_status(w, HTTP_STATUS_NOT_FOUND);
@@ -444,8 +444,7 @@ OnlineDriveBackend::HandleCopy(was_simple *w, const Resource &src,
 }
 
 void
-OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
-                               const Resource &dest)
+OnlineDriveBackend::HandleMove(was_simple *w, Resource &src, Resource &dest)
 {
     if (!src.Exists()) {
         was_simple_status(w, HTTP_STATUS_NOT_FOUND);
@@ -486,7 +485,7 @@ OnlineDriveBackend::HandleMove(was_simple *w, const Resource &src,
 
 void
 OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
-                                    const Resource &resource)
+                                    Resource &resource)
 {
     if (!resource.Exists()) {
         was_simple_status(w, HTTP_STATUS_NOT_FOUND);
@@ -540,7 +539,7 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
 }
 
 void
-OnlineDriveBackend::HandleLock(was_simple *w, const Resource &resource)
+OnlineDriveBackend::HandleLock(was_simple *w, Resource &resource)
 {
     LockMethod method;
     if (!method.ParseRequest(w))

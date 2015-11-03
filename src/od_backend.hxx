@@ -31,18 +31,18 @@ public:
 
     void HandleHead(was_simple *w, const Resource &resource);
     void HandleGet(was_simple *w, const Resource &resource);
-    void HandlePut(was_simple *w, const Resource &resource);
-    void HandleDelete(was_simple *w, const Resource &resource);
+    void HandlePut(was_simple *w, Resource &resource);
+    void HandleDelete(was_simple *w, Resource &resource);
 
     void HandlePropfind(was_simple *w, const char *uri,
                         const Resource &resource);
     void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &resource);
+                         Resource &resource);
 
-    void HandleMkcol(was_simple *w, const Resource &resource);
-    void HandleCopy(was_simple *w, const Resource &src, const Resource &dest);
-    void HandleMove(was_simple *w, const Resource &src, const Resource &dest);
-    void HandleLock(was_simple *w, const Resource &resource);
+    void HandleMkcol(was_simple *w, Resource &resource);
+    void HandleCopy(was_simple *w, const Resource &src, Resource &dest);
+    void HandleMove(was_simple *w, Resource &src, Resource &dest);
+    void HandleLock(was_simple *w, Resource &resource);
 };
 
 #endif

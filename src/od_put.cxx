@@ -37,7 +37,7 @@ SendStat(od_resource_create *c, const char *name, GError **error_r)
 }
 
 void
-OnlineDriveBackend::HandlePut(was_simple *w, const Resource &resource)
+OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
 {
     assert(was_simple_has_body(w));
 

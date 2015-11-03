@@ -195,7 +195,7 @@ template<typename Backend>
 static void
 run2(Backend &backend, was_simple *was, const char *uri)
 {
-    const auto resource = map_uri(backend, uri);
+    auto resource = map_uri(backend, uri);
     if (resource.IsNull()) {
         was_simple_status(was, HTTP_STATUS_NOT_FOUND);
         return;
@@ -286,7 +286,7 @@ run2(Backend &backend, was_simple *was, const char *uri)
 
         p = get_uri_path(p);
 
-        const auto destination = map_uri(backend, p);
+        auto destination = map_uri(backend, p);
         if (destination.IsNull()) {
             /* can't copy the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);
@@ -309,7 +309,7 @@ run2(Backend &backend, was_simple *was, const char *uri)
 
         p = get_uri_path(p);
 
-        const auto destination = map_uri(backend, p);
+        auto destination = map_uri(backend, p);
         if (destination.IsNull()) {
             /* can't move the file out of its site */
             was_simple_status(was, HTTP_STATUS_FORBIDDEN);

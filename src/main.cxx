@@ -44,11 +44,11 @@ public:
         handle_get(w, resource);
     }
 
-    void HandlePut(was_simple *w, const Resource &resource) {
+    void HandlePut(was_simple *w, Resource &resource) {
         handle_put(w, resource);
     }
 
-    void HandleDelete(was_simple *w, const Resource &resource) {
+    void HandleDelete(was_simple *w, Resource &resource) {
         handle_delete(w, resource);
     }
 
@@ -58,21 +58,21 @@ public:
     }
 
     void HandleProppatch(was_simple *w, const char *uri,
-                         const Resource &resource);
+                         Resource &resource);
 
-    void HandleMkcol(was_simple *w, const Resource &resource) {
+    void HandleMkcol(was_simple *w, Resource &resource) {
         handle_mkcol(w, resource);
     }
 
-    void HandleCopy(was_simple *w, const Resource &src, const Resource &dest) {
+    void HandleCopy(was_simple *w, const Resource &src, Resource &dest) {
         handle_copy(w, src, dest);
     }
 
-    void HandleMove(was_simple *w, const Resource &src, const Resource &dest) {
+    void HandleMove(was_simple *w, Resource &src, Resource &dest) {
         handle_move(w, src, dest);
     }
 
-    void HandleLock(was_simple *w, const Resource &resource);
+    void HandleLock(was_simple *w, Resource &resource);
 };
 
 inline bool
@@ -102,7 +102,7 @@ SimpleBackend::Map(const char *uri) const
 
 void
 SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
-                               const Resource &resource)
+                               Resource &resource)
 {
     if (!resource.Exists()) {
         errno_response(w, resource.GetError());
@@ -166,7 +166,7 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
 }
 
 void
-SimpleBackend::HandleLock(was_simple *w, const Resource &resource)
+SimpleBackend::HandleLock(was_simple *w, Resource &resource)
 {
     LockMethod method;
     if (!method.ParseRequest(w))
