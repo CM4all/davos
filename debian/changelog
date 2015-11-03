@@ -4,7 +4,7 @@ cm4all-davos (0.8) unstable; urgency=low
   * od: LOCK auto-creates empty resource
   * od: support PUT without splice()
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 03 Nov 2015 11:10:55 -0000
 
 cm4all-davos (0.7) unstable; urgency=low
 
