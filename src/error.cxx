@@ -48,13 +48,13 @@ errno_status(int e)
 }
 
 void
-errno_respones(was_simple *was, int e)
+errno_response(was_simple *was, int e)
 {
     was_simple_status(was, errno_status(e));
 }
 
 void
-errno_respones(was_simple *was)
+errno_response(was_simple *was)
 {
-    errno_respones(was, errno);
+    errno_response(was, errno);
 }

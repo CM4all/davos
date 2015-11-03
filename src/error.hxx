@@ -17,9 +17,9 @@ http_status_t
 errno_status(int e);
 
 void
-errno_respones(was_simple *was, int e);
+errno_response(was_simple *was, int e);
 
 void
-errno_respones(was_simple *was);
+errno_response(was_simple *was);
 
 #endif

@@ -23,7 +23,7 @@ handle_mkcol(was_simple *w, const FileResource &resource)
         if (errno == ENOTDIR)
             was_simple_status(w, HTTP_STATUS_CONFLICT);
         else
-            errno_respones(w, e);
+            errno_response(w, e);
         return;
     }
 

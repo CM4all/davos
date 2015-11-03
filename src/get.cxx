@@ -65,14 +65,14 @@ handle_get(was_simple *was, const FileResource &resource)
 
     const int fd = open(resource.GetPath(), O_RDONLY|O_NOCTTY);
     if (fd < 0) {
-        errno_respones(was);
+        errno_response(was);
         close(fd);
         return;
     }
 
     struct stat st;
     if (fstat(fd, &st) < 0) {
-        errno_respones(was);
+        errno_response(was);
         close(fd);
         return;
     }
@@ -93,7 +93,7 @@ void
 handle_head(was_simple *was, const FileResource &resource)
 {
     if (!resource.Exists()) {
-        errno_respones(was, resource.GetError());
+        errno_response(was, resource.GetError());
         return;
     }
 

@@ -25,7 +25,7 @@ handle_delete(was_simple *w, const FileResource &resource)
     fox_error_t error;
     fox_status_t status = fox_unlink(resource.GetPath(), 0, &error);
     if (status != FOX_STATUS_SUCCESS) {
-        errno_respones(w, status);
+        errno_response(w, status);
         return;
     }
 }
@@ -45,7 +45,7 @@ handle_copy(was_simple *w, const FileResource &src, const FileResource &dest)
     fox_status_t status = fox_copy(src.GetPath(), dest.GetPath(), options,
                                    &error);
     if (status != FOX_STATUS_SUCCESS) {
-        errno_respones(w, status);
+        errno_response(w, status);
         return;
     }
 }
@@ -56,7 +56,7 @@ handle_move(was_simple *w, const FileResource &src, const FileResource &dest)
     // TODO: support "Overwrite"
 
     if (rename(src.GetPath(), dest.GetPath()) < 0) {
-        errno_respones(w);
+        errno_response(w);
         return;
     }
 }

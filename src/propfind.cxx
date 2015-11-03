@@ -113,7 +113,7 @@ void
 handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
 {
     if (!resource.Exists()) {
-        errno_respones(was, resource.GetError());
+        errno_response(was, resource.GetError());
         return;
     }
 

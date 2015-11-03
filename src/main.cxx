@@ -105,7 +105,7 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
                                const Resource &resource)
 {
     if (!resource.Exists()) {
-        errno_respones(w, resource.GetError());
+        errno_response(w, resource.GetError());
         return;
     }
 
@@ -190,7 +190,7 @@ SimpleBackend::HandleLock(was_simple *w, const Resource &resource)
                     was_simple_status(w, HTTP_STATUS_CONFLICT);
                     return;
                 } else {
-                    errno_respones(w, e);
+                    errno_response(w, e);
                     return;
                 }
             } else {
@@ -200,7 +200,7 @@ SimpleBackend::HandleLock(was_simple *w, const Resource &resource)
             was_simple_status(w, HTTP_STATUS_CONFLICT);
             return;
         } else {
-            errno_respones(w, e);
+            errno_response(w, e);
             return;
         }
     }
