@@ -1,6 +1,6 @@
 cm4all-davos (0.9) unstable; urgency=low
 
-  * 
+  * remove "PUT" from "Allow" header on directories
 
  --   
 

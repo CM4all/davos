@@ -41,7 +41,7 @@ handle_options(was_simple *was, const typename Backend::Resource &resource)
     const char *allow_file =
         "OPTIONS,GET,HEAD,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
     const char *allow_directory =
-        "OPTIONS,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,PUT,LOCK,UNLOCK";
+        "OPTIONS,DELETE,PROPFIND,PROPPATCH,COPY,MOVE,LOCK,UNLOCK";
 
     const char *allow;
     if (!resource.Exists())
