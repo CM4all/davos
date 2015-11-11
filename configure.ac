@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT(CM4all Davos, 0.8, mk@cm4all.com, cm4all-davos)
+AC_INIT(CM4all Davos, 0.9, mk@cm4all.com, cm4all-davos)
 AC_COPYRIGHT(Copyright 2013-2015 Content Management AG)
 AC_CONFIG_SRCDIR(src/main.cxx)
 AC_CONFIG_AUX_DIR(build)
