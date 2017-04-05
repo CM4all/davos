@@ -12,6 +12,7 @@ extern "C" {
 #include <od/resource.h>
 }
 
+#include <utility>
 #include <string>
 
 #include <assert.h>
@@ -44,9 +45,9 @@ public:
     }
 
     OnlineDriveResource(OnlineDriveResource &&other)
-        :root(other.root), uri(std::move(other.uri)),
-         resource(other.resource) {
-        other.root = other.resource = nullptr;
+        :root(std::exchange(other.root, nullptr)),
+         uri(std::move(other.uri)),
+         resource(std::exchange(other.resource, nullptr)) {
     }
 
     ~OnlineDriveResource() {
