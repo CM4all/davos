@@ -38,9 +38,9 @@ add_global_arguments(common_flags,
 
 expat = dependency('expat')
 
-libinline = dependency('libcm4all-inline', version: '>= 0.3.2')
-libwas = dependency('libcm4all-was-simple', version: '>= 1.0')
-libfox = dependency('libcm4all-fox', version: '>= 0.2.1')
+libinline = dependency('libcm4all-inline', version: '>= 0.3.5')
+libwas = dependency('libcm4all-was-simple', version: '>= 1.9')
+libfox = dependency('libcm4all-fox', version: '>= 2.0')
 libod = dependency('libcm4all-od-setup', version: '>= 1.2')
 
 inc = include_directories('src', 'libcommon/src')
