@@ -3,18 +3,6 @@
 *.o
 *.a
 
-*.cache
-build
-*.log
-*.status
-Makefile
-Makefile.in
-configure
-aclocal.m4
-.libs
-.deps
-.dirstamp
 perf.data*
 
-src/davos-plain
-src/davos-od
+/build/

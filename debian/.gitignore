@@ -2,6 +2,7 @@
 /stamp-*
 /files
 /*.substvars
+/*.log
 /tmp
 
 /cm4all-davos-od
