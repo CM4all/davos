@@ -85,13 +85,15 @@ test_t_uri_escape_LDADD = libutil.a
 # documentation
 #
 
-MOSTLYCLEANFILES = doc/davos.html
+clean-local:
+	rm -rf doc/_build
+
+doc/_build/html/.buildinfo: doc/*.rst
+	$(MAKE) -C doc html
+
+doc/_build/html/.buildinfo: doc/*.rst
+	$(MAKE) -C doc html
 
 if DOCUMENTATION
-doc/davos.html: doc/davos.xml
-	$(XMLTO) -o $(@D) html-nochunks $<
-
-all-local: doc/davos.html
-
-doc_DATA = doc/davos.html
+all-local: doc/_build/html/.buildinfo
 endif

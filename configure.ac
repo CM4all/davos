@@ -94,13 +94,6 @@ AC_ARG_ENABLE(documentation,
 	enable_documentation=yes)
 AM_CONDITIONAL(DOCUMENTATION, test x$enable_documentation = xyes)
 
-if test x$enable_documentation = xyes; then
-	AC_PATH_PROG([XMLTO], [xmlto], [no])
-	if test x$XMLTO = xno; then
-		AC_MSG_ERROR([xmlto not found])
-	fi
-fi
-
 dnl
 dnl Output files
 dnl

@@ -3,13 +3,13 @@ Section: non-free/web
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 9), autoconf (>= 2.60), automake (>= 1.11),
- xmlto,
  clang (>= 3.4) | cm4all-thirdparty-clang (>= 3.4),
  libc6-dev (>= 2.13),
  libexpat1-dev,
  libcm4all-inline-dev (>= 0.3.3),
  libcm4all-fox-dev (>= 0.2.1), libcm4all-was-simple-dev (>= 1.0),
- libcm4all-od1-dev (>= 1.2)
+ libcm4all-od1-dev (>= 1.2),
+ python3-sphinx,
 Standards-Version: 3.9.1
 XS-Python-Standards-Version: 0.4
 XS-Python-Version: all

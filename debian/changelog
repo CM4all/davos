@@ -1,5 +1,6 @@
 cm4all-davos (0.9) unstable; urgency=low
 
+  * doc: migrate from DocBook to Sphinx
   * remove "PUT" from "Allow" header on directories
 
  --   
