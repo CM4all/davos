@@ -9,8 +9,6 @@
 std::pair<od_resource *, const char *>
 OnlineDriveResource::GetParent(GError **error_r) const
 {
-    assert(!IsNull());
-
     if (uri.empty())
         return { nullptr, nullptr };
 

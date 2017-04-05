@@ -25,9 +25,6 @@ class OnlineDriveResource {
     od_resource *resource;
 
 public:
-    OnlineDriveResource()
-        :root(nullptr) {}
-
     OnlineDriveResource(od_resource *_root,
                         const char *_uri,
                         od_resource *_resource)
@@ -53,7 +50,7 @@ public:
     }
 
     ~OnlineDriveResource() {
-        if (IsNull())
+        if (root == nullptr)
             return;
 
         if (resource != nullptr)
@@ -61,13 +58,7 @@ public:
         od_resource_free(root);
     }
 
-    bool IsNull() const {
-        return root == nullptr;
-    }
-
     bool Exists() const {
-        assert(!IsNull());
-
         return resource != nullptr;
     }
 
