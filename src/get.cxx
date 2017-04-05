@@ -10,6 +10,7 @@
 #include "splice.hxx"
 #include "mime_types.hxx"
 #include "io/UniqueFileDescriptor.hxx"
+#include "http/List.hxx"
 
 extern "C" {
 #include "format.h"
@@ -83,6 +84,17 @@ handle_get(was_simple *was, const FileResource &resource)
     if (!S_ISREG(st.st_mode)) {
         was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
         return;
+    }
+
+    const char *p = was_simple_get_header(was, "if-match");
+    if (p != nullptr && strcmp(p, "*") != 0) {
+        char buffer[128];
+        static_etag(buffer, st);
+
+        if (!http_list_contains(p, buffer)) {
+            was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+            return;
+        }
     }
 
     if (static_response_headers(was, resource))

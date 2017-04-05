@@ -5,6 +5,7 @@ cm4all-davos (0.9) unstable; urgency=low
   * remove "PUT" from "Allow" header on directories
   * plain: use O_TMPFILE and fallocate()
   * plain: set Content-Type from /etc/mime.types
+  * plain: implement the "If-Match" request header
   * od: use fallocate()
 
  --   

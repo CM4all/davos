@@ -47,6 +47,7 @@ inc = include_directories('src', 'libcommon/src')
 
 util = static_library('util',
   'libcommon/src/util/PrintException.cxx',
+  'libcommon/src/util/StringView.cxx',
   'src/util/UriEscape.cxx',
   'src/gmtime.c',
   'src/date.c',
@@ -56,6 +57,15 @@ util = static_library('util',
     libinline
   ])
 util_dep = declare_dependency(link_with: util)
+
+http = static_library('http',
+  'libcommon/src/http/List.cxx',
+  include_directories: inc,
+  dependencies: [
+    libinline,
+    util_dep,
+  ])
+http_dep = declare_dependency(link_with: http)
 
 io = static_library('io',
   'libcommon/src/io/FileDescriptor.cxx',
@@ -90,6 +100,7 @@ executable('davos-plain',
     libwas,
     libfox,
     util_dep,
+    http_dep,
     io_dep,
   ])
 
