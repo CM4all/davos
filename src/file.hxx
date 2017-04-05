@@ -20,41 +20,29 @@ class FileResource {
     struct stat st;
 
 public:
-    FileResource():error(-1) {}
-
     explicit FileResource(std::string &&_path);
-
-    bool IsNull() const {
-        return error == -1;
-    }
 
     int GetError() const {
         return error;
     }
 
     bool Exists() const {
-        assert(!IsNull());
-
         return error == 0;
     }
 
     bool IsFile() const {
-        assert(!IsNull());
         assert(Exists());
 
         return S_ISREG(st.st_mode);
     }
 
     bool IsDirectory() const {
-        assert(!IsNull());
         assert(Exists());
 
         return S_ISDIR(st.st_mode);
     }
 
     const char *GetPath() const {
-        assert(!IsNull());
-
         return path.c_str();
     }
 
