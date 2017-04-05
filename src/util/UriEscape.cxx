@@ -33,6 +33,7 @@
 
 #include <algorithm>
 
+#include <stdint.h>
 #include <string.h>
 
 /**
