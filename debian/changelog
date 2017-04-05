@@ -3,7 +3,7 @@ cm4all-davos (0.9) unstable; urgency=low
   * build with Meson and Ninja
   * doc: migrate from DocBook to Sphinx
   * remove "PUT" from "Allow" header on directories
-  * plain: use O_TMPFILE
+  * plain: use O_TMPFILE and fallocate()
 
  --   
 

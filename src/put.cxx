@@ -25,6 +25,10 @@ handle_put(was_simple *w, const FileResource &resource)
     try {
         FileWriter fw(resource.GetPath());
 
+        int64_t remaining = was_simple_input_remaining(w);
+        if (remaining > 0)
+            fw.Allocate(remaining);
+
         if (!splice_from_was(w, fw.GetFileDescriptor().Get())) {
             was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
             return;
