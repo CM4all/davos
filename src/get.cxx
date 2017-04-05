@@ -9,6 +9,7 @@
 #include "file.hxx"
 #include "splice.hxx"
 #include "mime_types.hxx"
+#include "io/UniqueFileDescriptor.hxx"
 
 extern "C" {
 #include "format.h"
@@ -67,30 +68,25 @@ handle_get(was_simple *was, const FileResource &resource)
 {
     // TODO: range, if-modified-since, if-match, ...
 
-    const int fd = open(resource.GetPath(), O_RDONLY|O_NOCTTY);
-    if (fd < 0) {
+    UniqueFileDescriptor fd;
+    if (!fd.Open(resource.GetPath(), O_RDONLY)) {
         errno_response(was);
-        close(fd);
         return;
     }
 
     struct stat st;
-    if (fstat(fd, &st) < 0) {
+    if (fstat(fd.Get(), &st) < 0) {
         errno_response(was);
-        close(fd);
         return;
     }
 
     if (!S_ISREG(st.st_mode)) {
-        close(fd);
         was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
         return;
     }
 
     if (static_response_headers(was, resource))
-        splice_to_was(was, fd, resource.GetSize());
-
-    close(fd);
+        splice_to_was(was, fd.Get(), resource.GetSize());
 }
 
 void
