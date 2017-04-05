@@ -15,4 +15,8 @@ gcc_pure
 std::string
 LookupMimeTypeByFileName(const char *name);
 
+gcc_pure
+std::string
+LookupMimeTypeByFilePath(const char *path);
+
 #endif

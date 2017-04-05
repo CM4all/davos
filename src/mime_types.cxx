@@ -80,3 +80,13 @@ LookupMimeTypeByFileName(const char *name)
 
     return LookupMimeTypeByExtension(dot + 1);
 }
+
+std::string
+LookupMimeTypeByFilePath(const char *path)
+{
+    const char *slash = strrchr(path, '/');
+    if (slash != nullptr)
+        path = slash + 1;
+
+    return LookupMimeTypeByFileName(path);
+}
