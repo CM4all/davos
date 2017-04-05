@@ -43,7 +43,7 @@ libwas = dependency('libcm4all-was-simple', version: '>= 1.0')
 libfox = dependency('libcm4all-fox', version: '>= 0.2.1')
 libod = dependency('libcm4all-od-setup', version: '>= 1.2')
 
-inc = include_directories('src')
+inc = include_directories('src', 'libcommon/src')
 
 util = static_library('util',
   'src/util/UriEscape.cxx',

@@ -28,7 +28,7 @@
  */
 
 #include "UriEscape.hxx"
-#include "CharUtil.hxx"
+#include "util/CharUtil.hxx"
 #include "LightString.hxx"
 
 #include <algorithm>
