@@ -22,7 +22,8 @@ extern "C" {
 #include <string.h>
 
 static bool
-SendStat(od_resource_create *c, const char *name, GError **error_r)
+SendStat(od_resource_create *c, const char *name, int64_t size,
+         GError **error_r)
 {
     od_stat st;
     memset(&st, 0, sizeof(st));
@@ -32,7 +33,9 @@ SendStat(od_resource_create *c, const char *name, GError **error_r)
         ? "application/octet-stream"
         : content_type.c_str();
 
-    st.size = OD_SIZE_UNKNOWN;
+    st.size = size >= 0
+        ? od_size_t(size)
+        : OD_SIZE_UNKNOWN;
 
     return od_resource_create_set_stat(c, &st, error_r);
 }
@@ -114,7 +117,8 @@ OnlineDriveBackend::HandlePut(was_simple *w, Resource &resource)
         return;
     }
 
-    if (!SendStat(c, resource.GetName2(), &error)) {
+    if (!SendStat(c, resource.GetName2(), was_simple_input_remaining(w),
+                  &error)) {
         fprintf(stderr, "%s\n", error->message);
         g_error_free(error);
         was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
