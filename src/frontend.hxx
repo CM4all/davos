@@ -80,6 +80,20 @@ get_uri_path(const char *p)
     return slash;
 }
 
+/**
+ * An exception type which gets thrown when the URI is malformed.
+ */
+struct MalformedUri {};
+
+/**
+ * An exception type which gets thrown when the URI is outside of the
+ * current mount point.
+ */
+struct OutsideUri {};
+
+/**
+ * Throws #MalformedUri or #OutsideUri on error.
+ */
 template<class Backend>
 static typename Backend::Resource
 map_uri(const Backend &backend, const char *uri)
@@ -88,12 +102,12 @@ map_uri(const Backend &backend, const char *uri)
 
     const LightString unescaped = UriUnescape(uri);
     if (unescaped.IsNull())
-        return typename Backend::Resource();
+        throw MalformedUri();
 
     uri = unescaped.c_str();
 
     if (strstr(uri, "/../") != nullptr)
-        return typename Backend::Resource();
+        throw MalformedUri();
 
     if (memcmp(uri, mountpoint, mountpoint_length) == 0)
         uri += mountpoint_length;
@@ -103,7 +117,7 @@ map_uri(const Backend &backend, const char *uri)
            (e.g. Microsoft) */
         uri = "";
     else
-        return typename Backend::Resource();
+        throw OutsideUri();
 
     /* strip trailing slash */
     std::string uri2(uri);
@@ -194,12 +208,8 @@ HasTrailingSlash(const char *uri)
 template<typename Backend>
 static void
 run2(Backend &backend, was_simple *was, const char *uri)
-{
+try {
     auto resource = map_uri(backend, uri);
-    if (resource.IsNull()) {
-        was_simple_status(was, HTTP_STATUS_NOT_FOUND);
-        return;
-    }
 
     const http_method_t method = was_simple_get_method(was);
 
@@ -287,12 +297,6 @@ run2(Backend &backend, was_simple *was, const char *uri)
         p = get_uri_path(p);
 
         auto destination = map_uri(backend, p);
-        if (destination.IsNull()) {
-            /* can't copy the file out of its site */
-            was_simple_status(was, HTTP_STATUS_FORBIDDEN);
-            return;
-        }
-
         backend.HandleCopy(was, resource, destination);
     }
         break;
@@ -310,12 +314,6 @@ run2(Backend &backend, was_simple *was, const char *uri)
         p = get_uri_path(p);
 
         auto destination = map_uri(backend, p);
-        if (destination.IsNull()) {
-            /* can't move the file out of its site */
-            was_simple_status(was, HTTP_STATUS_FORBIDDEN);
-            return;
-        }
-
         backend.HandleMove(was, resource, destination);
     }
         break;
@@ -331,6 +329,11 @@ run2(Backend &backend, was_simple *was, const char *uri)
     default:
         was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
    }
+} catch (MalformedUri) {
+    was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+} catch (OutsideUri) {
+    /* can't copy/move the file out of its site */
+    was_simple_status(was, HTTP_STATUS_FORBIDDEN);
 }
 
 template<typename Backend>
