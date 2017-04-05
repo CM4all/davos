@@ -59,6 +59,13 @@ public:
         od_resource_free(root);
     }
 
+    OnlineDriveResource &operator=(OnlineDriveResource &&src) {
+        std::swap(root, src.root);
+        uri = std::move(src.uri);
+        std::swap(resource, src.resource);
+        return *this;
+    }
+
     bool Exists() const {
         return resource != nullptr;
     }
