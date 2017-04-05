@@ -46,6 +46,7 @@ libod = dependency('libcm4all-od-setup', version: '>= 1.2')
 inc = include_directories('src', 'libcommon/src')
 
 util = static_library('util',
+  'libcommon/src/util/PrintException.cxx',
   'src/util/UriEscape.cxx',
   'src/gmtime.c',
   'src/date.c',
@@ -55,6 +56,15 @@ util = static_library('util',
     libinline
   ])
 util_dep = declare_dependency(link_with: util)
+
+io = static_library('io',
+  'libcommon/src/io/FileDescriptor.cxx',
+  'libcommon/src/io/FileWriter.cxx',
+  include_directories: inc,
+  dependencies: [
+    libinline
+  ])
+io_dep = declare_dependency(link_with: io)
 
 executable('davos-plain',
   'src/util.cxx',
@@ -79,6 +89,7 @@ executable('davos-plain',
     libwas,
     libfox,
     util_dep,
+    io_dep,
   ])
 
 executable('davos-od',
