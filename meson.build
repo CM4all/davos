@@ -68,6 +68,7 @@ io_dep = declare_dependency(link_with: io)
 
 executable('davos-plain',
   'src/util.cxx',
+  'src/mime_types.cxx',
   'src/uri_escape.cxx',
   'src/expat.cxx',
   'src/wxml.cxx',

@@ -8,6 +8,7 @@
 #include "error.hxx"
 #include "file.hxx"
 #include "splice.hxx"
+#include "mime_types.hxx"
 
 extern "C" {
 #include "format.h"
@@ -42,6 +43,9 @@ static bool
 static_response_headers(was_simple *was, const FileResource &resource)
 {
     const char *content_type = "application/octet-stream";
+    const auto _content_type = LookupMimeTypeByFilePath(resource.GetPath());
+    if (!_content_type.empty())
+        content_type = _content_type.c_str();
 
     if (!was_simple_set_header(was, "content-type", content_type) ||
         !was_simple_set_header(was, "last-modified",
