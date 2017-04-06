@@ -50,13 +50,20 @@ util = static_library('util',
   'libcommon/src/util/PrintException.cxx',
   'libcommon/src/util/StringView.cxx',
   'src/util/UriEscape.cxx',
-  'src/gmtime.c',
   'src/date.c',
   include_directories: inc,
   dependencies: [
     libinline
   ])
 util_dep = declare_dependency(link_with: util)
+
+time = static_library('time',
+  'libcommon/src/time/gmtime.c',
+  include_directories: inc,
+  dependencies: [
+    libinline,
+  ])
+time_dep = declare_dependency(link_with: time)
 
 http = static_library('http',
   'libcommon/src/http/List.cxx',
@@ -100,6 +107,7 @@ executable('davos-plain',
     libwas,
     libfox,
     util_dep,
+    time_dep,
     http_dep,
     io_dep,
   ])
@@ -124,6 +132,7 @@ executable('davos-od',
     libwas,
     libod,
     util_dep,
+    time_dep,
   ])
 
 test('t_uri_escape', executable('t_uri_escape',
