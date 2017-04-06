@@ -81,6 +81,27 @@ HandleIfMatch(was_simple *was, const struct stat &st)
     }
 }
 
+static void
+HandleIfNoneMatch(was_simple *was, const struct stat &st)
+{
+    const char *p = was_simple_get_header(was, "if-none-match");
+    if (p == nullptr)
+        return;
+
+    if (strcmp(p, "*") == 0) {
+        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
+
+    char buffer[128];
+    static_etag(buffer, st);
+
+    if (http_list_contains(p, buffer)) {
+        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
+}
+
 void
 handle_get(was_simple *was, const FileResource &resource)
 {
@@ -104,6 +125,7 @@ handle_get(was_simple *was, const FileResource &resource)
     }
 
     HandleIfMatch(was, st);
+    HandleIfNoneMatch(was, st);
 
     if (static_response_headers(was, resource))
         splice_to_was(was, fd.Get(), resource.GetSize());
