@@ -6,8 +6,8 @@
 
 #include "date.h"
 #include "gmtime.h"
-#include "format.h"
 #include "strutil.h"
+#include "util/DecimalFormat.h"
 
 #include <stdint.h>
 

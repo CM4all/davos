@@ -46,12 +46,12 @@ libod = dependency('libcm4all-od-setup', version: '>= 1.2')
 inc = include_directories('src', 'libcommon/src')
 
 util = static_library('util',
+  'libcommon/src/util/HexFormat.c',
   'libcommon/src/util/PrintException.cxx',
   'libcommon/src/util/StringView.cxx',
   'src/util/UriEscape.cxx',
   'src/gmtime.c',
   'src/date.c',
-  'src/format.c',
   include_directories: inc,
   dependencies: [
     libinline

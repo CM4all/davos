@@ -12,9 +12,9 @@
 #include "mime_types.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/List.hxx"
+#include "util/HexFormat.h"
 
 extern "C" {
-#include "format.h"
 #include "date.h"
 
 #include <was/simple.h>
