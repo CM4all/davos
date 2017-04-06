@@ -6,6 +6,7 @@
 
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
+#include "util/ScopeExit.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -345,8 +346,11 @@ run(Backend &backend, was_simple *was, const char *uri)
         return;
     }
 
+    AtScopeExit(&backend) {
+        backend.TearDown();
+    };
+
     run2(backend, was, uri);
-    backend.TearDown();
 }
 
 template<typename Backend>
