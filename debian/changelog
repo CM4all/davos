@@ -8,7 +8,7 @@ cm4all-davos (0.9) unstable; urgency=low
   * plain: implement the "If-Match" request header
   * od: use fallocate()
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 06 Apr 2017 11:02:20 -0000
 
 cm4all-davos (0.8) unstable; urgency=low
 
