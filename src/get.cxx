@@ -6,6 +6,7 @@
 
 #include "get.hxx"
 #include "error.hxx"
+#include "was.hxx"
 #include "file.hxx"
 #include "splice.hxx"
 #include "mime_types.hxx"
@@ -64,6 +65,22 @@ static_response_headers(was_simple *was, const FileResource &resource)
     return true;
 }
 
+static void
+HandleIfMatch(was_simple *was, const struct stat &st)
+{
+    const char *p = was_simple_get_header(was, "if-match");
+    if (p == nullptr || strcmp(p, "*") == 0)
+        return;
+
+    char buffer[128];
+    static_etag(buffer, st);
+
+    if (!http_list_contains(p, buffer)) {
+        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
+}
+
 void
 handle_get(was_simple *was, const FileResource &resource)
 {
@@ -86,16 +103,7 @@ handle_get(was_simple *was, const FileResource &resource)
         return;
     }
 
-    const char *p = was_simple_get_header(was, "if-match");
-    if (p != nullptr && strcmp(p, "*") != 0) {
-        char buffer[128];
-        static_etag(buffer, st);
-
-        if (!http_list_contains(p, buffer)) {
-            was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
-            return;
-        }
-    }
+    HandleIfMatch(was, st);
 
     if (static_response_headers(was, resource))
         splice_to_was(was, fd.Get(), resource.GetSize());
