@@ -7,6 +7,7 @@
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
+#include "was.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -335,6 +336,7 @@ try {
 } catch (OutsideUri) {
     /* can't copy/move the file out of its site */
     was_simple_status(was, HTTP_STATUS_FORBIDDEN);
+} catch (WasBreak) {
 }
 
 template<typename Backend>
