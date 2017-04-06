@@ -10,6 +10,7 @@
 #include "file.hxx"
 #include "splice.hxx"
 #include "mime_types.hxx"
+#include "Chrono.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/List.hxx"
 #include "http/Date.hxx"
@@ -60,6 +61,44 @@ static_response_headers(was_simple *was, const FileResource &resource)
     }
 
     return true;
+}
+
+static void
+HandleIfModifiedSince(was_simple *was, const struct stat &st)
+{
+    const char *p = was_simple_get_header(was, "if-modified-since");
+    if (p == nullptr)
+        return;
+
+    const auto t = http_date_parse(p);
+    if (t < std::chrono::system_clock::time_point()) {
+        was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+        throw WasBreak();
+    }
+
+    if (ToSystemTime(st.st_mtim) < t) {
+        was_simple_status(was, HTTP_STATUS_NOT_MODIFIED);
+        throw WasBreak();
+    }
+}
+
+static void
+HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
+{
+    const char *p = was_simple_get_header(was, "if-unmodified-since");
+    if (p == nullptr)
+        return;
+
+    const auto t = http_date_parse(p);
+    if (t < std::chrono::system_clock::time_point()) {
+        was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
+        throw WasBreak();
+    }
+
+    if (ToSystemTime(st.st_mtim) >= t) {
+        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
 }
 
 static void
@@ -121,6 +160,8 @@ handle_get(was_simple *was, const FileResource &resource)
         return;
     }
 
+    HandleIfModifiedSince(was, st);
+    HandleIfUnmodifiedSince(was, st);
     HandleIfMatch(was, st);
     HandleIfNoneMatch(was, st);
 
