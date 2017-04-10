@@ -13,10 +13,9 @@
 #include "proppatch.hxx"
 #include "lock.hxx"
 #include "util.hxx"
+#include "http/Date.hxx"
 
 extern "C" {
-#include "date.h"
-
 #include <inline/compiler.h>
 #include <od/setup.h>
 #include <od/site.h>
@@ -94,7 +93,7 @@ static_response_headers(was_simple *w, const OnlineDriveResource &resource,
 
     if (st.mtime > 0 &&
         !was_simple_set_header(w, "last-modified",
-                               http_date_format(st.mtime)))
+                               http_date_format(std::chrono::system_clock::from_time_t(st.mtime))))
         return false;
 
     const char *id = resource.GetId();
@@ -283,7 +282,7 @@ PropfindResource(Writer &w, std::string &uri,
 
     if (st.mtime > 0 &&
         !wxml_string_element(w, "D:getlastmodified",
-                             http_date_format(st.mtime)))
+                             http_date_format(std::chrono::system_clock::from_time_t(st.mtime))))
         return false;
 
     if (!close_response_prop(w))
@@ -512,13 +511,13 @@ OnlineDriveBackend::HandleProppatch(was_simple *w, const char *uri,
             st.mtime = tv.tv_sec;
             st_modified = true;
         } else if (prop.IsGetLastModified()) {
-            time_t t = http_date_parse(prop.value.c_str());
-            if (t == (time_t)-1) {
+            auto t = http_date_parse(prop.value.c_str());
+            if (t < std::chrono::system_clock::time_point()) {
                 prop.status = HTTP_STATUS_BAD_REQUEST;
                 continue;
             }
 
-            st.mtime = t;
+            st.mtime = std::chrono::system_clock::to_time_t(t);
             st_modified = true;
         }
     }

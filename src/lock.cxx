@@ -9,11 +9,7 @@
 #include "error.hxx"
 #include "expat.hxx"
 
-extern "C" {
-#include "date.h"
-
 #include <was/simple.h>
-}
 
 #include <inline/compiler.h>
 

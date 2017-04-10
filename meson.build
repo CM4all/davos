@@ -51,7 +51,6 @@ util = static_library('util',
   'libcommon/src/util/StringUtil.cxx',
   'libcommon/src/util/StringView.cxx',
   'src/util/UriEscape.cxx',
-  'src/date.c',
   include_directories: inc,
   dependencies: [
     libinline
@@ -68,6 +67,7 @@ time_dep = declare_dependency(link_with: time)
 
 http = static_library('http',
   'libcommon/src/http/List.cxx',
+  'libcommon/src/http/Date.cxx',
   include_directories: inc,
   dependencies: [
     libinline,
@@ -107,9 +107,9 @@ executable('davos-plain',
     libinline,
     libwas,
     libfox,
-    util_dep,
-    time_dep,
     http_dep,
+    time_dep,
+    util_dep,
     io_dep,
   ])
 
@@ -132,8 +132,9 @@ executable('davos-od',
     libinline,
     libwas,
     libod,
-    util_dep,
+    http_dep,
     time_dep,
+    util_dep,
   ])
 
 test('t_uri_escape', executable('t_uri_escape',

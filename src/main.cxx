@@ -14,7 +14,7 @@
 #include "lock.hxx"
 #include "other.hxx"
 #include "file.hxx"
-#include "date.h"
+#include "http/Date.hxx"
 
 #include <inline/compiler.h>
 
@@ -138,13 +138,13 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
 
             times_enabled = true;
         } else if (prop.IsGetLastModified()) {
-            time_t t = http_date_parse(prop.value.c_str());
-            if (t == (time_t)-1) {
+            const auto t = http_date_parse(prop.value.c_str());
+            if (t < std::chrono::system_clock::time_point()) {
                 prop.status = HTTP_STATUS_BAD_REQUEST;
                 continue;
             }
 
-            times[1].tv_sec = t;
+            times[1].tv_sec = std::chrono::system_clock::to_time_t(t);
             times[1].tv_usec = 0;
             times_enabled = true;
         }
