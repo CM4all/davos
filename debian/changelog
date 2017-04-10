@@ -1,7 +1,7 @@
 cm4all-davos (0.10) unstable; urgency=low
 
   * plain: implement the request headers "If-Modified-Since",
-    "If-Unmodified-Since" and "If-None-Match"
+    "If-Unmodified-Since", "If-None-Match", "If-Range" and "Range"
   * plain: use high-resolution time stamps internally
 
  --   

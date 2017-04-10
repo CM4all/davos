@@ -14,6 +14,7 @@
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/List.hxx"
 #include "http/Date.hxx"
+#include "http/Range.hxx"
 #include "util/HexFormat.h"
 
 #include <was/simple.h>
@@ -49,6 +50,7 @@ static_response_headers(was_simple *was, const FileResource &resource)
         content_type = _content_type.c_str();
 
     if (!was_simple_set_header(was, "content-type", content_type) ||
+        !was_simple_set_header(was, "accept-ranges", "bytes") ||
         !was_simple_set_header(was, "last-modified",
                                http_date_format(resource.GetModificationTime())))
         return false;
@@ -138,11 +140,27 @@ HandleIfNoneMatch(was_simple *was, const struct stat &st)
     }
 }
 
+/**
+ * Verifies the If-Range request header (RFC 2616 14.27).
+ */
+static bool
+CheckIfRange(const char *if_range, const struct stat &st)
+{
+    if (if_range == nullptr)
+        return true;
+
+    const auto t = http_date_parse(if_range);
+    if (t != std::chrono::system_clock::from_time_t(-1))
+        return std::chrono::system_clock::from_time_t(st.st_mtime) == t;
+
+    char etag[64];
+    static_etag(etag, st);
+    return strcmp(if_range, etag) == 0;
+}
+
 void
 handle_get(was_simple *was, const FileResource &resource)
 {
-    // TODO: range, if-modified-since, if-match, ...
-
     UniqueFileDescriptor fd;
     if (!fd.Open(resource.GetPath(), O_RDONLY)) {
         errno_response(was);
@@ -165,8 +183,56 @@ handle_get(was_simple *was, const FileResource &resource)
     HandleIfMatch(was, st);
     HandleIfNoneMatch(was, st);
 
+    HttpRangeRequest range(st.st_size);
+
+    const char *p = was_simple_get_header(was, "range");
+    if (p != nullptr &&
+        CheckIfRange(was_simple_get_header(was, "if-range"), st))
+        range.ParseRangeHeader(p);
+
+    switch (range.type) {
+    case HttpRangeRequest::Type::NONE:
+        break;
+
+    case HttpRangeRequest::Type::VALID:
+        if (!was_simple_status(was, HTTP_STATUS_PARTIAL_CONTENT))
+            return;
+
+        {
+            char buffer[128];
+            snprintf(buffer, sizeof(buffer), "bytes %llu-%llu/%llu",
+                     (unsigned long long)range.skip,
+                     (unsigned long long)(range.size - 1),
+                     (unsigned long long)st.st_size);
+            if (!was_simple_set_header(was, "content-range", buffer))
+                return;
+        }
+
+        break;
+
+    case HttpRangeRequest::Type::INVALID:
+        if (!was_simple_status(was, HTTP_STATUS_REQUESTED_RANGE_NOT_SATISFIABLE))
+            return;
+
+        {
+            char buffer[128];
+            snprintf(buffer, sizeof(buffer), "bytes */%llu",
+                     (unsigned long long)st.st_size);
+            if (!was_simple_set_header(was, "content-range", buffer))
+                return;
+        }
+
+        static_response_headers(was, resource);
+        return;
+    }
+
+    if (range.skip > 0 && fd.Seek(range.skip) < 0) {
+        errno_response(was);
+        return;
+    }
+
     if (static_response_headers(was, resource))
-        splice_to_was(was, fd.Get(), st.st_size);
+        splice_to_was(was, fd.Get(), range.size - range.skip);
 }
 
 void
