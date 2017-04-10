@@ -113,11 +113,10 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
     if (!method.ParseRequest(w))
         return;
 
-    struct timeval times[2];
-    times[0].tv_sec = std::chrono::system_clock::to_time_t(resource.GetAccessTime());
-    times[0].tv_usec = 0;
-    times[1].tv_sec = std::chrono::system_clock::to_time_t(resource.GetModificationTime());
-    times[1].tv_usec = 0;
+    struct timeval times[2] = {
+        ToTimeval(resource.GetAccessTime()),
+        ToTimeval(resource.GetModificationTime()),
+    };
 
     bool times_enabled = false;
     http_status_t times_status = HTTP_STATUS_NOT_FOUND;

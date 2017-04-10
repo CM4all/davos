@@ -7,6 +7,8 @@
 #ifndef DAVOS_FILE_HXX
 #define DAVOS_FILE_HXX
 
+#include "Chrono.hxx"
+
 #include <string>
 #include <chrono>
 
@@ -56,11 +58,11 @@ public:
     }
 
     std::chrono::system_clock::time_point GetAccessTime() const {
-        return std::chrono::system_clock::from_time_t(st.st_atime);
+        return ToSystemTime(st.st_atim);
     }
 
     std::chrono::system_clock::time_point GetModificationTime() const {
-        return std::chrono::system_clock::from_time_t(st.st_mtime);
+        return ToSystemTime(st.st_mtim);
     }
 
     /**

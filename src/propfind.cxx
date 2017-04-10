@@ -9,6 +9,7 @@
 #include "wxml.hxx"
 #include "error.hxx"
 #include "file.hxx"
+#include "Chrono.hxx"
 #include "http/Date.hxx"
 
 #include <was/simple.h>
@@ -58,7 +59,7 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
             return false;
     }
 
-    const auto mtime = std::chrono::system_clock::from_time_t(st.st_mtime);
+    const auto mtime = ToSystemTime(st.st_mtim);
 
     if (!wxml_string_element(writer, "D:getlastmodified",
                              http_date_format(mtime)))
