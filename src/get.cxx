@@ -125,7 +125,7 @@ handle_get(was_simple *was, const FileResource &resource)
     HandleIfNoneMatch(was, st);
 
     if (static_response_headers(was, resource))
-        splice_to_was(was, fd.Get(), resource.GetSize());
+        splice_to_was(was, fd.Get(), st.st_size);
 }
 
 void
