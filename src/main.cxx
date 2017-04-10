@@ -114,9 +114,9 @@ SimpleBackend::HandleProppatch(was_simple *w, const char *uri,
         return;
 
     struct timeval times[2];
-    times[0].tv_sec = resource.GetAccessTime();
+    times[0].tv_sec = std::chrono::system_clock::to_time_t(resource.GetAccessTime());
     times[0].tv_usec = 0;
-    times[1].tv_sec = resource.GetModificationTime();
+    times[1].tv_sec = std::chrono::system_clock::to_time_t(resource.GetModificationTime());
     times[1].tv_usec = 0;
 
     bool times_enabled = false;

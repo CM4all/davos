@@ -49,7 +49,7 @@ static_response_headers(was_simple *was, const FileResource &resource)
 
     if (!was_simple_set_header(was, "content-type", content_type) ||
         !was_simple_set_header(was, "last-modified",
-                               http_date_format(std::chrono::system_clock::from_time_t(resource.GetModificationTime()))))
+                               http_date_format(resource.GetModificationTime())))
         return false;
 
     {

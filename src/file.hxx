@@ -8,6 +8,7 @@
 #define DAVOS_FILE_HXX
 
 #include <string>
+#include <chrono>
 
 #include <assert.h>
 #include <sys/stat.h>
@@ -54,12 +55,12 @@ public:
         return st.st_size;
     }
 
-    time_t GetAccessTime() const {
-        return st.st_atime;
+    std::chrono::system_clock::time_point GetAccessTime() const {
+        return std::chrono::system_clock::from_time_t(st.st_atime);
     }
 
-    time_t GetModificationTime() const {
-        return st.st_mtime;
+    std::chrono::system_clock::time_point GetModificationTime() const {
+        return std::chrono::system_clock::from_time_t(st.st_mtime);
     }
 
     /**
