@@ -9,14 +9,12 @@
 
 #include <inline/compiler.h>
 
-#include <string>
-
 gcc_pure
-std::string
+const char *
 LookupMimeTypeByFileName(const char *name);
 
 gcc_pure
-std::string
+const char *
 LookupMimeTypeByFilePath(const char *path);
 
 #endif

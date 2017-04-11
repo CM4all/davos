@@ -28,10 +28,10 @@ SendStat(od_resource_create *c, const char *name, int64_t size,
     od_stat st;
     memset(&st, 0, sizeof(st));
 
-    const std::string content_type = LookupMimeTypeByFileName(name);
-    st.content_type = content_type.empty()
+    const char * content_type = LookupMimeTypeByFileName(name);
+    st.content_type = content_type == nullptr
         ? "application/octet-stream"
-        : content_type.c_str();
+        : content_type;
 
     st.size = size >= 0
         ? od_size_t(size)

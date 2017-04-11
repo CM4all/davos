@@ -10,6 +10,7 @@
 #include "util/ScopeExit.hxx"
 
 #include <map>
+#include <string>
 #include <algorithm>
 
 #include <string.h>
@@ -68,7 +69,7 @@ LoadMimeTypesFile()
     }
 }
 
-static std::string
+static const char *
 LookupMimeTypeByExtension(const char *ext)
 {
     LoadMimeTypesFile();
@@ -76,29 +77,29 @@ LookupMimeTypeByExtension(const char *ext)
     const size_t length = strlen(ext);
     char lc_ext[32];
     if (length >= sizeof(lc_ext))
-        return std::string();
+        return nullptr;
 
     std::transform(ext, ext + length, lc_ext, ToLowerASCII);
     lc_ext[length] = 0;
 
     auto i = mime_types.find(lc_ext);
     if (i == mime_types.end())
-        return std::string();
+        return nullptr;
 
-    return i->second;
+    return i->second.c_str();
 }
 
-std::string
+const char *
 LookupMimeTypeByFileName(const char *name)
 {
     const char *dot = strrchr(name + 1, '.');
     if (dot == nullptr || dot[1] == 0)
-        return std::string();
+        return nullptr;
 
     return LookupMimeTypeByExtension(dot + 1);
 }
 
-std::string
+const char *
 LookupMimeTypeByFilePath(const char *path)
 {
     const char *slash = strrchr(path, '/');
