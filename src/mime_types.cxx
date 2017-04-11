@@ -7,6 +7,7 @@
 #include "mime_types.hxx"
 #include "util/CharUtil.hxx"
 #include "util/StringUtil.hxx"
+#include "util/ScopeExit.hxx"
 
 #include <string.h>
 
@@ -24,6 +25,8 @@ LookupMimeTypeByExtension(const char *ext)
     FILE *file = fopen("/etc/mime.types", "r");
     if (file == nullptr)
         return std::string();
+
+    AtScopeExit(file) { fclose(file); };
 
     char line[256];
     while (fgets(line, sizeof(line), file) != nullptr) {
@@ -48,14 +51,11 @@ LookupMimeTypeByExtension(const char *ext)
                    EOL */
                 *p++ = 0;
 
-            if (strcasecmp(start, ext) == 0) {
-                fclose(file);
+            if (strcasecmp(start, ext) == 0)
                 return line;
-            }
         }
     }
 
-    fclose(file);
     return std::string();
 }
 
