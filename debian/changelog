@@ -5,7 +5,7 @@ cm4all-davos (0.10) unstable; urgency=low
   * plain: use high-resolution time stamps internally
   * cache the /etc/mime.types contents
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 11 Apr 2017 08:13:54 -0000
 
 cm4all-davos (0.9) unstable; urgency=low
 
