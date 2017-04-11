@@ -9,7 +9,13 @@
 #include "util/StringUtil.hxx"
 #include "util/ScopeExit.hxx"
 
+#include <map>
+#include <algorithm>
+
 #include <string.h>
+
+static std::map<std::string, std::string> mime_types;
+static bool mime_types_loaded = false;
 
 static char *
 end_of_word(char *p)
@@ -19,12 +25,17 @@ end_of_word(char *p)
     return p;
 }
 
-static std::string
-LookupMimeTypeByExtension(const char *ext)
+static void
+LoadMimeTypesFile()
 {
+    if (mime_types_loaded)
+        return;
+
+    mime_types_loaded = true;
+
     FILE *file = fopen("/etc/mime.types", "r");
     if (file == nullptr)
-        return std::string();
+        return;
 
     AtScopeExit(file) { fclose(file); };
 
@@ -51,12 +62,30 @@ LookupMimeTypeByExtension(const char *ext)
                    EOL */
                 *p++ = 0;
 
-            if (strcasecmp(start, ext) == 0)
-                return line;
+            if (p > start)
+                mime_types.emplace(start, line);
         }
     }
+}
 
-    return std::string();
+static std::string
+LookupMimeTypeByExtension(const char *ext)
+{
+    LoadMimeTypesFile();
+
+    const size_t length = strlen(ext);
+    char lc_ext[32];
+    if (length >= sizeof(lc_ext))
+        return std::string();
+
+    std::transform(ext, ext + length, lc_ext, ToLowerASCII);
+    lc_ext[length] = 0;
+
+    auto i = mime_types.find(lc_ext);
+    if (i == mime_types.end())
+        return std::string();
+
+    return i->second;
 }
 
 std::string
