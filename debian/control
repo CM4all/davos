@@ -18,7 +18,7 @@ Vcs-git: git.intern.cm-ag:/srv/git/master/davos.git
 Package: cm4all-davos-plain
 Architecture: any
 Depends: ${shlibs:Depends}
-Recommends: cm4all-beng-proxy
+Enhances: cm4all-beng-proxy
 Description: WebDAV server for plain filesystem
  Davos is a WebDAV server with a WAS (Web Application Socket)
  frontend.
@@ -28,7 +28,7 @@ Description: WebDAV server for plain filesystem
 Package: cm4all-davos-od
 Architecture: any
 Depends: ${shlibs:Depends}, mime-support
-Recommends: cm4all-beng-proxy
+Enhances: cm4all-beng-proxy
 Description: WebDAV server for OnlineDrive
  Davos is a WebDAV server with a WAS (Web Application Socket)
  frontend.

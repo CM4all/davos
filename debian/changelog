@@ -1,6 +1,6 @@
 cm4all-davos (0.11) unstable; urgency=low
 
-  * 
+  * debian/control: downgrade beng-proxy from "Recommends" to "Enhances"
 
  --   
 
