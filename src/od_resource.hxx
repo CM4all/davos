@@ -7,8 +7,9 @@
 #ifndef DAVOS_OD_RESOURCE_HXX
 #define DAVOS_OD_RESOURCE_HXX
 
+#include "util/Compiler.h"
+
 extern "C" {
-#include <inline/compiler.h>
 #include <od/resource.h>
 }
 

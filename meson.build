@@ -40,7 +40,6 @@ add_global_arguments(common_flags,
 
 expat = dependency('expat')
 
-libinline = dependency('libcm4all-inline', version: '>= 0.3.5')
 libwas = dependency('libcm4all-was-simple', version: '>= 1.9')
 libfox = dependency('libcm4all-fox', version: '>= 2.0')
 libod = dependency('libcm4all-od-setup', version: '>= 1.2')
@@ -55,7 +54,6 @@ util = static_library('util',
   'src/util/UriEscape.cxx',
   include_directories: inc,
   dependencies: [
-    libinline
   ])
 util_dep = declare_dependency(link_with: util)
 
@@ -63,7 +61,6 @@ time = static_library('time',
   'libcommon/src/time/gmtime.c',
   include_directories: inc,
   dependencies: [
-    libinline,
   ])
 time_dep = declare_dependency(link_with: time)
 
@@ -73,7 +70,6 @@ http = static_library('http',
   'libcommon/src/http/Range.cxx',
   include_directories: inc,
   dependencies: [
-    libinline,
     util_dep,
   ])
 http_dep = declare_dependency(link_with: http)
@@ -83,7 +79,6 @@ io = static_library('io',
   'libcommon/src/io/FileWriter.cxx',
   include_directories: inc,
   dependencies: [
-    libinline
   ])
 io_dep = declare_dependency(link_with: io)
 
@@ -107,7 +102,6 @@ executable('davos-plain',
   include_directories: inc,
   dependencies: [
     expat,
-    libinline,
     libwas,
     libfox,
     http_dep,
@@ -132,7 +126,6 @@ executable('davos-od',
   include_directories: inc,
   dependencies: [
     expat,
-    libinline,
     libwas,
     libod,
     http_dep,

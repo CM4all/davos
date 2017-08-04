@@ -7,8 +7,9 @@
 #ifndef DAVOS_ERROR_HXX
 #define DAVOS_ERROR_HXX
 
+#include "util/Compiler.h"
+
 #include <http/status.h>
-#include <inline/compiler.h>
 
 struct was_simple;
 

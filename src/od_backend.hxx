@@ -5,7 +5,7 @@
 #ifndef DAVOS_OD_BACKEND_HXX
 #define DAVOS_OD_BACKEND_HXX
 
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 struct was_simple;
 struct od_setup;

@@ -15,9 +15,9 @@
 #include "util.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
+#include "util/Compiler.h"
 
 extern "C" {
-#include <inline/compiler.h>
 #include <od/setup.h>
 #include <od/site.h>
 #include <od/resource.h>

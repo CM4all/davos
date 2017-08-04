@@ -16,8 +16,7 @@
 #include "file.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
-
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -4,16 +4,15 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
+#include "was.hxx"
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
-#include "was.hxx"
+#include "util/Compiler.h"
 
 extern "C" {
 #include <was/simple.h>
 }
-
-#include <inline/compiler.h>
 
 #include <string>
 

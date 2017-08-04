@@ -24,6 +24,5 @@ test('t_uri_escape', executable('t_uri_escape',
   install: false,
   dependencies: [
     gtest,
-    libinline,
     util_dep,
   ]))

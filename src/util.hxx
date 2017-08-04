@@ -7,7 +7,7 @@
 #ifndef DAVOS_UTIL_HXX
 #define DAVOS_UTIL_HXX
 
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 struct was_simple;
 

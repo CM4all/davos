@@ -7,7 +7,7 @@
 #ifndef DAVOS_MIME_TYPES_HXX
 #define DAVOS_MIME_TYPES_HXX
 
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 gcc_pure
 const char *

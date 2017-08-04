@@ -11,10 +11,9 @@
 #include "file.hxx"
 #include "Chrono.hxx"
 #include "http/Date.hxx"
+#include "util/Compiler.h"
 
 #include <was/simple.h>
-
-#include <inline/compiler.h>
 
 #include <string>
 #include <forward_list>

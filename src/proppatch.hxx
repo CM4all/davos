@@ -7,9 +7,10 @@
 #ifndef DAVOS_PROPPATCH_HXX
 #define DAVOS_PROPPATCH_HXX
 
+#include "util/Compiler.h"
+
 extern "C" {
 #include <http/status.h>
-#include <inline/compiler.h>
 }
 
 #include <string>

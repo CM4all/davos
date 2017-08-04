@@ -7,7 +7,7 @@
 #ifndef DAVOS_URI_ESCAPE_HXX
 #define DAVOS_URI_ESCAPE_HXX
 
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 #include <string>
 

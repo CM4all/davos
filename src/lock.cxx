@@ -8,10 +8,9 @@
 #include "wxml.hxx"
 #include "error.hxx"
 #include "expat.hxx"
+#include "util/Compiler.h"
 
 #include <was/simple.h>
-
-#include <inline/compiler.h>
 
 #include <string>
 #include <forward_list>

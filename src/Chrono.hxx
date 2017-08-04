@@ -1,7 +1,7 @@
 #ifndef CHRONO_HXX
 #define CHRONO_HXX
 
-#include <inline/compiler.h>
+#include "util/Compiler.h"
 
 #include <chrono>
 
