@@ -609,4 +609,5 @@ try {
     return EXIT_SUCCESS;
 } catch (...) {
     PrintException(std::current_exception());
+    return EXIT_FAILURE;
 }
