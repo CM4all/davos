@@ -14,6 +14,7 @@
 #include "lock.hxx"
 #include "util.hxx"
 #include "http/Date.hxx"
+#include "util/PrintException.hxx"
 
 extern "C" {
 #include <inline/compiler.h>
@@ -593,7 +594,7 @@ Initialize(const char *path, const char *group_name)
 
 int
 main(int argc, const char *const*argv)
-{
+try {
     if (argc != 3) {
         fprintf(stderr, "Usage: %s PATH GROUP\n", argv[0]);
         return EXIT_FAILURE;
@@ -606,4 +607,6 @@ main(int argc, const char *const*argv)
     OnlineDriveBackend backend(setup);
     run(backend);
     return EXIT_SUCCESS;
+} catch (...) {
+    PrintException(std::current_exception());
 }

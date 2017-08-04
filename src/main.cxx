@@ -15,6 +15,7 @@
 #include "other.hxx"
 #include "file.hxx"
 #include "http/Date.hxx"
+#include "util/PrintException.hxx"
 
 #include <inline/compiler.h>
 
@@ -209,11 +210,13 @@ SimpleBackend::HandleLock(was_simple *w, Resource &resource)
 
 int
 main(int argc, const char *const*argv)
-{
+try {
     (void)argc;
     (void)argv;
 
     SimpleBackend backend;
     run(backend);
     return EXIT_SUCCESS;
+} catch (...) {
+    PrintException(std::current_exception());
 }
