@@ -74,6 +74,13 @@ http = static_library('http',
   ])
 http_dep = declare_dependency(link_with: http)
 
+system = static_library('system',
+  'libcommon/src/system/BindMount.cxx',
+  include_directories: inc,
+  dependencies: [
+  ])
+system_dep = declare_dependency(link_with: system)
+
 io = static_library('io',
   'libcommon/src/io/FileDescriptor.cxx',
   'libcommon/src/io/FileWriter.cxx',
@@ -83,6 +90,7 @@ io = static_library('io',
 io_dep = declare_dependency(link_with: io)
 
 executable('davos-plain',
+  'src/PivotRoot.cxx',
   'src/util.cxx',
   'src/mime_types.cxx',
   'src/uri_escape.cxx',
@@ -108,6 +116,7 @@ executable('davos-plain',
     time_dep,
     util_dep,
     io_dep,
+    system_dep,
   ])
 
 executable('davos-od',

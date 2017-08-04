@@ -14,9 +14,12 @@
 #include "lock.hxx"
 #include "other.hxx"
 #include "file.hxx"
+#include "PivotRoot.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
 #include "util/Compiler.h"
+
+#include <stdexcept>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -207,11 +210,30 @@ SimpleBackend::HandleLock(was_simple *w, Resource &resource)
     method.Run(w, created);
 }
 
+static void
+MaybePivotRoot()
+{
+    const char *new_root = getenv("DAVOS_PIVOT_ROOT");
+    if (new_root == nullptr)
+        return;
+
+    const char *put_old = getenv("DAVOS_PIVOT_ROOT_OLD");
+    if (put_old == nullptr)
+        throw std::runtime_error("DAVOS_PIVOT_ROOT_OLD missing");
+
+    if (*put_old == '/' || *put_old == 0)
+        throw std::runtime_error("DAVOS_PIVOT_ROOT_OLD must be a relative path");
+
+    PivotRoot(new_root, put_old);
+}
+
 int
 main(int argc, const char *const*argv)
 try {
     (void)argc;
     (void)argv;
+
+    MaybePivotRoot();
 
     SimpleBackend backend;
     run(backend);
