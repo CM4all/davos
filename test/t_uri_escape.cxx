@@ -3,7 +3,8 @@
 
 #include <inline/compiler.h>
 
-#include <assert.h>
+#include <gtest/gtest.h>
+
 #include <string.h>
 
 static const char *const literals[] = {
@@ -32,23 +33,21 @@ static constexpr TestPair pairs[] = {
     { "\xff", "%ff" },
 };
 
-static void
-TestUriEscapePath()
+TEST(UriEscapeTest, EscapePath)
 {
     for (auto i : literals) {
         auto result = UriEscapePath(i);
-        assert(result.c_str() == i);
+        ASSERT_EQ(result.c_str(), i);
     }
 
     for (auto i : pairs) {
         auto result = UriEscapePath(i.raw);
-        assert(!result.IsNull());
-        assert(strcmp(result.c_str(), i.escaped) == 0);
+        ASSERT_FALSE(result.IsNull());
+        ASSERT_STREQ(result.c_str(), i.escaped);
     }
 }
 
-static void
-TestUriUnescape()
+TEST(UriEscapeTest, Unescape)
 {
     for (auto i : literals) {
         auto result = UriUnescape(i);
@@ -65,12 +64,4 @@ TestUriUnescape()
         assert(!result.IsNull());
         assert(strcmp(result.c_str(), i.raw) == 0);
     }
-}
-
-int
-main(gcc_unused int argc, gcc_unused char **argv)
-{
-    TestUriEscapePath();
-    TestUriUnescape();
-    return 0;
 }

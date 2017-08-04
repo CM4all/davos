@@ -5,6 +5,8 @@ project('CM4all Davos', ['c', 'cpp'], version: '0.11',
   ],
 )
 
+compiler = meson.get_compiler('cpp')
+
 common_flags = [
   '-D_REENTRANT', '-D_GNU_SOURCE',
 ]
