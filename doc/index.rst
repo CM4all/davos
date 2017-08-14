@@ -66,7 +66,7 @@ The following WAS parameters are understood by the "plain" backend:
   cannot be followed anymore.  This setting requires also setting
   :envvar:`DAVOS_PIVOT_ROOT_OLD` to a relative directory below the
   given :envvar:`DAVOS_PIVOT_ROOT`.  Note that
-  :envvar:`DAVOS_DOCUMENT_ROOT` is basedd on that new filesystem root.
+  :envvar:`DAVOS_DOCUMENT_ROOT` is based on that new filesystem root.
 
 Example translation response::
 
