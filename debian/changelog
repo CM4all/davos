@@ -2,7 +2,7 @@ cm4all-davos (0.12) unstable; urgency=low
 
   * plain: add option DAVOS_ISOLATE_PATH
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 16 Aug 2017 12:52:32 -0000
 
 cm4all-davos (0.11) unstable; urgency=low
 
