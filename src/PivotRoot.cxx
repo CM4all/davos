@@ -15,12 +15,38 @@
 #error This library requires Linux
 #endif
 
+static void
+UnshareOrThrow(int flags)
+{
+    if (unshare(flags) < 0)
+        throw FormatErrno("unshare(0x%x) failed", flags);
+}
+
+static void
+ChdirOrThrow(const char *path)
+{
+    if (chdir(path) < 0)
+        throw FormatErrno("chdir('%s') failed", path);
+}
+
+static void
+PivotRootOrThrow(const char *new_root, const char *put_old)
+{
+    if (my_pivot_root(new_root, put_old) < 0)
+        throw FormatErrno("pivot_root('%s', '%s') failed", new_root, put_old);
+}
+
+static void
+LazyUmountOrThrow(const char *path)
+{
+    if (umount2(path, MNT_DETACH) < 0)
+        throw FormatErrno("umount('%s') failed", path);
+}
+
 void
 PivotRoot(const char *new_root, const char *put_old)
 {
-    constexpr int flags = CLONE_NEWUSER|CLONE_NEWNS;
-    if (unshare(flags) < 0)
-        throw FormatErrno("unshare(0x%x) failed", flags);
+    UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
     /* convert all "shared" mounts to "private" mounts */
     mount(nullptr, "/", nullptr, MS_PRIVATE|MS_REC, nullptr);
@@ -32,14 +58,11 @@ PivotRoot(const char *new_root, const char *put_old)
     BindMount(new_root, new_root, MS_NOSUID|MS_NOEXEC|MS_NODEV);
 
     /* release a reference to the old root */
-    if (chdir(new_root) < 0)
-        throw FormatErrno("chdir('%s') failed", new_root);
+    ChdirOrThrow(new_root);
 
     /* enter the new root */
-    if (my_pivot_root(new_root, put_old) < 0)
-        throw FormatErrno("pivot_root('%s', '%s') failed", new_root, put_old);
+    PivotRootOrThrow(new_root, put_old);
 
     /* get rid of the old root */
-    if (umount2(put_old, MNT_DETACH) < 0)
-        throw FormatErrno("umount('%s') failed", put_old);
+    LazyUmountOrThrow(put_old);
 }
