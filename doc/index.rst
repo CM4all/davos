@@ -59,7 +59,12 @@ The following WAS parameters are understood by the "plain" backend:
   :envvar:`DAVOS_MOUNT`.  Files in this directory will be served/edited
   by Davos.
 
-- :envvar:`DAVOS_PIVOT_ROOT=path`: Make the given directory the
+- :envvar:`DAVOS_ISOLATE_PATH=path`: Make all of the filesystem but
+  this directory inaccessible.  This is a security hardening option
+  which for example fixes the problem with symlinks pointing outside
+  this path.
+
+- :envvar:`DAVOS_PIVOT_ROOT=path` (deprecated): Make the given directory the
   filesystem root, and effectively make the rest of the file system
   inaccessible.  This is a security hardening option which for example
   fixes the problem with symlinks pointing outside the root; they
@@ -75,6 +80,13 @@ Example translation response::
   PAIR "DAVOS_DOCUMENT_ROOT=/var/www"
 
 Example hardened translation response::
+
+  WAS "/usr/lib/cm4all/was/bin/davos-plain"
+  SETENV "DAVOS_ISOLATE_PATH=/var/www"
+  PAIR "DAVOS_MOUNT=/dav/"
+  PAIR "DAVOS_DOCUMENT_ROOT=/var/www"
+
+Example (deprecated) hardened translation response::
 
   WAS "/usr/lib/cm4all/was/bin/davos-plain"
   SETENV "DAVOS_PIVOT_ROOT=/var/www"

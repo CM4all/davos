@@ -84,6 +84,7 @@ system_dep = declare_dependency(link_with: system)
 io = static_library('io',
   'libcommon/src/io/FileDescriptor.cxx',
   'libcommon/src/io/FileWriter.cxx',
+  'libcommon/src/io/WriteFile.cxx',
   include_directories: inc,
   dependencies: [
   ])
@@ -91,6 +92,7 @@ io_dep = declare_dependency(link_with: io)
 
 executable('davos-plain',
   'src/PivotRoot.cxx',
+  'src/IsolatePath.cxx',
   'src/util.cxx',
   'src/mime_types.cxx',
   'src/uri_escape.cxx',

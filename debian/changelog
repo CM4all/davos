@@ -1,6 +1,6 @@
 cm4all-davos (0.12) unstable; urgency=low
 
-  * 
+  * plain: add option DAVOS_ISOLATE_PATH
 
  --   
 

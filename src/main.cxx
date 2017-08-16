@@ -15,6 +15,7 @@
 #include "other.hxx"
 #include "file.hxx"
 #include "PivotRoot.hxx"
+#include "IsolatePath.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
 #include "util/Compiler.h"
@@ -227,6 +228,19 @@ MaybePivotRoot()
     PivotRoot(new_root, put_old);
 }
 
+static void
+MaybeIsolatePath()
+{
+    const char *path = getenv("DAVOS_ISOLATE_PATH");
+    if (path == nullptr)
+        return;
+
+    if (*path != '/')
+        throw std::runtime_error("DAVOS_ISOLATE_PATH must be an absolute path");
+
+    IsolatePath(path);
+}
+
 int
 main(int argc, const char *const*argv)
 try {
@@ -234,6 +248,7 @@ try {
     (void)argv;
 
     MaybePivotRoot();
+    MaybeIsolatePath();
 
     SimpleBackend backend;
     run(backend);
