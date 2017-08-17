@@ -90,6 +90,15 @@ io = static_library('io',
   ])
 io_dep = declare_dependency(link_with: io)
 
+spawn = static_library('spawn',
+  'libcommon/src/spawn/UserNamespace.cxx',
+  include_directories: inc,
+  dependencies: [
+    system_dep,
+    io_dep,
+  ])
+spawn_dep = declare_dependency(link_with: spawn)
+
 executable('davos-plain',
   'src/PivotRoot.cxx',
   'src/IsolatePath.cxx',
@@ -119,6 +128,7 @@ executable('davos-plain',
     util_dep,
     io_dep,
     system_dep,
+    spawn_dep,
   ])
 
 executable('davos-od',

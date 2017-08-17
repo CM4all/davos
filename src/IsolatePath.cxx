@@ -3,10 +3,10 @@
  */
 
 #include "IsolatePath.hxx"
+#include "spawn/UserNamespace.hxx"
 #include "system/BindMount.hxx"
 #include "system/pivot_root.h"
 #include "system/Error.hxx"
-#include "io/WriteFile.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <assert.h>
@@ -69,40 +69,6 @@ MakeDirs(const char *path)
     mkdir(allocated, 0700);
 }
 
-static void
-write_file(const char *path, const char *data)
-{
-    if (TryWriteExistingFile(path, data) == WriteFileResult::ERROR)
-        throw FormatErrno("write('%s') failed", path);
-}
-
-static void
-setup_uid_map(int uid)
-{
-    char buffer[64];
-    sprintf(buffer, "%d %d 1", uid, uid);
-    write_file("/proc/self/uid_map", buffer);
-}
-
-static void
-setup_gid_map(int gid)
-{
-    char buffer[64];
-    sprintf(buffer, "%d %d 1", gid, gid);
-    write_file("/proc/self/gid_map", buffer);
-}
-
-/**
- * Write "deny" to /proc/self/setgroups which is necessary for
- * unprivileged processes to set up a gid_map.  See Linux commits
- * 9cc4651 and 66d2f33 for details.
- */
-static void
-deny_setgroups()
-{
-    TryWriteExistingFile("/proc/self/setgroups", "deny");
-}
-
 void
 IsolatePath(const char *path)
 {
@@ -113,9 +79,9 @@ IsolatePath(const char *path)
 
     UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
-    deny_setgroups();
-    setup_gid_map(gid);
-    setup_uid_map(uid);
+    DenySetGroups();
+    SetupGidMap(0, gid, false);
+    SetupUidMap(0, uid, false);
 
     /* convert all "shared" mounts to "private" mounts */
     mount(nullptr, "/", nullptr, MS_PRIVATE|MS_REC, nullptr);
