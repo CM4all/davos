@@ -59,6 +59,8 @@ The following WAS parameters are understood by the "plain" backend:
   :envvar:`DAVOS_MOUNT`.  Files in this directory will be served/edited
   by Davos.
 
+The following environment variables are understood:
+
 - :envvar:`DAVOS_ISOLATE_PATH=path`: Make all of the filesystem but
   this directory inaccessible.  This is a security hardening option
   which for example fixes the problem with symlinks pointing outside

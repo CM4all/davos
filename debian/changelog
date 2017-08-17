@@ -1,6 +1,6 @@
 cm4all-davos (0.13) unstable; urgency=low
 
-  * 
+  * doc: DAVOS_ISOLATE_PATH is an environment variable
 
  --   
 
