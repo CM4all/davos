@@ -64,7 +64,8 @@ The following environment variables are understood:
 - :envvar:`DAVOS_ISOLATE_PATH=path`: Make all of the filesystem but
   this directory inaccessible.  This is a security hardening option
   which for example fixes the problem with symlinks pointing outside
-  this path.
+  this path.  It requires user namespaces, mount namespaces and a
+  writable :file:`/proc`.
 
 - :envvar:`DAVOS_PIVOT_ROOT=path` (deprecated): Make the given directory the
   filesystem root, and effectively make the rest of the file system
