@@ -23,6 +23,7 @@ bool
 splice_from_was(was_simple *w, int out_fd)
 {
     const int in_fd = was_simple_input_fd(w);
+    constexpr size_t max_len = 1 << 30;
 
     while (true) {
         enum was_simple_poll_result result = was_simple_input_poll(w, -1);
@@ -46,9 +47,13 @@ splice_from_was(was_simple *w, int out_fd)
             return false;
         }
 
+        const int64_t remaining = was_simple_input_remaining(w);
         auto nbytes = splice(in_fd, nullptr, out_fd, nullptr,
-                             1 << 30,
-                             SPLICE_F_MOVE|SPLICE_F_NONBLOCK|SPLICE_F_MORE);
+                             remaining > 0
+                             ? std::min<uint64_t>(remaining, max_len)
+                             : (1u << 30),
+                             SPLICE_F_MOVE|SPLICE_F_NONBLOCK|
+                             ((remaining < 0 || uint64_t(remaining) > max_len) * SPLICE_F_MORE));
         if (nbytes < 0) {
             if (errno == EAGAIN)
                 continue;
