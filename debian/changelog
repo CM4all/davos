@@ -1,6 +1,7 @@
 cm4all-davos (0.13) unstable; urgency=low
 
   * doc: DAVOS_ISOLATE_PATH is an environment variable
+  * plain: fix PUT file mode when O_TMPFILE is unavailable (e.g. NFS)
 
  --   
 
