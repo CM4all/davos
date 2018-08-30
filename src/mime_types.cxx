@@ -6,7 +6,7 @@
 
 #include "mime_types.hxx"
 #include "util/CharUtil.hxx"
-#include "util/StringUtil.hxx"
+#include "util/StringStrip.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <map>

@@ -49,7 +49,7 @@ inc = include_directories('src', 'libcommon/src')
 util = static_library('util',
   'libcommon/src/util/HexFormat.c',
   'libcommon/src/util/PrintException.cxx',
-  'libcommon/src/util/StringUtil.cxx',
+  'libcommon/src/util/StringStrip.cxx',
   'libcommon/src/util/StringView.cxx',
   'src/util/UriEscape.cxx',
   include_directories: inc,
