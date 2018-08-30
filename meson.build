@@ -46,49 +46,24 @@ libod = dependency('libcm4all-od-setup', version: '>= 1.2')
 
 inc = include_directories('src', 'libcommon/src')
 
-util = static_library('util',
-  'libcommon/src/util/HexFormat.c',
-  'libcommon/src/util/PrintException.cxx',
-  'libcommon/src/util/StringStrip.cxx',
-  'libcommon/src/util/StringView.cxx',
+subdir('libcommon/src/util')
+
+util2 = static_library(
+  'util2',
   'src/util/UriEscape.cxx',
   include_directories: inc,
-  dependencies: [
-  ])
-util_dep = declare_dependency(link_with: util)
-
-time = static_library('time',
-  'libcommon/src/time/gmtime.c',
-  include_directories: inc,
-  dependencies: [
-  ])
-time_dep = declare_dependency(link_with: time)
-
-http = static_library('http',
-  'libcommon/src/http/List.cxx',
-  'libcommon/src/http/Date.cxx',
-  'libcommon/src/http/Range.cxx',
-  include_directories: inc,
+)
+util_dep = declare_dependency(
+  link_with: util2,
   dependencies: [
     util_dep,
-  ])
-http_dep = declare_dependency(link_with: http)
+  ],
+)
 
-system = static_library('system',
-  'libcommon/src/system/BindMount.cxx',
-  include_directories: inc,
-  dependencies: [
-  ])
-system_dep = declare_dependency(link_with: system)
-
-io = static_library('io',
-  'libcommon/src/io/FileDescriptor.cxx',
-  'libcommon/src/io/FileWriter.cxx',
-  'libcommon/src/io/WriteFile.cxx',
-  include_directories: inc,
-  dependencies: [
-  ])
-io_dep = declare_dependency(link_with: io)
+subdir('libcommon/src/time')
+subdir('libcommon/src/http')
+subdir('libcommon/src/io')
+subdir('libcommon/src/system')
 
 spawn = static_library('spawn',
   'libcommon/src/spawn/UserNamespace.cxx',
