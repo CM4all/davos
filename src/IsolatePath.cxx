@@ -118,5 +118,5 @@ IsolatePath(const char *path)
     if (mount(nullptr, "/", nullptr,
               MS_REMOUNT|MS_BIND|MS_NODEV|MS_NOEXEC|MS_NOSUID|MS_RDONLY,
               nullptr) < 0)
-        throw FormatErrno("Failed to remount read-only");
+        throw MakeErrno("Failed to remount read-only");
 }
