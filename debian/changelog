@@ -1,6 +1,6 @@
 cm4all-davos (0.14) unstable; urgency=low
 
-  * 
+  * debian: use debhelper 10
 
  --   
 

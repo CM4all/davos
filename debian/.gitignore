@@ -1,9 +1,10 @@
-/substvars
-/stamp-*
 /files
 /*.substvars
-/*.log
-/tmp
+/*-stamp
+
+/.debhelper/
+/build/
+/tmp/
 
 /cm4all-davos-od
 /cm4all-davos-plain
