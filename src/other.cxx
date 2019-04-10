@@ -10,14 +10,9 @@
 #include "util.hxx"
 
 extern "C" {
-#include <was/simple.h>
 #include <fox/unlink.h>
 #include <fox/cp.h>
 }
-
-#include <errno.h>
-#include <unistd.h>
-#include <stdio.h>
 
 void
 handle_delete(was_simple *w, const FileResource &resource)
