@@ -130,3 +130,4 @@ executable('davos-od',
   ])
 
 subdir('test')
+subdir('doc')

@@ -3,7 +3,7 @@ Section: non-free/web
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 9),
- meson (>= 0.37), make,
+ meson (>= 0.37),
  libc6-dev (>= 2.19),
  libexpat1-dev,
  libcm4all-fox-dev (>= 2.0), libcm4all-was-simple-dev (>= 1.9),

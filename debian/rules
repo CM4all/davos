@@ -6,7 +6,8 @@
 
 MESON_BUILDTYPE = debug
 
-MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE)
+MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) \
+	-Ddocumentation=true
 
 build/build.ninja: meson.build
 	rm -rf build
@@ -16,13 +17,7 @@ debian/stamp-build: build/build.ninja
 	ninja -C build test
 	touch $@
 
-doc/_build/html/.buildinfo: doc/*.rst
-	$(MAKE) -C doc html
-
-debian/stamp-doc: doc/_build/html/.buildinfo
-	touch $@
-
-build: debian/stamp-build debian/stamp-doc
+build: debian/stamp-build
 check:
 
 clean:
@@ -30,7 +25,7 @@ clean:
 	dh_testroot
 	rm -f debian/stamp-*
 
-	rm -rf build doc/_build
+	rm -rf build
 
 	dh_clean
 

@@ -1,0 +1,3 @@
+option('documentation', type: 'boolean',
+  value: true,
+  description: 'Build documentation')
