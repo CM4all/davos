@@ -7,7 +7,8 @@
 MESON_BUILDTYPE = debug
 
 MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) \
-	-Ddocumentation=true
+	-Ddocumentation=true \
+	--prefix=/usr
 
 build/build.ninja: meson.build
 	rm -rf build
@@ -29,7 +30,10 @@ clean:
 
 	dh_clean
 
-install:
+install: debian/stamp-install
+debian/stamp-install: debian/stamp-build
+	DESTDIR=${CURDIR}/debian/tmp ninja -v -C build install
+	touch $@
 
 # Build architecture-independent files here.
 binary-indep: build check install

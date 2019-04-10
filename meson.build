@@ -74,7 +74,8 @@ spawn = static_library('spawn',
   ])
 spawn_dep = declare_dependency(link_with: spawn)
 
-executable('davos-plain',
+executable(
+  'davos-plain',
   'src/PivotRoot.cxx',
   'src/IsolatePath.cxx',
   'src/util.cxx',
@@ -104,9 +105,13 @@ executable('davos-plain',
     io_dep,
     system_dep,
     spawn_dep,
-  ])
+  ],
+  install: true,
+  install_dir: 'lib/cm4all/was/bin',
+)
 
-executable('davos-od',
+executable(
+  'davos-od',
   'src/util.cxx',
   'src/mime_types.cxx',
   'src/uri_escape.cxx',
@@ -127,7 +132,10 @@ executable('davos-od',
     http_dep,
     time_dep,
     util_dep,
-  ])
+  ],
+  install: true,
+  install_dir: 'lib/cm4all/was/bin',
+)
 
 subdir('test')
 subdir('doc')
