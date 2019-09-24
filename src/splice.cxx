@@ -52,8 +52,7 @@ splice_from_was(was_simple *w, int out_fd)
                              remaining > 0
                              ? std::min<uint64_t>(remaining, max_len)
                              : (1u << 30),
-                             SPLICE_F_MOVE|SPLICE_F_NONBLOCK|
-                             ((remaining < 0 || uint64_t(remaining) > max_len) * SPLICE_F_MORE));
+                             SPLICE_F_MOVE|SPLICE_F_NONBLOCK);
         if (nbytes < 0) {
             if (errno == EAGAIN)
                 continue;
