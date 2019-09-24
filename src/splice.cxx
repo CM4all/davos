@@ -51,7 +51,7 @@ splice_from_was(was_simple *w, int out_fd)
         auto nbytes = splice(in_fd, nullptr, out_fd, nullptr,
                              remaining > 0
                              ? std::min<uint64_t>(remaining, max_len)
-                             : (1u << 30),
+                             : max_len,
                              SPLICE_F_MOVE|SPLICE_F_NONBLOCK);
         if (nbytes < 0) {
             if (errno == EAGAIN)
