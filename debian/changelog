@@ -1,5 +1,6 @@
 cm4all-davos (0.14) unstable; urgency=low
 
+  * fix "splice() failed: Resource temporarily unavailable" on large files
   * debian: use debhelper 10
 
  --   

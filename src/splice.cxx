@@ -81,6 +81,28 @@ splice_to_was(was_simple *w, int in_fd, uint64_t remaining)
 
     const int out_fd = was_simple_output_fd(w);
     while (remaining > 0) {
+        const auto poll_result = was_simple_output_poll(w, -1);
+        switch (poll_result) {
+        case WAS_SIMPLE_POLL_SUCCESS:
+            break;
+
+        case WAS_SIMPLE_POLL_ERROR:
+            fprintf(stderr, "Error sending HTTP response body.\n");
+            return false;
+
+        case WAS_SIMPLE_POLL_TIMEOUT:
+            fprintf(stderr, "Timeout writing HTTP response body.\n");
+            return false;
+
+        case WAS_SIMPLE_POLL_END:
+            /* how can this happen if "remaining>0"? */
+            return true;
+
+        case WAS_SIMPLE_POLL_CLOSED:
+            fprintf(stderr, "Client has closed the GET response body.\n");
+            return false;
+        }
+
         constexpr uint64_t max = std::numeric_limits<size_t>::max();
         size_t length = std::min(remaining, max);
         ssize_t nbytes = splice(in_fd, nullptr, out_fd, nullptr,
