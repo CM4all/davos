@@ -11,7 +11,7 @@ MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) \
 	--prefix=/usr
 
 %:
-	dh $@
+	dh $@ --with sphinxdoc
 
 override_dh_auto_clean:
 	rm -rf debian/build

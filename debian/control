@@ -40,6 +40,7 @@ Description: WebDAV server for OnlineDrive
 Package: cm4all-davos-doc
 Section: non-free/doc
 Architecture: all
+Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Description: WebDAV server for OnlineDrive, documentation
  Davos is a WebDAV server with a WAS (Web Application Socket)
  frontend.
