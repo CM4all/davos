@@ -107,7 +107,7 @@ splice_to_was(was_simple *w, int in_fd, uint64_t remaining)
         size_t length = std::min(remaining, max);
         ssize_t nbytes = splice(in_fd, nullptr, out_fd, nullptr,
                                 length,
-                                SPLICE_F_MOVE|SPLICE_F_MORE);
+                                SPLICE_F_MOVE);
         if (nbytes <= 0) {
             if (nbytes < 0)
                 fprintf(stderr, "splice() failed: %s\n", strerror(errno));
