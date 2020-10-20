@@ -43,6 +43,8 @@ libod = dependency('libcm4all-od-setup', version: '>= 1.2', required: get_option
 
 inc = include_directories('src', 'libcommon/src')
 
+libcommon_enable_libcap = false
+
 subdir('libcommon/src/util')
 
 util2 = static_library(
