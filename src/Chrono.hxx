@@ -12,7 +12,7 @@ static inline std::chrono::system_clock::time_point
 ToSystemTime(const struct timespec ts)
 {
     return std::chrono::system_clock::from_time_t(ts.tv_sec)
-        + std::chrono::nanoseconds(ts.tv_nsec);
+        + std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::nanoseconds(ts.tv_nsec));
 }
 
 gcc_const
