@@ -13,8 +13,6 @@ common_flags = [
 ]
 
 add_global_arguments(common_flags,
-  '-Wall',
-  '-Wextra',
   '-Wmissing-prototypes', '-Wstrict-prototypes',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wbad-function-cast',
@@ -29,8 +27,6 @@ add_global_arguments(common_flags,
   language: 'c')
 
 add_global_arguments(common_flags,
-  '-Wall',
-  '-Wextra',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
