@@ -24,7 +24,6 @@ add_global_arguments(common_flags,
   '-Wnested-externs',
   '-Wunused',
   '-Wundef',
-  '-pedantic',
   language: 'c')
 
 add_global_arguments(common_flags,
