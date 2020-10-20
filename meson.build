@@ -44,6 +44,7 @@ libod = dependency('libcm4all-od-setup', version: '>= 1.2', required: get_option
 inc = include_directories('src', 'libcommon/src')
 
 libcommon_enable_libcap = false
+libcommon_enable_filesystem = false
 
 subdir('libcommon/src/util')
 
