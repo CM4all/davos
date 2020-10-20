@@ -10,6 +10,8 @@ project('CM4all Davos', ['c', 'cpp'], version: '0.15',
 compiler = meson.get_compiler('cpp')
 c_compiler = meson.get_compiler('c')
 
+debug = get_option('b_ndebug') != 'true'
+
 common_flags = [
   '-D_GNU_SOURCE',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
@@ -20,9 +22,28 @@ common_flags = [
 ]
 
 test_common_flags = [
+  '-fvisibility=hidden',
 ]
 
+if not debug
+  test_common_flags += [
+    '-ffunction-sections',
+    '-fdata-sections',
+  ]
+
+  add_global_link_arguments(
+    compiler.get_supported_link_arguments(
+      '-Wl,--gc-sections',
+      '-Wl,--icf=all',
+    ),
+    language: 'cpp'
+  )
+endif
+
 test_cxxflags = test_common_flags + [
+  '-fno-threadsafe-statics',
+  '-fmerge-all-constants',
+
   '-Wno-missing-field-initializers',
   '-Wno-non-virtual-dtor',
 ]
