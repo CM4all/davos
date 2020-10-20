@@ -20,6 +20,7 @@
 #include "util/PrintException.hxx"
 #include "util/Compiler.h"
 
+#include <cerrno>
 #include <stdexcept>
 
 #include <stdio.h>
