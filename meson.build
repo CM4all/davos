@@ -8,6 +8,7 @@ project('CM4all Davos', ['c', 'cpp'], version: '0.15',
 )
 
 compiler = meson.get_compiler('cpp')
+c_compiler = meson.get_compiler('c')
 
 common_flags = [
   '-D_GNU_SOURCE',
@@ -18,17 +19,26 @@ common_flags = [
   '-Wundef',
 ]
 
-add_global_arguments(common_flags,
+test_common_flags = [
+]
+
+test_cxxflags = test_common_flags + [
+  '-Wno-missing-field-initializers',
+  '-Wno-non-virtual-dtor',
+]
+
+test_cflags = test_common_flags + [
   '-Wmissing-prototypes', '-Wstrict-prototypes',
   '-Wbad-function-cast',
   '-Waggregate-return',
   '-Wnested-externs',
-  language: 'c')
+]
 
-add_global_arguments(common_flags,
-  '-Wno-missing-field-initializers',
-  '-Wno-non-virtual-dtor',
-  language: 'cpp')
+add_global_arguments(common_flags, language: 'cpp')
+add_global_arguments(common_flags, language: 'c')
+
+add_global_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
+add_global_arguments(c_compiler.get_supported_arguments(test_cflags), language: 'c')
 
 expat = dependency('expat')
 
