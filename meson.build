@@ -22,7 +22,6 @@ add_global_arguments(common_flags,
   '-Wbad-function-cast',
   '-Waggregate-return',
   '-Wnested-externs',
-  '-Wunused',
   '-Wundef',
   language: 'c')
 
