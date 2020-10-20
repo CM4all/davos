@@ -15,6 +15,7 @@ common_flags = [
   '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
   '-Wredundant-decls', '-Wno-long-long', '-Wundef',
+  '-Wundef',
 ]
 
 add_global_arguments(common_flags,
@@ -22,7 +23,6 @@ add_global_arguments(common_flags,
   '-Wbad-function-cast',
   '-Waggregate-return',
   '-Wnested-externs',
-  '-Wundef',
   language: 'c')
 
 add_global_arguments(common_flags,
