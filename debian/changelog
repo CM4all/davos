@@ -1,6 +1,6 @@
 cm4all-davos (0.15) unstable; urgency=low
 
-  * 
+  * meson: add options to disable od/plain
 
  --   
 

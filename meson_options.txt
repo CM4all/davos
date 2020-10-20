@@ -1,3 +1,6 @@
 option('documentation', type: 'boolean',
   value: true,
   description: 'Build documentation')
+
+option('plain', type: 'feature', description: 'Plain file backend')
+option('od', type: 'feature', description: 'libod backend')

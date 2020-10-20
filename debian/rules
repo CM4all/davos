@@ -8,6 +8,8 @@ MESON_BUILDTYPE = debug
 
 MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) \
 	-Ddocumentation=true \
+	-Dplain=enabled \
+	-Dod=enabled \
 	--prefix=/usr
 
 %:
