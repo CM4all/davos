@@ -10,16 +10,16 @@ compiler = meson.get_compiler('cpp')
 
 common_flags = [
   '-D_GNU_SOURCE',
+  '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
+  '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
+  '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
+  '-Wredundant-decls', '-Wno-long-long', '-Wundef',
 ]
 
 add_global_arguments(common_flags,
   '-Wmissing-prototypes', '-Wstrict-prototypes',
-  '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wbad-function-cast',
-  '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Waggregate-return',
-  '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
-  '-Wredundant-decls', '-Wno-long-long', '-Wundef',
   '-Wnested-externs',
   '-Wunused',
   '-Wundef',
@@ -27,10 +27,6 @@ add_global_arguments(common_flags,
   language: 'c')
 
 add_global_arguments(common_flags,
-  '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
-  '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
-  '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
-  '-Wredundant-decls', '-Wno-long-long', '-Wundef',
   '-Wno-missing-field-initializers',
   '-Wno-non-virtual-dtor',
   language: 'cpp')
