@@ -1,28 +1,14 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-MESON_BUILDTYPE = debug
-
-MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) \
+MESON_OPTIONS = \
 	-Ddocumentation=true \
 	-Dplain=enabled \
 	-Dod=enabled \
-	--prefix=/usr
+	--werror
 
 %:
 	dh $@ --with sphinxdoc
 
-override_dh_auto_clean:
-	rm -rf debian/build
-
 override_dh_auto_configure:
-	meson . debian/build $(MESON_OPTIONS)
-
-override_dh_auto_build:
-	ninja -v -C debian/build
-
-override_dh_auto_install:
-	DESTDIR=${CURDIR}/debian/tmp ninja -v -C debian/build install
+	dh_auto_configure -- $(MESON_OPTIONS)

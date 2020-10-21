@@ -1,6 +1,5 @@
 .stgit*
 *~
 
-perf.data*
-
 /output/
+/obj-*/

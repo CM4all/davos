@@ -1,5 +1,7 @@
 /files
 /*.substvars
+/*.debhelper
+/*.debhelper.log
 /*-stamp
 
 /.debhelper/
