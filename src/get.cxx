@@ -16,6 +16,7 @@
 #include "http/Date.hxx"
 #include "http/Range.hxx"
 #include "util/HexFormat.h"
+#include "util/StringBuffer.hxx"
 #include "util/StringView.hxx"
 
 #include <was/simple.h>
@@ -31,9 +32,13 @@ IsGetOrHead(was_simple *was) noexcept
     return method == HTTP_METHOD_GET || method == HTTP_METHOD_HEAD;
 }
 
-static void
-static_etag(char *p, const struct stat &st)
+gcc_pure
+static auto
+MakeETag(const struct stat &st) noexcept
 {
+    StringBuffer<32> result;
+
+    char *p = result.data();
     *p++ = '"';
 
     p += format_uint32_hex(p, (uint32_t)st.st_dev);
@@ -48,14 +53,14 @@ static_etag(char *p, const struct stat &st)
 
     *p++ = '"';
     *p = 0;
+
+    return result;
 }
 
 static bool
 SendETagHeader(was_simple *was, const struct stat &st) noexcept
 {
-    char buffer[128];
-    static_etag(buffer, st);
-    return was_simple_set_header(was, "etag", buffer);
+    return was_simple_set_header(was, "etag", MakeETag(st));
 }
 
 static bool
@@ -131,9 +136,7 @@ CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept
     if (p == nullptr || strcmp(p, "*") == 0)
         return true;
 
-    char buffer[128];
-    static_etag(buffer, st);
-    return http_list_contains(p, buffer);
+    return http_list_contains(p, MakeETag(st).c_str());
 }
 
 static void
@@ -160,9 +163,7 @@ CheckIfNoneMatch(const struct was_simple &was, const struct stat &st) noexcept
     if (strcmp(p, "*") == 0)
         return false;
 
-    char buffer[128];
-    static_etag(buffer, st);
-    return !http_list_contains(p, buffer);
+    return !http_list_contains(p, MakeETag(st).c_str());
 }
 
 static void
@@ -190,9 +191,7 @@ CheckIfRange(const char *if_range, const struct stat &st)
     if (t != std::chrono::system_clock::from_time_t(-1))
         return std::chrono::system_clock::from_time_t(st.st_mtime) == t;
 
-    char etag[64];
-    static_etag(etag, st);
-    return strcmp(if_range, etag) == 0;
+    return strcmp(if_range, MakeETag(st)) == 0;
 }
 
 void
