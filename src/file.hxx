@@ -53,6 +53,10 @@ public:
         return st;
     }
 
+    const struct stat *GetStatIfExists() const noexcept {
+        return Exists() ? &GetStat() : nullptr;
+    }
+
     off_t GetSize() const {
         return st.st_size;
     }

@@ -2,6 +2,7 @@ cm4all-davos (0.16) unstable; urgency=low
 
   * plain: send ETag header in "304 Not Modified" responses
   * plain: "If-None-Match" fails with "304 Not Modified" instead of "412"
+  * plain: check "If-(None-)Match" in PUT requests
 
  --   
 

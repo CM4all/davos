@@ -5,6 +5,8 @@
  */
 
 #include "put.hxx"
+#include "IfMatch.hxx"
+#include "was.hxx"
 #include "error.hxx"
 #include "file.hxx"
 #include "splice.hxx"
@@ -17,10 +19,31 @@ extern "C" {
 
 #include <exception>
 
+static void
+HandleIfMatch(struct was_simple &was, const struct stat *st)
+{
+    if (!CheckIfMatch(was, st)) {
+        was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
+}
+
+static void
+HandleIfNoneMatch(struct was_simple &was, const struct stat *st)
+{
+    if (!CheckIfNoneMatch(was, st)) {
+        was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);
+        throw WasBreak();
+    }
+}
+
 void
 handle_put(was_simple *w, const FileResource &resource)
 {
     assert(was_simple_has_body(w));
+
+    HandleIfMatch(*w, resource.GetStatIfExists());
+    HandleIfNoneMatch(*w, resource.GetStatIfExists());
 
     try {
         FileWriter fw(resource.GetPath());
