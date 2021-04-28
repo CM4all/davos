@@ -66,6 +66,12 @@ static_response_headers(was_simple *was, const FileResource &resource)
     return SendETagHeader(was, resource.GetStat());
 }
 
+static bool
+SendNotModified(was_simple *was) noexcept
+{
+    return was_simple_status(was, HTTP_STATUS_NOT_MODIFIED);
+}
+
 static void
 HandleIfModifiedSince(was_simple *was, const struct stat &st)
 {
@@ -80,7 +86,7 @@ HandleIfModifiedSince(was_simple *was, const struct stat &st)
     }
 
     if (ToSystemTime(st.st_mtim) < t) {
-        was_simple_status(was, HTTP_STATUS_NOT_MODIFIED);
+        SendNotModified(was);
         throw WasBreak();
     }
 }
