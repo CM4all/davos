@@ -110,6 +110,8 @@ executable(
   'src/expat.cxx',
   'src/wxml.cxx',
   'src/error.cxx',
+  'src/ETag.cxx',
+  'src/IfMatch.cxx',
   'src/splice.cxx',
   'src/directory.cxx',
   'src/get.cxx',

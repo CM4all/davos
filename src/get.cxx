@@ -5,6 +5,8 @@
  */
 
 #include "get.hxx"
+#include "ETag.hxx"
+#include "IfMatch.hxx"
 #include "error.hxx"
 #include "was.hxx"
 #include "file.hxx"
@@ -12,11 +14,9 @@
 #include "mime_types.hxx"
 #include "Chrono.hxx"
 #include "io/UniqueFileDescriptor.hxx"
-#include "http/List.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
 #include "util/HexFormat.h"
-#include "util/StringBuffer.hxx"
 #include "util/StringView.hxx"
 
 #include <was/simple.h>
@@ -30,31 +30,6 @@ IsGetOrHead(was_simple *was) noexcept
 {
     http_method_t method = was_simple_get_method(was);
     return method == HTTP_METHOD_GET || method == HTTP_METHOD_HEAD;
-}
-
-gcc_pure
-static auto
-MakeETag(const struct stat &st) noexcept
-{
-    StringBuffer<32> result;
-
-    char *p = result.data();
-    *p++ = '"';
-
-    p += format_uint32_hex(p, (uint32_t)st.st_dev);
-
-    *p++ = '-';
-
-    p += format_uint32_hex(p, (uint32_t)st.st_ino);
-
-    *p++ = '-';
-
-    p += format_uint32_hex(p, (uint32_t)st.st_mtime);
-
-    *p++ = '"';
-    *p = 0;
-
-    return result;
 }
 
 static bool
@@ -124,21 +99,6 @@ HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
     }
 }
 
-/**
- * @return false if there is an "if-match" header and it does not
- * match the file's ETag
- */
-gcc_pure
-static bool
-CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept
-{
-    const char *p = was_simple_get_header(&was, "if-match");
-    if (p == nullptr || strcmp(p, "*") == 0)
-        return true;
-
-    return http_list_contains(p, MakeETag(st).c_str());
-}
-
 static void
 HandleIfMatch(was_simple *was, const struct stat &st)
 {
@@ -146,24 +106,6 @@ HandleIfMatch(was_simple *was, const struct stat &st)
         was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
         throw WasBreak();
     }
-}
-
-/**
- * @return false if there is an "if-none-match" header and it matches
- * the file's ETag
- */
-gcc_pure
-static bool
-CheckIfNoneMatch(const struct was_simple &was, const struct stat &st) noexcept
-{
-    const char *p = was_simple_get_header(&was, "if-none-match");
-    if (p == nullptr)
-        return true;
-
-    if (strcmp(p, "*") == 0)
-        return false;
-
-    return !http_list_contains(p, MakeETag(st).c_str());
 }
 
 static void
