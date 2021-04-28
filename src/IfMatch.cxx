@@ -15,24 +15,27 @@
 #include <string.h>
 
 bool
-CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept
+CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept
 {
     const char *p = was_simple_get_header(&was, "if-match");
     if (p == nullptr || strcmp(p, "*") == 0)
         return true;
 
-    return http_list_contains(p, MakeETag(st).c_str());
+    return st != nullptr && http_list_contains(p, MakeETag(*st).c_str());
 }
 
 bool
-CheckIfNoneMatch(const struct was_simple &was, const struct stat &st) noexcept
+CheckIfNoneMatch(const struct was_simple &was, const struct stat *st) noexcept
 {
     const char *p = was_simple_get_header(&was, "if-none-match");
     if (p == nullptr)
         return true;
 
+    if (st == nullptr)
+        return true;
+
     if (strcmp(p, "*") == 0)
         return false;
 
-    return !http_list_contains(p, MakeETag(st).c_str());
+    return !http_list_contains(p, MakeETag(*st).c_str());
 }

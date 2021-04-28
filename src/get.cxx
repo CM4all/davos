@@ -102,7 +102,7 @@ HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
 static void
 HandleIfMatch(was_simple *was, const struct stat &st)
 {
-    if (!CheckIfMatch(*was, st)) {
+    if (!CheckIfMatch(*was, &st)) {
         was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
         throw WasBreak();
     }
@@ -111,7 +111,7 @@ HandleIfMatch(was_simple *was, const struct stat &st)
 static void
 HandleIfNoneMatch(was_simple *was, const struct stat &st)
 {
-    if (!CheckIfNoneMatch(*was, st)) {
+    if (!CheckIfNoneMatch(*was, &st)) {
         if (IsGetOrHead(was))
             SendNotModified(was, st);
         else

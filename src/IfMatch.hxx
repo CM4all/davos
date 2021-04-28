@@ -18,7 +18,7 @@ struct was_simple;
  */
 gcc_pure
 bool
-CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept;
+CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept;
 
 /**
  * @return false if there is an "if-none-match" header and it matches
@@ -26,4 +26,4 @@ CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept;
  */
 gcc_pure
 bool
-CheckIfNoneMatch(const struct was_simple &was, const struct stat &st) noexcept;
+CheckIfNoneMatch(const struct was_simple &was, const struct stat *st) noexcept;
