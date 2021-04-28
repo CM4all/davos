@@ -23,6 +23,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+gcc_pure
+static bool
+IsGetOrHead(was_simple *was) noexcept
+{
+    http_method_t method = was_simple_get_method(was);
+    return method == HTTP_METHOD_GET || method == HTTP_METHOD_HEAD;
+}
+
 static void
 static_etag(char *p, const struct stat &st)
 {
@@ -161,7 +169,10 @@ static void
 HandleIfNoneMatch(was_simple *was, const struct stat &st)
 {
     if (!CheckIfNoneMatch(*was, st)) {
-        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
+        if (IsGetOrHead(was)||true)
+            SendNotModified(was, st);
+        else
+            was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
         throw WasBreak();
     }
 }
