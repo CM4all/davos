@@ -111,38 +111,56 @@ HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
     }
 }
 
-static void
-HandleIfMatch(was_simple *was, const struct stat &st)
+/**
+ * @return false if there is an "if-match" header and it does not
+ * match the file's ETag
+ */
+gcc_pure
+static bool
+CheckIfMatch(const struct was_simple &was, const struct stat &st) noexcept
 {
-    const char *p = was_simple_get_header(was, "if-match");
+    const char *p = was_simple_get_header(&was, "if-match");
     if (p == nullptr || strcmp(p, "*") == 0)
-        return;
+        return true;
 
     char buffer[128];
     static_etag(buffer, st);
+    return http_list_contains(p, buffer);
+}
 
-    if (!http_list_contains(p, buffer)) {
+static void
+HandleIfMatch(was_simple *was, const struct stat &st)
+{
+    if (!CheckIfMatch(*was, st)) {
         was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
         throw WasBreak();
     }
 }
 
-static void
-HandleIfNoneMatch(was_simple *was, const struct stat &st)
+/**
+ * @return false if there is an "if-none-match" header and it matches
+ * the file's ETag
+ */
+gcc_pure
+static bool
+CheckIfNoneMatch(const struct was_simple &was, const struct stat &st) noexcept
 {
-    const char *p = was_simple_get_header(was, "if-none-match");
+    const char *p = was_simple_get_header(&was, "if-none-match");
     if (p == nullptr)
-        return;
+        return true;
 
-    if (strcmp(p, "*") == 0) {
-        was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
-        throw WasBreak();
-    }
+    if (strcmp(p, "*") == 0)
+        return false;
 
     char buffer[128];
     static_etag(buffer, st);
+    return !http_list_contains(p, buffer);
+}
 
-    if (http_list_contains(p, buffer)) {
+static void
+HandleIfNoneMatch(was_simple *was, const struct stat &st)
+{
+    if (!CheckIfNoneMatch(*was, st)) {
         was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
         throw WasBreak();
     }
