@@ -43,6 +43,14 @@ static_etag(char *p, const struct stat &st)
 }
 
 static bool
+SendETagHeader(was_simple *was, const struct stat &st) noexcept
+{
+    char buffer[128];
+    static_etag(buffer, st);
+    return was_simple_set_header(was, "etag", buffer);
+}
+
+static bool
 static_response_headers(was_simple *was, const FileResource &resource)
 {
     const char *content_type = LookupMimeTypeByFilePath(resource.GetPath());
@@ -55,14 +63,7 @@ static_response_headers(was_simple *was, const FileResource &resource)
                                http_date_format(resource.GetModificationTime())))
         return false;
 
-    {
-        char buffer[128];
-        static_etag(buffer, resource.GetStat());
-        if (!was_simple_set_header(was, "etag", buffer))
-            return false;
-    }
-
-    return true;
+    return SendETagHeader(was, resource.GetStat());
 }
 
 static void
