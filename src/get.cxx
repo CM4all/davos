@@ -169,7 +169,7 @@ static void
 HandleIfNoneMatch(was_simple *was, const struct stat &st)
 {
     if (!CheckIfNoneMatch(*was, st)) {
-        if (IsGetOrHead(was)||true)
+        if (IsGetOrHead(was))
             SendNotModified(was, st);
         else
             was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
