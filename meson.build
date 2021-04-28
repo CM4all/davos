@@ -63,7 +63,7 @@ add_global_arguments(c_compiler.get_supported_arguments(test_cflags), language: 
 
 expat = dependency('expat')
 
-libwas = dependency('libcm4all-was-simple', version: '>= 1.9')
+libwas = dependency('libcm4all-was-simple', version: '>= 1.20')
 libfox = dependency('libcm4all-fox', version: '>= 2.0', required: get_option('plain'), disabler: true)
 libod = dependency('libcm4all-od-setup', version: '>= 1.2', required: get_option('od'), disabler: true)
 
