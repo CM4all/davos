@@ -1,6 +1,6 @@
 cm4all-davos (0.17) unstable; urgency=low
 
-  * 
+  * plain: fix file descriptor leak
 
  --   
 

@@ -11,6 +11,7 @@
 #include "file.hxx"
 #include "Chrono.hxx"
 #include "http/Date.hxx"
+#include "io/DirectoryReader.hxx"
 #include "util/Compiler.h"
 
 #include <was/simple.h>
@@ -26,19 +27,19 @@
 
 static std::forward_list<std::string>
 ListDirectory(const char *path)
-{
+try {
     std::forward_list<std::string> result;
-    DIR *dir = opendir(path);
-    if (gcc_likely(dir != nullptr)) {
-        struct dirent *ent;
-        while ((ent = readdir(dir)) != nullptr) {
-            const char *name = ent->d_name;
-            if (strcmp(name, ".") != 0 && strcmp(name, "..") != 0)
+    DirectoryReader r{path};
+    while (const char *name = r.Read()) {
+                if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+                    continue;
+
                 result.emplace_front(name);
-        }
     }
 
     return result;
+} catch (...) {
+    return {};
 }
 
 static bool
