@@ -3,7 +3,7 @@
  */
 
 #include "ETag.hxx"
-#include "util/HexFormat.h"
+#include "util/HexFormat.hxx"
 
 StringBuffer<32>
 MakeETag(const struct stat &st) noexcept
@@ -13,15 +13,15 @@ MakeETag(const struct stat &st) noexcept
     char *p = result.data();
     *p++ = '"';
 
-    p += format_uint32_hex(p, (uint32_t)st.st_dev);
+    p = format_uint32_hex(p, (uint32_t)st.st_dev);
 
     *p++ = '-';
 
-    p += format_uint32_hex(p, (uint32_t)st.st_ino);
+    p = format_uint32_hex(p, (uint32_t)st.st_ino);
 
     *p++ = '-';
 
-    p += format_uint32_hex(p, (uint32_t)st.st_mtime);
+    p = format_uint32_hex(p, (uint32_t)st.st_mtime);
 
     *p++ = '"';
     *p = 0;

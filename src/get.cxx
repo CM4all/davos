@@ -16,7 +16,6 @@
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
-#include "util/HexFormat.h"
 #include "util/StringView.hxx"
 
 #include <was/simple.h>
