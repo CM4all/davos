@@ -21,14 +21,10 @@ common_flags = [
   '-Wmissing-declarations',
   '-Wmissing-format-attribute',
   '-Wmissing-noreturn',
-  '-Wpointer-arith',
   '-Wredundant-decls',
   '-Wshadow',
-  '-Wsign-compare',
   '-Wundef',
   '-Wwrite-strings',
-
-  '-Wno-long-long',
 ]
 
 test_common_flags = [
