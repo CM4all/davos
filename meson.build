@@ -14,7 +14,9 @@ debug = get_option('b_ndebug') != 'true'
 
 common_flags = [
   '-D_GNU_SOURCE',
+]
 
+test_common_flags = [
   '-Wcast-align',
   '-Wcast-qual',
   '-Wfloat-equal',
@@ -27,12 +29,12 @@ common_flags = [
   '-Wwrite-strings',
 ]
 
-test_common_flags = [
+test_global_common_flags = [
   '-fvisibility=hidden',
 ]
 
 if not debug
-  test_common_flags += [
+  test_global_common_flags += [
     '-ffunction-sections',
     '-fdata-sections',
   ]
@@ -45,6 +47,12 @@ if not debug
     language: 'cpp'
   )
 endif
+
+test_global_cxxflags = test_global_common_flags + [
+]
+
+test_global_cflags = test_global_common_flags + [
+]
 
 test_cxxflags = test_common_flags + [
   '-fno-threadsafe-statics',
@@ -65,8 +73,10 @@ test_cflags = test_common_flags + [
 add_global_arguments(common_flags, language: 'cpp')
 add_global_arguments(common_flags, language: 'c')
 
-add_global_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
-add_global_arguments(c_compiler.get_supported_arguments(test_cflags), language: 'c')
+add_global_arguments(compiler.get_supported_arguments(test_global_cxxflags), language: 'cpp')
+add_global_arguments(c_compiler.get_supported_arguments(test_global_cflags), language: 'c')
+add_project_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
+add_project_arguments(c_compiler.get_supported_arguments(test_cflags), language: 'c')
 
 expat = dependency('expat')
 
