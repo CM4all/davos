@@ -25,16 +25,22 @@
 #include <fcntl.h>
 #include <dirent.h>
 
+static std::size_t MAX_FILES = 2000;
+static unsigned MAX_DEPTH = 3;
+
 static std::forward_list<std::string>
 ListDirectory(const char *path)
 try {
     std::forward_list<std::string> result;
+    std::size_t n = 0;
     DirectoryReader r{path};
     while (const char *name = r.Read()) {
         if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
             continue;
 
         result.emplace_front(name);
+        if (++n >= MAX_FILES)
+            break;
     }
 
     return result;
@@ -121,6 +127,8 @@ handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
     const char *depth_string = was_simple_get_header(was, "depth");
     if (depth_string != nullptr)
         depth = strtoul(depth_string, nullptr, 10);
+    if (depth > MAX_DEPTH)
+        depth = MAX_DEPTH;
 
     if (!was_simple_status(was, HTTP_STATUS_MULTI_STATUS) ||
         !was_simple_set_header(was, "content-type",

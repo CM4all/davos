@@ -1,6 +1,7 @@
 cm4all-davos (0.17) unstable; urgency=low
 
   * plain: fix file descriptor leak
+  * plain: limit directory listings to 2000 entries and depth to 8
 
  --   
 
