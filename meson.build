@@ -14,11 +14,21 @@ debug = get_option('b_ndebug') != 'true'
 
 common_flags = [
   '-D_GNU_SOURCE',
-  '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
-  '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
-  '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
-  '-Wredundant-decls', '-Wno-long-long', '-Wundef',
+
+  '-Wcast-align',
+  '-Wcast-qual',
+  '-Wfloat-equal',
+  '-Wmissing-declarations',
+  '-Wmissing-format-attribute',
+  '-Wmissing-noreturn',
+  '-Wpointer-arith',
+  '-Wredundant-decls',
+  '-Wshadow',
+  '-Wsign-compare',
   '-Wundef',
+  '-Wwrite-strings',
+
+  '-Wno-long-long',
 ]
 
 test_common_flags = [
@@ -49,10 +59,11 @@ test_cxxflags = test_common_flags + [
 ]
 
 test_cflags = test_common_flags + [
-  '-Wmissing-prototypes', '-Wstrict-prototypes',
-  '-Wbad-function-cast',
   '-Waggregate-return',
+  '-Wbad-function-cast',
+  '-Wmissing-prototypes',
   '-Wnested-externs',
+  '-Wstrict-prototypes',
 ]
 
 add_global_arguments(common_flags, language: 'cpp')
