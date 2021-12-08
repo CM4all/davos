@@ -13,8 +13,9 @@ if compiler.get_id() == 'gcc'
   ]
 endif
 
+gtest_main_dep = dependency('gtest', main: true, fallback: ['gtest', 'gtest_main_dep'])
 gtest = declare_dependency(
-  dependencies: [dependency('gtest', main: true)],
+  dependencies: gtest_main_dep,
   compile_args: gtest_compile_args,
 )
 
