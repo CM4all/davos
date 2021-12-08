@@ -29,6 +29,7 @@
 
 #include "UriEscape.hxx"
 #include "util/CharUtil.hxx"
+#include "util/HexFormat.hxx"
 #include "util/HexParse.hxx"
 #include "LightString.hxx"
 
@@ -83,20 +84,10 @@ CountEscapePath(const char *p)
 }
 
 static char *
-FormatHexByte(char *p, uint8_t value)
-{
-	static constexpr char hex_digits[] = "0123456789abcdef";
-
-	*p++ = hex_digits[value >> 4];
-	*p++ = hex_digits[value & 0xf];
-	return p;
-}
-
-static char *
 UriEscapeByte(char *p, uint8_t value)
 {
 	*p++ = '%';
-	p = FormatHexByte(p, value);
+	p = format_uint8_hex_fixed(p, value);
 	return p;
 }
 
