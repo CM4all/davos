@@ -46,8 +46,7 @@ wxml_close_element(Writer &w, const char *name)
         wxml_end_tag(w);
 }
 
-gcc_unused
-static bool
+inline bool
 wxml_short_element(Writer &w, const char *name)
 {
     return wxml_begin_tag(w, name) && wxml_end_short_tag(w);
@@ -61,8 +60,7 @@ gcc_nonnull_all
 bool
 wxml_uri_escape(Writer &w, const char *uri);
 
-gcc_unused
-static bool
+inline bool
 wxml_string_element(Writer &w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
@@ -70,8 +68,7 @@ wxml_string_element(Writer &w, const char *name, const char *value)
         wxml_close_element(w, name);
 }
 
-gcc_unused
-static bool
+inline bool
 wxml_uri_element(Writer &w, const char *name, const char *value)
 {
     return wxml_open_element(w, name) &&
@@ -97,8 +94,7 @@ wxml_attribute(Writer &w, const char *name, const char *value)
         w.Write("\"");
 }
 
-gcc_unused
-static bool
+inline bool
 begin_multistatus(Writer &w)
 {
     return wxml_declaration(w) &&
@@ -107,8 +103,7 @@ begin_multistatus(Writer &w)
         wxml_end_tag(w);
 }
 
-gcc_unused
-static bool
+inline bool
 end_multistatus(Writer &w)
 {
     return wxml_close_element(w, "D:multistatus");
@@ -117,15 +112,13 @@ end_multistatus(Writer &w)
 /**
  * @param uri an escaped URI
  */
-gcc_unused
-static bool
+inline bool
 href(Writer &w, const char *uri)
 {
     return wxml_string_element(w, "D:href", uri);
 }
 
-gcc_unused
-static bool
+inline bool
 resourcetype_collection(Writer &w)
 {
     return wxml_open_element(w, "D:resourcetype") &&
@@ -133,8 +126,7 @@ resourcetype_collection(Writer &w)
         wxml_close_element(w, "D:resourcetype");
 }
 
-gcc_unused
-static bool
+inline bool
 open_response_prop(Writer &w, const char *uri, const char *status)
 {
     return wxml_open_element(w, "D:response") &&
@@ -144,8 +136,7 @@ open_response_prop(Writer &w, const char *uri, const char *status)
         wxml_open_element(w, "D:prop");
 }
 
-gcc_unused
-static bool
+inline bool
 close_response_prop(Writer &w)
 {
     return wxml_close_element(w, "D:prop") &&
