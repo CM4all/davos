@@ -31,10 +31,10 @@ try {
     std::forward_list<std::string> result;
     DirectoryReader r{path};
     while (const char *name = r.Read()) {
-                if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
-                    continue;
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+            continue;
 
-                result.emplace_front(name);
+        result.emplace_front(name);
     }
 
     return result;
