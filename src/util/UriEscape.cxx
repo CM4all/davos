@@ -29,6 +29,7 @@
 
 #include "UriEscape.hxx"
 #include "util/CharUtil.hxx"
+#include "util/HexParse.hxx"
 #include "LightString.hxx"
 
 #include <algorithm>
@@ -125,19 +126,6 @@ UriEscapePath(const char *src)
 	char *dest = new char[strlen(src) + n_escape * 2 + 1];
 	*UriEscapePath(dest, src) = 0;
 	return LightString::Donate(dest);
-}
-
-static int
-ParseHexDigit(char ch)
-{
-	if (IsDigitASCII(ch))
-		return ch - '0';
-	else if (ch >= 'a' && ch <= 'f')
-		return ch - 'a' + 0xa;
-	else if (ch >= 'A' && ch <= 'F')
-		return ch - 'A' + 0xa;
-	else
-		return -1;
 }
 
 static char *
