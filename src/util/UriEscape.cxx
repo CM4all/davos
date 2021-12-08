@@ -168,9 +168,6 @@ UriUnescape(char *dest, const char *src, const char *const end)
 		*dest++ = ch;
 		src += 3;
 	}
-
-	dest = std::copy(src, end, dest);
-	return dest;
 }
 
 LightString
