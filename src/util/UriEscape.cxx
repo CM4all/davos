@@ -73,7 +73,7 @@ static char *
 UriEscapeByte(char *p, uint8_t value)
 {
 	*p++ = '%';
-	p = format_uint8_hex_fixed(p, value);
+	p = HexFormatUint8Fixed(p, value);
 	return p;
 }
 
