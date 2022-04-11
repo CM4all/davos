@@ -116,6 +116,7 @@ libcommon_enable_libcap = false
 libcommon_enable_filesystem = false
 
 subdir('libcommon/src/util')
+subdir('libcommon/src/uri')
 
 util2 = static_library(
   'util2',
@@ -126,6 +127,7 @@ util_dep = declare_dependency(
   link_with: util2,
   dependencies: [
     util_dep,
+    uri_dep,
   ],
 )
 

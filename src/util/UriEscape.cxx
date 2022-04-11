@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Max Kellermann <max@duempel.org>
+ * Copyright 2015-2022 Max Kellermann <max@duempel.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,24 +30,10 @@
 #include "UriEscape.hxx"
 #include "util/CharUtil.hxx"
 #include "util/HexFormat.hxx"
-#include "util/HexParse.hxx"
+#include "util/StringView.hxx"
+#include "uri/Chars.hxx"
+#include "uri/Unescape.hxx"
 #include "LightString.hxx"
-
-#include <algorithm>
-
-#include <stdint.h>
-#include <string.h>
-
-/**
- * @see RFC 3986 2.3
- */
-constexpr
-static inline bool
-IsUriUnreserved(char ch)
-{
-	return IsAlphaNumericASCII(ch) ||
-		ch == '-' || ch == '.' || ch == '_' || ch == '~';
-}
 
 /**
  * @see RFC 3986 2.2
@@ -69,7 +55,7 @@ constexpr
 static inline bool
 IsUriPathUnreserved(char ch)
 {
-	return IsUriUnreserved(ch) || IsUriSubcomponentDelimiter(ch) ||
+	return IsUriUnreservedChar(ch) || IsUriSubcomponentDelimiter(ch) ||
 		ch == ':' || ch == '@' || ch == '/';
 }
 
@@ -119,49 +105,19 @@ UriEscapePath(const char *src)
 	return LightString::Donate(dest);
 }
 
-static char *
-UriUnescape(char *dest, const char *src, const char *const end)
-{
-	while (true) {
-		const char *p = std::find(src, end, '%');
-		dest = std::copy(src, p, dest);
-		if (p == end)
-			return dest;
-
-		src = p;
-		if (src + 2 >= end)
-			/* percent sign at the end of string */
-			return nullptr;
-
-		const int digit1 = ParseHexDigit(src[1]);
-		const int digit2 = ParseHexDigit(src[2]);
-		if (digit1 == -1 || digit2 == -1)
-			/* invalid hex digits */
-			return nullptr;
-
-		const char ch = (char)((digit1 << 4) | digit2);
-		if (ch == 0)
-			/* no %00 hack allowed! */
-			return nullptr;
-
-		*dest++ = ch;
-		src += 3;
-	}
-}
-
 LightString
-UriUnescape(const char *src)
+UriUnescape(const char *_src)
 {
-	const size_t length = strlen(src);
-	if (memchr(src, '%', length) == nullptr)
+	const StringView src{_src};
+	if (src.Find('%') == nullptr)
 		/* no escape, no change required, return the existing
 		   pointer without allocating a copy */
-		return LightString::Make(src);
+		return LightString::Make(_src);
 
 	/* worst-case allocation */
-	char *dest = new char[length + 1];
+	char *dest = new char[src.size + 1];
 
-	char *end = UriUnescape(dest, src, src + length);
+	char *end = UriUnescape(dest, src);
 	if (end == nullptr) {
 		delete[] dest;
 		return nullptr;
