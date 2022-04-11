@@ -8,20 +8,26 @@
 #include "error.hxx"
 #include "file.hxx"
 #include "util.hxx"
+#include "system/Error.hxx"
+#include "io/FileDescriptor.hxx"
+#include "io/RecursiveDelete.hxx"
 
 extern "C" {
-#include <fox/unlink.h>
 #include <fox/cp.h>
 }
+
+#include <fcntl.h>
 
 void
 handle_delete(was_simple *w, const FileResource &resource)
 {
-    fox_error_t error;
-    fox_status_t status = fox_unlink(resource.GetPath(), 0, &error);
-    if (status != FOX_STATUS_SUCCESS) {
-        errno_response(w, status);
-        return;
+    try {
+        RecursiveDelete(FileDescriptor{AT_FDCWD}, resource.GetPath());
+    } catch (const std::system_error &e) {
+        if (e.code().category() == ErrnoCategory())
+            errno_response(w, e.code().value());
+        else
+            throw;
     }
 }
 
