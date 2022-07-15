@@ -1,6 +1,7 @@
 cm4all-davos (0.18) unstable; urgency=low
 
   * plain: use base32 instead of hex for ETags
+  * switch to C++20
 
  --   
 
