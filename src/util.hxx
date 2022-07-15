@@ -4,22 +4,18 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_UTIL_HXX
-#define DAVOS_UTIL_HXX
-
-#include "util/Compiler.h"
+#pragma once
 
 struct was_simple;
 
-gcc_pure
+[[gnu::pure]]
 bool
-get_boolean_header(was_simple *w, const char *name, bool default_value);
+get_boolean_header(was_simple *w, const char *name,
+                   bool default_value) noexcept;
 
-gcc_pure
+[[gnu::pure]]
 static inline bool
-get_overwrite_header(was_simple *w)
+get_overwrite_header(was_simple *w) noexcept
 {
     return get_boolean_header(w, "overwrite", true);
 }
-
-#endif
