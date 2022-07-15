@@ -14,7 +14,7 @@ extern "C" {
 }
 
 #include <string.h>
-#include <sys/time.h>
+#include <time.h>
 
 static void XMLCALL
 start_element(void *userData, const XML_Char *name,
