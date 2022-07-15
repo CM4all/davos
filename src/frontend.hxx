@@ -5,14 +5,11 @@
  */
 
 #include "was.hxx"
+#include "was/Loop.hxx"
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/Compiler.h"
-
-extern "C" {
-#include <was/simple.h>
-}
 
 #include <string>
 
@@ -362,11 +359,7 @@ run(Backend &backend)
     prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
 #endif
 
-    was_simple *was = was_simple_new();
-    const char *uri;
-
-    while ((uri = was_simple_accept(was)) != nullptr)
+    WasLoop([&backend](struct was_simple *was, const char *uri){
         run(backend, was, uri);
-
-    was_simple_free(was);
+    });
 }
