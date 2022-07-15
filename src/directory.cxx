@@ -18,14 +18,14 @@ extern "C" {
 void
 handle_mkcol(was_simple *w, const FileResource &resource)
 {
-    if (mkdir(resource.GetPath(), 0777) < 0) {
-        const int e = errno;
-        if (errno == ENOTDIR)
-            was_simple_status(w, HTTP_STATUS_CONFLICT);
-        else
-            errno_response(w, e);
-        return;
-    }
+	if (mkdir(resource.GetPath(), 0777) < 0) {
+		const int e = errno;
+		if (errno == ENOTDIR)
+			was_simple_status(w, HTTP_STATUS_CONFLICT);
+		else
+			errno_response(w, e);
+		return;
+	}
 
-    was_simple_status(w, HTTP_STATUS_CREATED);
+	was_simple_status(w, HTTP_STATUS_CREATED);
 }

@@ -11,19 +11,19 @@
 #include <unistd.h>
 
 FileResource::FileResource(std::string &&_path)
-    :path(std::move(_path)), error(0)
+	:path(std::move(_path)), error(0)
 {
-    if (stat(path.c_str(), &st) < 0)
-        error = errno;
+	if (stat(path.c_str(), &st) < 0)
+		error = errno;
 }
 
 int
 FileResource::CreateExclusive() const
 {
-    int fd = open(GetPath(), O_CREAT|O_EXCL|O_WRONLY|O_NOCTTY, 0666);
-    if (fd < 0)
-        return errno;
+	int fd = open(GetPath(), O_CREAT|O_EXCL|O_WRONLY|O_NOCTTY, 0666);
+	if (fd < 0)
+		return errno;
 
-    close(fd);
-    return 0;
+	close(fd);
+	return 0;
 }

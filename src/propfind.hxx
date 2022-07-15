@@ -12,6 +12,6 @@ class FileResource;
 
 void
 handle_propfind(was_simple *was, const char *uri,
-                const FileResource &resource);
+		const FileResource &resource);
 
 #endif

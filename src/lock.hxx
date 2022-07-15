@@ -12,23 +12,23 @@
 struct was_simple;
 
 struct LockParserData {
-    enum State {
-        ROOT,
-        OWNER,
-        OWNER_HREF,
-    } state;
+	enum State {
+		ROOT,
+		OWNER,
+		OWNER_HREF,
+	} state;
 
-    std::string owner_href;
+	std::string owner_href;
 
-    LockParserData():state(ROOT) {}
+	LockParserData():state(ROOT) {}
 };
 
 class LockMethod {
-    LockParserData data;
+	LockParserData data;
 
 public:
-    bool ParseRequest(was_simple *w);
-    void Run(was_simple *w, bool created);
+	bool ParseRequest(was_simple *w);
+	void Run(was_simple *w, bool created);
 };
 
 #endif

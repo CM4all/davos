@@ -16,65 +16,65 @@
 #include <sys/stat.h>
 
 class FileResource {
-    std::string path;
+	std::string path;
 
-    int error;
+	int error;
 
-    struct stat st;
+	struct stat st;
 
 public:
-    explicit FileResource(std::string &&_path);
+	explicit FileResource(std::string &&_path);
 
-    int GetError() const {
-        return error;
-    }
+	int GetError() const {
+		return error;
+	}
 
-    bool Exists() const {
-        return error == 0;
-    }
+	bool Exists() const {
+		return error == 0;
+	}
 
-    bool IsFile() const {
-        assert(Exists());
+	bool IsFile() const {
+		assert(Exists());
 
-        return S_ISREG(st.st_mode);
-    }
+		return S_ISREG(st.st_mode);
+	}
 
-    bool IsDirectory() const {
-        assert(Exists());
+	bool IsDirectory() const {
+		assert(Exists());
 
-        return S_ISDIR(st.st_mode);
-    }
+		return S_ISDIR(st.st_mode);
+	}
 
-    const char *GetPath() const {
-        return path.c_str();
-    }
+	const char *GetPath() const {
+		return path.c_str();
+	}
 
-    const struct stat &GetStat() const {
-        return st;
-    }
+	const struct stat &GetStat() const {
+		return st;
+	}
 
-    const struct stat *GetStatIfExists() const noexcept {
-        return Exists() ? &GetStat() : nullptr;
-    }
+	const struct stat *GetStatIfExists() const noexcept {
+		return Exists() ? &GetStat() : nullptr;
+	}
 
-    off_t GetSize() const {
-        return st.st_size;
-    }
+	off_t GetSize() const {
+		return st.st_size;
+	}
 
-    std::chrono::system_clock::time_point GetAccessTime() const {
-        return ToSystemTime(st.st_atim);
-    }
+	std::chrono::system_clock::time_point GetAccessTime() const {
+		return ToSystemTime(st.st_atim);
+	}
 
-    std::chrono::system_clock::time_point GetModificationTime() const {
-        return ToSystemTime(st.st_mtim);
-    }
+	std::chrono::system_clock::time_point GetModificationTime() const {
+		return ToSystemTime(st.st_mtim);
+	}
 
-    /**
-     * Create the file with O_EXCL.
-     *
-     * @return 0 on success, an errno value on error
-     */
-    int CreateExclusive() const;
+	/**
+	 * Create the file with O_EXCL.
+	 *
+	 * @return 0 on success, an errno value on error
+	 */
+	int CreateExclusive() const;
 };
 
 #endif

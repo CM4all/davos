@@ -8,23 +8,23 @@
 StringBuffer<32>
 MakeETag(const struct stat &st) noexcept
 {
-    StringBuffer<32> result;
+	StringBuffer<32> result;
 
-    char *p = result.data();
-    *p++ = '"';
+	char *p = result.data();
+	*p++ = '"';
 
-    p = FormatIntBase32(p, st.st_dev);
+	p = FormatIntBase32(p, st.st_dev);
 
-    *p++ = '-';
+	*p++ = '-';
 
-    p = FormatIntBase32(p, st.st_ino);
+	p = FormatIntBase32(p, st.st_ino);
 
-    *p++ = '-';
+	*p++ = '-';
 
-    p = FormatIntBase32(p, st.st_mtime);
+	p = FormatIntBase32(p, st.st_mtime);
 
-    *p++ = '"';
-    *p = 0;
+	*p++ = '"';
+	*p = 0;
 
-    return result;
+	return result;
 }

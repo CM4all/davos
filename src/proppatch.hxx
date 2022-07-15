@@ -20,55 +20,55 @@ struct was_simple;
 struct timeval;
 
 struct PropNameValue {
-    std::string name;
-    std::string value;
-    http_status_t status;
+	std::string name;
+	std::string value;
+	http_status_t status;
 
-    PropNameValue(const char *_name)
-        :name(_name),
-         status(HTTP_STATUS_NOT_FOUND) {}
+	PropNameValue(const char *_name)
+		:name(_name),
+		 status(HTTP_STATUS_NOT_FOUND) {}
 
-    gcc_pure
-    bool IsGetLastModified() const {
-        return name == "DAV:|getlastmodified";
-    }
+	gcc_pure
+	bool IsGetLastModified() const {
+		return name == "DAV:|getlastmodified";
+	}
 
-    gcc_pure
-    bool IsWin32LastAccessTime() const {
-        return name == "urn:schemas-microsoft-com:|Win32LastAccessTime";
-    }
+	gcc_pure
+	bool IsWin32LastAccessTime() const {
+		return name == "urn:schemas-microsoft-com:|Win32LastAccessTime";
+	}
 
-    gcc_pure
-    bool IsWin32LastModifiedTime() const {
-        return name == "urn:schemas-microsoft-com:|Win32LastModifiedTime";
-    }
+	gcc_pure
+	bool IsWin32LastModifiedTime() const {
+		return name == "urn:schemas-microsoft-com:|Win32LastModifiedTime";
+	}
 
-    bool ParseWin32Timestamp(timeval &tv) const;
+	bool ParseWin32Timestamp(timeval &tv) const;
 };
 
 struct ProppatchParserData {
-    enum State {
-        ROOT,
-        PROP,
-        PROP_NAME,
-    } state;
+	enum State {
+		ROOT,
+		PROP,
+		PROP_NAME,
+	} state;
 
-    std::list<PropNameValue> props;
+	std::list<PropNameValue> props;
 
-    ProppatchParserData():state(ROOT) {}
+	ProppatchParserData():state(ROOT) {}
 };
 
 class ProppatchMethod {
-    ProppatchParserData data;
+	ProppatchParserData data;
 
 public:
-    bool ParseRequest(was_simple *w);
+	bool ParseRequest(was_simple *w);
 
-    std::list<PropNameValue> &GetProps() {
-        return data.props;
-    }
+	std::list<PropNameValue> &GetProps() {
+		return data.props;
+	}
 
-    bool SendResponse(was_simple *w, const char *uri);
+	bool SendResponse(was_simple *w, const char *uri);
 };
 
 #endif

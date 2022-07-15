@@ -11,6 +11,6 @@
 void
 AppendUriEscape(std::string &dest, const char *src)
 {
-    const auto escaped = UriEscapePath(src);
-    dest.append(escaped.c_str());
+	const auto escaped = UriEscapePath(src);
+	dest.append(escaped.c_str());
 }
