@@ -3,7 +3,7 @@ cm4all-davos (0.18) unstable; urgency=low
   * plain: use base32 instead of hex for ETags
   * switch to C++20
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 14 Sep 2022 19:24:15 +0200
 
 cm4all-davos (0.17) unstable; urgency=low
 
