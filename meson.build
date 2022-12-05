@@ -107,7 +107,6 @@ add_project_arguments(c_compiler.get_supported_arguments(test_cflags), language:
 expat = dependency('expat')
 
 libfox = dependency('libcm4all-fox', version: '>= 2.0', required: get_option('plain'), disabler: true)
-libod = dependency('libcm4all-od-setup', version: '>= 1.2', required: get_option('od'), disabler: true)
 
 inc = include_directories('src', 'libcommon/src')
 
