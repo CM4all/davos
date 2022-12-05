@@ -37,19 +37,6 @@
 #include <cstring>
 
 /**
- * @see RFC 3986 2.2
- */
-constexpr
-static inline bool
-IsUriSubcomponentDelimiter(char ch)
-{
-	return ch == '!' || ch == '$' || ch == '&' || ch == '\'' ||
-		ch == '(' || ch == ')' ||
-		ch == '*' || ch == '+' ||
-		ch == ',' || ch == ';' || ch == '=';
-}
-
-/**
  * @see RFC 3986 2.3
  */
 constexpr
