@@ -30,10 +30,11 @@
 #include "UriEscape.hxx"
 #include "util/CharUtil.hxx"
 #include "util/HexFormat.hxx"
-#include "util/StringView.hxx"
 #include "uri/Chars.hxx"
 #include "uri/Unescape.hxx"
 #include "LightString.hxx"
+
+#include <cstring>
 
 /**
  * @see RFC 3986 2.2
@@ -108,14 +109,14 @@ UriEscapePath(const char *src)
 LightString
 UriUnescape(const char *_src)
 {
-	const StringView src{_src};
-	if (src.Find('%') == nullptr)
+	const std::string_view src{_src};
+	if (src.find('%') == src.npos)
 		/* no escape, no change required, return the existing
 		   pointer without allocating a copy */
 		return LightString::Make(_src);
 
 	/* worst-case allocation */
-	char *dest = new char[src.size + 1];
+	char *dest = new char[src.size() + 1];
 
 	char *end = UriUnescape(dest, src);
 	if (end == nullptr) {
