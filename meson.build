@@ -106,8 +106,6 @@ add_project_arguments(c_compiler.get_supported_arguments(test_cflags), language:
 
 expat = dependency('expat')
 
-libfox = dependency('libcm4all-fox', version: '>= 2.0', required: get_option('plain'), disabler: true)
-
 inc = include_directories('src', 'libcommon/src')
 
 libcommon_enable_libcap = false
@@ -170,7 +168,6 @@ executable(
   dependencies: [
     expat,
     was_dep,
-    libfox,
     http_dep,
     time_dep,
     util_dep,
