@@ -56,23 +56,11 @@ gcc_nonnull_all
 bool
 wxml_cdata(Writer &w, const char *data);
 
-gcc_nonnull_all
-bool
-wxml_uri_escape(Writer &w, const char *uri);
-
 inline bool
 wxml_string_element(Writer &w, const char *name, const char *value)
 {
 	return wxml_open_element(w, name) &&
 		wxml_cdata(w, value) &&
-		wxml_close_element(w, name);
-}
-
-inline bool
-wxml_uri_element(Writer &w, const char *name, const char *value)
-{
-	return wxml_open_element(w, name) &&
-		wxml_uri_escape(w, value) &&
 		wxml_close_element(w, name);
 }
 

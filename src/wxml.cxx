@@ -5,7 +5,6 @@
  */
 
 #include "wxml.hxx"
-#include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 
 #include <assert.h>
@@ -50,11 +49,4 @@ wxml_cdata(Writer &w, const char *data)
 		if (!w.Write(wxml_escape_char(*data++)))
 			return false;
 	}
-}
-
-bool
-wxml_uri_escape(Writer &w, const char *uri)
-{
-	const auto escaped = UriEscapePath(uri);
-	return wxml_cdata(w, escaped.c_str());
 }
