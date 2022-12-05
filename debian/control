@@ -15,6 +15,7 @@ Build-Conflicts: libcm4all-inline-dev (<< 0.3.6)
 Standards-Version: 3.9.1
 XS-Python-Standards-Version: 0.4
 XS-Python-Version: all
+Vcs-Browser: http://dev.intern.cm-ag/max/davos
 Vcs-git: git@dev.intern.cm-ag:max/davos.git
 
 Package: cm4all-davos-plain
