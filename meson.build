@@ -183,32 +183,5 @@ executable(
   install_dir: 'lib/cm4all/was/bin',
 )
 
-executable(
-  'davos-od',
-  'src/util.cxx',
-  'src/mime_types.cxx',
-  'src/uri_escape.cxx',
-  'src/expat.cxx',
-  'src/wxml.cxx',
-  'src/splice.cxx',
-  'src/proppatch.cxx',
-  'src/lock.cxx',
-  'src/od_resource.cxx',
-  'src/od_create.cxx',
-  'src/od_put.cxx',
-  'src/od_main.cxx',
-  include_directories: inc,
-  dependencies: [
-    expat,
-    was_dep,
-    libod,
-    http_dep,
-    time_dep,
-    util_dep,
-  ],
-  install: true,
-  install_dir: 'lib/cm4all/was/bin',
-)
-
 subdir('test')
 subdir('doc')

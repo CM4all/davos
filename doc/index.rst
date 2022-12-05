@@ -5,9 +5,7 @@ What is Davos?
 --------------
 
 Davos is a WebDAV server with a WAS (Web Application Socket) frontend,
-to be run by beng-proxy.  There are two backends: one that stores in a
-plain filesystem (called "plain") and one for CM4all OnlineDrive
-(called "od").
+to be run by beng-proxy.
 
 
 Installation & Configuration
@@ -16,8 +14,7 @@ Installation & Configuration
 Installation
 ^^^^^^^^^^^^
 
-Depending on your choice of backend, install either
-`cm4all-davos-plain` or `cm4all-davos-od`.  Example::
+Install the Debian package :file:`cm4all-davos-plain`::
 
   apt-get install cm4all-davos-plain
 
@@ -26,8 +23,6 @@ Configuration
 
 The "plain" backend does not need any configuration.  Everything is
 controlled with WAS parameters.
-
-The "od" backend requires a `libod` configuration file.
 
 
 Reference
@@ -96,65 +91,3 @@ Example (deprecated) hardened translation response::
   SETENV "DAVOS_PIVOT_ROOT_OLD=mnt"
   PAIR "DAVOS_MOUNT=/dav/"
   PAIR "DAVOS_DOCUMENT_ROOT=/"
-
-Online-Drive
-^^^^^^^^^^^^
-
-The "od" backend expects two command-line arguments: the path of the
-`libod` configuration file and the name of the "group" within this
-file.
-
-The following WAS parameters are understood by the "od" backend:
-
-- :envvar:`DAVOS_SITE=name`: The site id.
-
-Example translation response::
-
-  WAS "/usr/lib/cm4all/was/bin/davos-od"
-  APPEND "/etc/cm4all/davos/od.conf"
-  APPEND "foo"
-  PAIR "DAVOS_MOUNT=/dav/abc/"
-  PAIR "DAVOS_SITE=abc"
-
-`libod` Configuration
-^^^^^^^^^^^^^^^^^^^^^
-
-`libod` is configured with an INI-style
-text file containing at least 3 groups.  Example::
-
-  [foo]
-  data = foo_data
-  meta = foo_meta
-
-  [foo_data]
-  module = fs
-  path = /var/www
-
-  [foo_meta]
-  module = sql
-  uri = codb:postgresql:strict:dbname=od
-
-The first section is the one whose name you pass to `davos-od`.  It
-chooses a "data" group and a "meta" group.  These groups configure the
-according module.  The "meta" module maintains file metadata
-(directory structure, file names, attributes), and the "data" module
-stores file contents.
-
-The `fs` module stores file contents in
-the local file system.  Each site has its own directory
-inside the given :envvar:`path`.  Instead of
-:envvar:`path`, you can specify
-:envvar:`regex` and :envvar:`expand_path`::
-
-  [foo_data]
-  module = fs
-  regex = ^(..)(..)(........)$
-  expand_path = /var/www/data/\1/\2/\3
-
-This assumes that site ids have 12 characters, and will assume nested
-subdirectories.
-
-The `sql` module uses `libcodb` to store metadata in a relational
-database.
-
-For more information, read the `libod` documentation.

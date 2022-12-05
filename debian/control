@@ -8,7 +8,6 @@ Build-Depends: debhelper (>= 12~),
  libc6-dev (>= 2.19),
  libexpat1-dev,
  libcm4all-fox-dev (>= 2.0), libcm4all-was-simple-dev (>= 1.20),
- libcm4all-od1-dev (>= 1.2),
  libgtest-dev,
  python3-sphinx
 Build-Conflicts: libcm4all-inline-dev (<< 0.3.6)
@@ -28,17 +27,6 @@ Description: WebDAV server for plain filesystem
  frontend.
  .
  This package contains the plain local filesystem backend.
-
-Package: cm4all-davos-od
-Architecture: any
-Depends: ${shlibs:Depends}
-Recommends: mime-support
-Enhances: cm4all-beng-proxy
-Description: WebDAV server for OnlineDrive
- Davos is a WebDAV server with a WAS (Web Application Socket)
- frontend.
- .
- This package contains the OnlineDrive backend.
 
 Package: cm4all-davos-doc
 Section: non-free/doc
