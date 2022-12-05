@@ -16,6 +16,7 @@
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
+#include "util/StringAPI.hxx"
 #include "util/StringView.hxx"
 
 #include <was/simple.h>
@@ -121,7 +122,7 @@ CheckIfRange(const char *if_range, const struct stat &st)
 	if (t != std::chrono::system_clock::from_time_t(-1))
 		return std::chrono::system_clock::from_time_t(st.st_mtime) == t;
 
-	return strcmp(if_range, MakeETag(st)) == 0;
+	return StringIsEqual(if_range, MakeETag(st));
 }
 
 void
