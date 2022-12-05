@@ -8,7 +8,6 @@
 #include "ETag.hxx"
 #include "file.hxx"
 #include "http/List.hxx"
-#include "util/StringView.hxx"
 
 #include <was/simple.h>
 

@@ -17,7 +17,6 @@
 #include "http/Date.hxx"
 #include "http/Range.hxx"
 #include "util/StringAPI.hxx"
-#include "util/StringView.hxx"
 
 #include <was/simple.h>
 
