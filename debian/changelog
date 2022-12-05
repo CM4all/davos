@@ -3,7 +3,7 @@ cm4all-davos (0.19) unstable; urgency=low
   * od: drop the OnlineDrive backend
   * eliminate dependency on libfox
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 05 Dec 2022 15:40:30 +0100
 
 cm4all-davos (0.18) unstable; urgency=low
 
