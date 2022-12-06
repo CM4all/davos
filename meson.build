@@ -108,9 +108,6 @@ expat = dependency('expat')
 
 inc = include_directories('src', 'libcommon/src')
 
-libcommon_enable_libcap = false
-libcommon_enable_filesystem = false
-
 subdir('libcommon/src/util')
 subdir('libcommon/src/uri')
 
