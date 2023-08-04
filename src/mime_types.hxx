@@ -4,17 +4,12 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_MIME_TYPES_HXX
-#define DAVOS_MIME_TYPES_HXX
+#pragma once
 
-#include "util/Compiler.h"
-
-gcc_pure
+[[gnu::pure]]
 const char *
 LookupMimeTypeByFileName(const char *name);
 
-gcc_pure
+[[gnu::pure]]
 const char *
 LookupMimeTypeByFilePath(const char *path);
-
-#endif

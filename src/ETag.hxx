@@ -5,10 +5,9 @@
 #pragma once
 
 #include "util/StringBuffer.hxx"
-#include "util/Compiler.h"
 
 #include <sys/stat.h>
 
-gcc_pure
+[[gnu::pure]]
 StringBuffer<32>
 MakeETag(const struct stat &st) noexcept;

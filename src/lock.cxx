@@ -50,7 +50,7 @@ owner_href(Writer &w, const char *token)
 
 static void XMLCALL
 start_element(void *userData, const XML_Char *name,
-	      gcc_unused const XML_Char **atts)
+	      [[maybe_unused]] const XML_Char **atts)
 {
 	LockParserData &data = *(LockParserData *)userData;
 

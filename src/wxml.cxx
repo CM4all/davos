@@ -6,6 +6,7 @@
 
 #include "wxml.hxx"
 #include "util/LightString.hxx"
+#include "util/Compiler.h"
 
 #include <assert.h>
 #include <string.h>

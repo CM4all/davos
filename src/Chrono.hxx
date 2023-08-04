@@ -1,13 +1,10 @@
-#ifndef CHRONO_HXX
-#define CHRONO_HXX
-
-#include "util/Compiler.h"
+#pragma once
 
 #include <chrono>
 
 #include <sys/time.h>
 
-gcc_const
+[[gnu::const]]
 static inline std::chrono::system_clock::time_point
 ToSystemTime(const struct timespec ts)
 {
@@ -15,7 +12,7 @@ ToSystemTime(const struct timespec ts)
 		+ std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::nanoseconds(ts.tv_nsec));
 }
 
-gcc_const
+[[gnu::const]]
 static inline struct timeval
 ToTimeval(std::chrono::system_clock::time_point p)
 {
@@ -26,5 +23,3 @@ ToTimeval(std::chrono::system_clock::time_point p)
 	tv.tv_usec = std::chrono::duration_cast<std::chrono::microseconds>(remainder).count();
 	return tv;
 }
-
-#endif

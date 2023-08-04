@@ -18,7 +18,7 @@ extern "C" {
 
 static void XMLCALL
 start_element(void *userData, const XML_Char *name,
-	      gcc_unused const XML_Char **atts)
+	      [[maybe_unused]] const XML_Char **atts)
 {
 	ProppatchParserData &data = *(ProppatchParserData *)userData;
 
@@ -104,7 +104,7 @@ propstat(Writer &w, const char *name, const char *status)
 		wxml_close_element(w, "D:propstat");
 }
 
-gcc_pure
+[[gnu::pure]]
 static bool
 parse_win32_timestamp(const char *s, struct timeval &tv)
 {

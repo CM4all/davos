@@ -9,7 +9,6 @@
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
-#include "util/Compiler.h"
 
 #include <string>
 
@@ -148,7 +147,7 @@ configure_umask(was_simple *w)
 	return true;
 }
 
-gcc_pure
+[[gnu::pure]]
 static bool
 check_mountpoint(const char *p, size_t length)
 {
@@ -194,7 +193,7 @@ configure(Backend &backend, was_simple *w)
 		backend.Setup(w);
 }
 
-gcc_pure
+[[gnu::pure]]
 static bool
 HasTrailingSlash(const char *uri)
 {

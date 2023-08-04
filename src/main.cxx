@@ -18,7 +18,6 @@
 #include "IsolatePath.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
-#include "util/Compiler.h"
 
 #include <cerrno>
 #include <stdexcept>
@@ -38,7 +37,7 @@ public:
 	bool Setup(was_simple *w);
 	void TearDown() {}
 
-	gcc_pure
+	[[gnu::pure]]
 	Resource Map(const char *uri) const;
 
 	void HandleHead(was_simple *w, const Resource &resource) {

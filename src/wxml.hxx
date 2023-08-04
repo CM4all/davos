@@ -5,7 +5,6 @@
  */
 
 #include "writer.hxx"
-#include "util/Compiler.h"
 
 #include <algorithm>
 
@@ -52,7 +51,7 @@ wxml_short_element(Writer &w, const char *name)
 	return wxml_begin_tag(w, name) && wxml_end_short_tag(w);
 }
 
-gcc_nonnull_all
+[[gnu::nonnull]]
 bool
 wxml_cdata(Writer &w, const char *data);
 
