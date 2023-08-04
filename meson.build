@@ -109,6 +109,7 @@ expat = dependency('expat')
 inc = include_directories('src', 'libcommon/src')
 
 subdir('libcommon/src/util')
+subdir('libcommon/src/lib/fmt')
 subdir('libcommon/src/uri')
 
 util2 = static_library(
