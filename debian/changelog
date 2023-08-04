@@ -1,6 +1,7 @@
 cm4all-davos (0.20) unstable; urgency=low
 
   * use libfmt
+  * use the new Linux mount API
 
  --   
 

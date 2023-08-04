@@ -3,9 +3,10 @@
  */
 
 #include "PivotRoot.hxx"
-#include "system/BindMount.hxx"
+#include "system/Mount.hxx"
 #include "system/pivot_root.h"
 #include "system/Error.hxx"
+#include "io/FileDescriptor.hxx"
 
 #include <sched.h>
 #include <unistd.h>
@@ -49,13 +50,19 @@ PivotRoot(const char *new_root, const char *put_old)
 	UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
 	/* convert all "shared" mounts to "private" mounts */
-	mount(nullptr, "/", nullptr, MS_PRIVATE|MS_REC, nullptr);
+	MountSetAttr(FileDescriptor::Undefined(), "/",
+		     AT_RECURSIVE|AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     0, 0, MS_PRIVATE);
 
 	/* first bind-mount the new root onto itself to "unlock" the
 	   kernel's mount object (flag MNT_LOCKED) in our namespace;
 	   without this, the kernel would not allow an unprivileged
 	   process to pivot_root to it */
-	BindMount(new_root, new_root, MS_NOSUID|MS_NOEXEC|MS_NODEV);
+	BindMount(new_root, new_root);
+	MountSetAttr(FileDescriptor::Undefined(), new_root,
+		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     MS_NOSUID|MS_NOEXEC|MS_NODEV,
+		     0);
 
 	/* release a reference to the old root */
 	ChdirOrThrow(new_root);

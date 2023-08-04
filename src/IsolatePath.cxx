@@ -4,9 +4,10 @@
 
 #include "IsolatePath.hxx"
 #include "spawn/UserNamespace.hxx"
-#include "system/BindMount.hxx"
+#include "system/Mount.hxx"
 #include "system/pivot_root.h"
 #include "system/Error.hxx"
+#include "io/FileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <assert.h>
@@ -84,19 +85,24 @@ IsolatePath(const char *path)
 	SetupUidMap(0, uid, false);
 
 	/* convert all "shared" mounts to "private" mounts */
-	mount(nullptr, "/", nullptr, MS_PRIVATE|MS_REC, nullptr);
+	MountSetAttr(FileDescriptor::Undefined(), "/",
+		     AT_RECURSIVE|AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     0, 0, MS_PRIVATE);
 
 	/* create an empty tmpfs as the new filesystem root */
 	const char *const new_root = "/tmp";
-	if (mount("none", new_root, "tmpfs", MS_NODEV|MS_NOEXEC|MS_NOSUID,
-		  "size=256k,nr_inodes=1024,mode=755") < 0)
-		throw FormatErrno("mount(tmpfs, '%s') failed", new_root);
+	MountOrThrow("none", new_root, "tmpfs", MS_NODEV|MS_NOEXEC|MS_NOSUID,
+		     "size=256k,nr_inodes=1024,mode=755");
 
 	/* first bind-mount the new root onto itself to "unlock" the
 	   kernel's mount object (flag MNT_LOCKED) in our namespace;
 	   without this, the kernel would not allow an unprivileged
 	   process to pivot_root to it */
-	BindMount(new_root, new_root, MS_NOSUID|MS_NOEXEC|MS_NODEV);
+	BindMount(new_root, new_root);
+	MountSetAttr(FileDescriptor::Undefined(), new_root,
+		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     MS_NOSUID|MS_RDONLY|MS_NOEXEC|MS_NODEV,
+		     0);
 
 	/* release a reference to the old root */
 	ChdirOrThrow(new_root);
@@ -105,7 +111,11 @@ IsolatePath(const char *path)
 	mkdir(put_old + 1, 0700);
 
 	MakeDirs(path);
-	BindMount(path, path + 1, MS_NOSUID|MS_NOEXEC|MS_NODEV);
+	BindMount(path, path + 1);
+	MountSetAttr(FileDescriptor{AT_FDCWD}, path + 1,
+		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     MS_NOSUID|MS_NOEXEC|MS_NODEV,
+		     0);
 
 	/* enter the new root */
 	PivotRootOrThrow(new_root, put_old + 1);
@@ -115,8 +125,8 @@ IsolatePath(const char *path)
 
 	rmdir(put_old);
 
-	if (mount(nullptr, "/", nullptr,
-		  MS_REMOUNT|MS_BIND|MS_NODEV|MS_NOEXEC|MS_NOSUID|MS_RDONLY,
-		  nullptr) < 0)
-		throw MakeErrno("Failed to remount read-only");
+	MountSetAttr(FileDescriptor::Undefined(), "/",
+		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     MS_NODEV|MS_NOEXEC|MS_NOSUID|MS_RDONLY,
+		     0);
 }
