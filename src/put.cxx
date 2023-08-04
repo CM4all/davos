@@ -9,7 +9,7 @@
 #include "was.hxx"
 #include "error.hxx"
 #include "file.hxx"
-#include "splice.hxx"
+#include "was/Splice.hxx"
 #include "io/FileWriter.hxx"
 #include "util/PrintException.hxx"
 
@@ -52,7 +52,7 @@ handle_put(was_simple *w, const FileResource &resource)
 		if (remaining > 0)
 			fw.Allocate(remaining);
 
-		if (!splice_from_was(w, fw.GetFileDescriptor().Get())) {
+		if (!SpliceFromWas(w, fw.GetFileDescriptor())) {
 			was_simple_status(w, HTTP_STATUS_INTERNAL_SERVER_ERROR);
 			return;
 		}

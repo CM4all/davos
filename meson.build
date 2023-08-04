@@ -152,7 +152,6 @@ executable(
   'src/error.cxx',
   'src/ETag.cxx',
   'src/IfMatch.cxx',
-  'src/splice.cxx',
   'src/directory.cxx',
   'src/get.cxx',
   'src/put.cxx',

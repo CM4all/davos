@@ -10,9 +10,9 @@
 #include "error.hxx"
 #include "was.hxx"
 #include "file.hxx"
-#include "splice.hxx"
 #include "mime_types.hxx"
 #include "Chrono.hxx"
+#include "was/Splice.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
@@ -198,7 +198,7 @@ handle_get(was_simple *was, const FileResource &resource)
 	}
 
 	if (static_response_headers(was, resource))
-		splice_to_was(was, fd.Get(), range.size - range.skip);
+		SpliceToWas(was, fd, range.size - range.skip);
 }
 
 void
