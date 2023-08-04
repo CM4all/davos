@@ -79,7 +79,7 @@ IsolatePath(const char *path)
 
 	UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
-	DenySetGroups();
+	DenySetGroups(0);
 	SetupGidMap(0, gid, false);
 	SetupUidMap(0, uid, false);
 
