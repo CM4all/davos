@@ -8,6 +8,7 @@
 #include "wxml.hxx"
 #include "expat.hxx"
 #include "error.hxx"
+#include "was/WasOutputStream.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -75,33 +76,35 @@ char_data(void *userData, const XML_Char *s, int len)
 	}
 }
 
-static bool
-ns_short_element(Writer &w, const char *name)
+static void
+ns_short_element(BufferedOutputStream &o, const char *name)
 {
 	const char *pipe = strchr(name, '|');
 	if (pipe == nullptr)
-		return false;
+		// TODO what now? is this a bug or bad user input?
+		return;
 
 	const std::string ns(name, pipe);
 	name = pipe + 1;
 
-	return w.Write("<") && w.Write("X:") &&
-		w.Write(name) &&
-		wxml_attribute(w, "xmlns:X", ns.c_str()) &&
-		wxml_end_short_tag(w);
+	o.Write('<');
+	o.Write("X:");
+	o.Write(name);
+	wxml_attribute(o, "xmlns:X", ns.c_str());
+	wxml_end_short_tag(o);
 }
 
-static bool
-propstat(Writer &w, const char *name, const char *status)
+static void
+propstat(BufferedOutputStream &o, const char *name, std::string_view status)
 {
-	return wxml_open_element(w, "D:propstat") &&
-		wxml_open_element(w, "D:prop") &&
-		ns_short_element(w, name) &&
-		wxml_close_element(w, "D:prop") &&
-		wxml_open_element(w, "D:status") &&
-		w.Write(status) &&
-		wxml_close_element(w, "D:status") &&
-		wxml_close_element(w, "D:propstat");
+	wxml_open_element(o, "D:propstat");
+	wxml_open_element(o, "D:prop");
+	ns_short_element(o, name);
+	wxml_close_element(o, "D:prop");
+	wxml_open_element(o, "D:status");
+	o.Write(status);
+	wxml_close_element(o, "D:status");
+	wxml_close_element(o, "D:propstat");
 }
 
 [[gnu::pure]]
@@ -145,16 +148,20 @@ ProppatchMethod::SendResponse(was_simple *w, const char *uri)
 				   "text/xml; charset=\"utf-8\""))
 		return false;
 
-	Writer writer(w);
-	if (!begin_multistatus(writer) ||
-	    !wxml_open_element(writer, "D:response") ||
-	    !href(writer, uri))
-		return false;
+	WasOutputStream wos{w};
+	BufferedOutputStream bos{wos};
+
+	begin_multistatus(bos);
+	wxml_open_element(bos, "D:response");
+	href(bos, uri);
 
 	for (auto prop : data.props)
-		if (!propstat(writer, prop.name.c_str(),
-			      http_status_to_string(prop.status)))
-			return false;
+		propstat(bos, prop.name.c_str(),
+			 http_status_to_string(prop.status));
 
-	return wxml_close_element(writer, "D:response") && end_multistatus(writer);
+	wxml_close_element(bos, "D:response");
+	end_multistatus(bos);
+
+	bos.Flush();
+	return true;
 }

@@ -6,6 +6,7 @@
 
 #include "was.hxx"
 #include "was/Loop.hxx"
+#include "was/WasOutputStream.hxx"
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
@@ -326,6 +327,7 @@ try {
 	default:
 		was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
 	}
+} catch (WasOutputStream::WriteFailed) {
 } catch (MalformedUri) {
 	was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
 } catch (OutsideUri) {

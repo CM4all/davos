@@ -32,22 +32,21 @@ wxml_escape_char(char ch)
 	gcc_unreachable();
 }
 
-bool
-wxml_cdata(Writer &w, const char *data)
+void
+wxml_cdata(BufferedOutputStream &o, const char *data)
 {
 	while (true) {
 		const char *p = strpbrk(data, "<>&\"");
-		if (p == nullptr)
-			return w.Write(data);
+		if (p == nullptr) {
+			o.Write(data);
+			return;
+		}
 
 		if (p > data) {
-			if (!w.Write(data, p - data))
-				return false;
-
+			o.Write(std::string_view(data, p - data));
 			data = p;
 		}
 
-		if (!w.Write(wxml_escape_char(*data++)))
-			return false;
+		o.Write(wxml_escape_char(*data++));
 	}
 }

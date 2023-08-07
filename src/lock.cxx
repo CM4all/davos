@@ -8,7 +8,7 @@
 #include "wxml.hxx"
 #include "error.hxx"
 #include "expat.hxx"
-#include "util/Compiler.h"
+#include "was/WasOutputStream.hxx"
 
 #include <was/simple.h>
 
@@ -17,35 +17,35 @@
 
 #include <string.h>
 
-static bool
-begin_prop(Writer &w)
+static void
+begin_prop(BufferedOutputStream &o)
 {
-	return wxml_declaration(w) &&
-		wxml_begin_tag(w, "D:prop") &&
-		wxml_attribute(w, "xmlns:D", "DAV:") &&
-		wxml_end_tag(w);
+	wxml_declaration(o);
+	wxml_begin_tag(o, "D:prop");
+	wxml_attribute(o, "xmlns:D", "DAV:");
+	wxml_end_tag(o);
 }
 
-static bool
-end_prop(Writer &w)
+static void
+end_prop(BufferedOutputStream &o)
 {
-	return wxml_close_element(w, "D:prop");
+	wxml_close_element(o, "D:prop");
 }
 
-static bool
-locktoken_href(Writer &w, const char *token)
+static void
+locktoken_href(BufferedOutputStream &o, const char *token)
 {
-	return wxml_open_element(w, "D:locktoken") &&
-		href(w, token) &&
-		wxml_close_element(w, "D:locktoken");
+	wxml_open_element(o, "D:locktoken");
+	href(o, token);
+	wxml_close_element(o, "D:locktoken");
 }
 
-static bool
-owner_href(Writer &w, const char *token)
+static void
+owner_href(BufferedOutputStream &o, const char *token)
 {
-	return wxml_open_element(w, "D:owner") &&
-		href(w, token) &&
-		wxml_close_element(w, "D:owner");
+	wxml_open_element(o, "D:owner");
+	href(o, token);
+	wxml_close_element(o, "D:owner");
 }
 
 static void XMLCALL
@@ -139,25 +139,29 @@ LockMethod::Run(was_simple *w, bool created)
 	    !was_simple_set_header(w, "lock-token", token2))
 		return;
 
-	Writer writer(w);
-	begin_prop(writer) &&
-		wxml_open_element(writer, "D:lockdiscovery") &&
-		wxml_open_element(writer, "D:activelock") &&
+	WasOutputStream wos{w};
+	BufferedOutputStream bos{wos};
 
-		wxml_open_element(writer, "D:locktype") &&
-		wxml_short_element(writer, "D:write") &&
-		wxml_close_element(writer, "D:locktype") &&
+	begin_prop(bos);
+	wxml_open_element(bos, "D:lockdiscovery");
+	wxml_open_element(bos, "D:activelock");
 
-		wxml_open_element(writer, "D:lockscope") &&
-		wxml_short_element(writer, "D:exclusive") &&
-		wxml_close_element(writer, "D:lockscope") &&
+	wxml_open_element(bos, "D:locktype");
+	wxml_short_element(bos, "D:write");
+	wxml_close_element(bos, "D:locktype");
 
-		wxml_string_element(writer, "D:depth", "infinity") &&
+	wxml_open_element(bos, "D:lockscope");
+	wxml_short_element(bos, "D:exclusive");
+	wxml_close_element(bos, "D:lockscope");
 
-		locktoken_href(writer, token) &&
-		(data.owner_href.empty() ||
-		 owner_href(writer, data.owner_href.c_str())) &&
-		wxml_close_element(writer, "D:activelock") &&
-		wxml_close_element(writer, "D:lockdiscovery") &&
-		end_prop(writer);
+	wxml_string_element(bos, "D:depth", "infinity");
+
+	locktoken_href(bos, token);
+	if (!data.owner_href.empty())
+		owner_href(bos, data.owner_href.c_str());
+	wxml_close_element(bos, "D:activelock");
+	wxml_close_element(bos, "D:lockdiscovery");
+	end_prop(bos);
+
+	bos.Flush();
 }

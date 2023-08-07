@@ -10,6 +10,7 @@
 #include "error.hxx"
 #include "file.hxx"
 #include "Chrono.hxx"
+#include "was/WasOutputStream.hxx"
 #include "http/Date.hxx"
 #include "io/DirectoryReader.hxx"
 #include "util/Compiler.h"
@@ -48,31 +49,24 @@ try {
 	return {};
 }
 
-static bool
-propfind_file(Writer &writer, std::string &uri, std::string &path,
+static void
+propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 	      const struct stat &st,
 	      unsigned depth)
 {
-	if (!open_response_prop(writer, uri.c_str(), "HTTP/1.1 200 OK"))
-		return false;
+	open_response_prop(o, uri.c_str(), "HTTP/1.1 200 OK");
 
 	if (S_ISDIR(st.st_mode)) {
-		if (!resourcetype_collection(writer))
-			return false;
+		resourcetype_collection(o);
 	} else if (S_ISREG(st.st_mode)) {
-		if (!wxml_format_element(writer, "D:getcontentlength", "%llu",
-					 (unsigned long long)st.st_size))
-			return false;
+		wxml_fmt_element(o, "D:getcontentlength", "{}", st.st_size);
 	}
 
 	const auto mtime = ToSystemTime(st.st_mtim);
 
-	if (!wxml_string_element(writer, "D:getlastmodified",
-				 http_date_format(mtime)))
-		return false;
+	wxml_string_element(o, "D:getlastmodified", http_date_format(mtime));
 
-	if (!close_response_prop(writer))
-		return false;
+	close_response_prop(o);
 
 	if (depth > 0 && S_ISDIR(st.st_mode)) {
 		--depth;
@@ -95,24 +89,18 @@ propfind_file(Writer &writer, std::string &uri, std::string &path,
 			path.append(name);
 
 			struct stat st2;
-			bool success = true;
 			if (stat(path.c_str(), &st2) == 0) {
 				if (S_ISDIR(st2.st_mode))
 					/* directory URIs should end with a slash */
 					uri.push_back('/');
 
-				success = propfind_file(writer, uri, path, st2, depth);
+				propfind_file(o, uri, path, st2, depth);
 			}
 
 			uri.erase(uri_length);
 			path.erase(path_length);
-
-			if (!success)
-				return false;
 		}
 	}
-
-	return true;
 }
 
 void
@@ -135,14 +123,15 @@ handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
 				   "text/xml; charset=\"utf-8\""))
 		return;
 
-	Writer writer(was);
-	if (!begin_multistatus(writer))
-		return;
+	WasOutputStream wos{was};
+	BufferedOutputStream bos{wos};
+
+	begin_multistatus(bos);
 
 	std::string uri2(uri);
 	std::string path2(resource.GetPath());
-	if (!propfind_file(writer, uri2, path2, resource.GetStat(), depth))
-		return;
+	propfind_file(bos, uri2, path2, resource.GetStat(), depth);
+	end_multistatus(bos);
 
-	end_multistatus(writer);
+	bos.Flush();
 }
