@@ -23,33 +23,33 @@ class FileResource {
 	struct stat st;
 
 public:
-	explicit FileResource(std::string &&_path);
+	explicit FileResource(std::string &&_path) noexcept;
 
-	int GetError() const {
+	int GetError() const noexcept {
 		return error;
 	}
 
-	bool Exists() const {
+	bool Exists() const noexcept {
 		return error == 0;
 	}
 
-	bool IsFile() const {
+	bool IsFile() const noexcept {
 		assert(Exists());
 
 		return S_ISREG(st.st_mode);
 	}
 
-	bool IsDirectory() const {
+	bool IsDirectory() const noexcept {
 		assert(Exists());
 
 		return S_ISDIR(st.st_mode);
 	}
 
-	const char *GetPath() const {
+	const char *GetPath() const noexcept {
 		return path.c_str();
 	}
 
-	const struct stat &GetStat() const {
+	const struct stat &GetStat() const noexcept {
 		return st;
 	}
 
@@ -57,15 +57,15 @@ public:
 		return Exists() ? &GetStat() : nullptr;
 	}
 
-	off_t GetSize() const {
+	off_t GetSize() const noexcept {
 		return st.st_size;
 	}
 
-	std::chrono::system_clock::time_point GetAccessTime() const {
+	std::chrono::system_clock::time_point GetAccessTime() const noexcept {
 		return ToSystemTime(st.st_atim);
 	}
 
-	std::chrono::system_clock::time_point GetModificationTime() const {
+	std::chrono::system_clock::time_point GetModificationTime() const noexcept {
 		return ToSystemTime(st.st_mtim);
 	}
 
@@ -74,7 +74,7 @@ public:
 	 *
 	 * @return 0 on success, an errno value on error
 	 */
-	int CreateExclusive() const;
+	int CreateExclusive() const noexcept;
 };
 
 #endif
