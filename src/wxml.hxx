@@ -53,13 +53,12 @@ wxml_short_element(BufferedOutputStream &o, std::string_view name)
 	wxml_end_short_tag(o);
 }
 
-[[gnu::nonnull]]
 void
-wxml_cdata(BufferedOutputStream &o, const char *data);
+wxml_cdata(BufferedOutputStream &o, std::string_view data);
 
 inline void
 wxml_string_element(BufferedOutputStream &o, std::string_view name,
-		    const char *value)
+		    std::string_view value)
 {
 	wxml_open_element(o, name);
 	wxml_cdata(o, value);
@@ -77,7 +76,7 @@ wxml_fmt_element(BufferedOutputStream &o, std::string_view name,
 }
 
 static void
-wxml_attribute(BufferedOutputStream &o, std::string_view name, const char *value)
+wxml_attribute(BufferedOutputStream &o, std::string_view name, std::string_view value)
 {
 	o.Write(' ');
 	o.Write(name);

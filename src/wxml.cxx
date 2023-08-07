@@ -33,20 +33,21 @@ wxml_escape_char(char ch)
 }
 
 void
-wxml_cdata(BufferedOutputStream &o, const char *data)
+wxml_cdata(BufferedOutputStream &o, std::string_view data)
 {
 	while (true) {
-		const char *p = strpbrk(data, "<>&\"");
-		if (p == nullptr) {
+		const auto p = data.find_first_of("<>&\"");
+		if (p == data.npos) {
 			o.Write(data);
 			return;
 		}
 
-		if (p > data) {
-			o.Write(std::string_view(data, p - data));
-			data = p;
+		if (p > 0) {
+			o.Write(data.substr(0, p));
+			data = data.substr(p);
 		}
 
-		o.Write(wxml_escape_char(*data++));
+		o.Write(wxml_escape_char(data.front()));
+		data = data.substr(1);
 	}
 }

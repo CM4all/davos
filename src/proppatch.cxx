@@ -9,6 +9,7 @@
 #include "expat.hxx"
 #include "error.hxx"
 #include "was/WasOutputStream.hxx"
+#include "util/StringSplit.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -77,25 +78,22 @@ char_data(void *userData, const XML_Char *s, int len)
 }
 
 static void
-ns_short_element(BufferedOutputStream &o, const char *name)
+ns_short_element(BufferedOutputStream &o, std::string_view name)
 {
-	const char *pipe = strchr(name, '|');
-	if (pipe == nullptr)
+	const auto [ns, rest] = Split(name, '|');
+	if (rest.data() == nullptr)
 		// TODO what now? is this a bug or bad user input?
 		return;
 
-	const std::string ns(name, pipe);
-	name = pipe + 1;
-
 	o.Write('<');
 	o.Write("X:");
-	o.Write(name);
-	wxml_attribute(o, "xmlns:X", ns.c_str());
+	o.Write(rest);
+	wxml_attribute(o, "xmlns:X", ns);
 	wxml_end_short_tag(o);
 }
 
 static void
-propstat(BufferedOutputStream &o, const char *name, std::string_view status)
+propstat(BufferedOutputStream &o, std::string_view name, std::string_view status)
 {
 	wxml_open_element(o, "D:propstat");
 	wxml_open_element(o, "D:prop");
@@ -156,7 +154,7 @@ ProppatchMethod::SendResponse(was_simple *w, const char *uri)
 	href(bos, uri);
 
 	for (auto prop : data.props)
-		propstat(bos, prop.name.c_str(),
+		propstat(bos, prop.name,
 			 http_status_to_string(prop.status));
 
 	wxml_close_element(bos, "D:response");
