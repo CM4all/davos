@@ -139,7 +139,7 @@ ProppatchMethod::ParseRequest(was_simple *w)
 }
 
 bool
-ProppatchMethod::SendResponse(was_simple *w, const char *uri)
+ProppatchMethod::SendResponse(was_simple *w, std::string_view uri)
 {
 	if (!was_simple_status(w, HTTP_STATUS_MULTI_STATUS) ||
 	    !was_simple_set_header(w, "content-type",

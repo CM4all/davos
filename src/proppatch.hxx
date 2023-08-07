@@ -65,5 +65,5 @@ public:
 		return data.props;
 	}
 
-	bool SendResponse(was_simple *w, const char *uri);
+	bool SendResponse(was_simple *w, std::string_view uri);
 };

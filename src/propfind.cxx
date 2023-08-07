@@ -54,7 +54,7 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 	      const struct stat &st,
 	      unsigned depth)
 {
-	open_response_prop(o, uri.c_str(), "HTTP/1.1 200 OK");
+	open_response_prop(o, uri, "HTTP/1.1 200 OK");
 
 	if (S_ISDIR(st.st_mode)) {
 		resourcetype_collection(o);

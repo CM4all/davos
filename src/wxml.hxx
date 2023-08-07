@@ -104,7 +104,7 @@ end_multistatus(BufferedOutputStream &o)
  * @param uri an escaped URI
  */
 inline void
-href(BufferedOutputStream &o, const char *uri)
+href(BufferedOutputStream &o, std::string_view uri)
 {
 	wxml_string_element(o, "D:href", uri);
 }
@@ -118,7 +118,7 @@ resourcetype_collection(BufferedOutputStream &o)
 }
 
 inline void
-open_response_prop(BufferedOutputStream &o, const char *uri, const char *status)
+open_response_prop(BufferedOutputStream &o, std::string_view uri, std::string_view status)
 {
 	wxml_open_element(o, "D:response");
 	href(o, uri);

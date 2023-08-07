@@ -33,7 +33,7 @@ end_prop(BufferedOutputStream &o)
 }
 
 static void
-locktoken_href(BufferedOutputStream &o, const char *token)
+locktoken_href(BufferedOutputStream &o, std::string_view token)
 {
 	wxml_open_element(o, "D:locktoken");
 	href(o, token);
@@ -41,7 +41,7 @@ locktoken_href(BufferedOutputStream &o, const char *token)
 }
 
 static void
-owner_href(BufferedOutputStream &o, const char *token)
+owner_href(BufferedOutputStream &o, std::string_view token)
 {
 	wxml_open_element(o, "D:owner");
 	href(o, token);
@@ -158,7 +158,7 @@ LockMethod::Run(was_simple *w, bool created)
 
 	locktoken_href(bos, token);
 	if (!data.owner_href.empty())
-		owner_href(bos, data.owner_href.c_str());
+		owner_href(bos, data.owner_href);
 	wxml_close_element(bos, "D:activelock");
 	wxml_close_element(bos, "D:lockdiscovery");
 	end_prop(bos);
