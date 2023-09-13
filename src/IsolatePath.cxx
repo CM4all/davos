@@ -42,13 +42,6 @@ PivotRootOrThrow(const char *new_root, const char *put_old)
 }
 
 static void
-LazyUmountOrThrow(const char *path)
-{
-	if (umount2(path, MNT_DETACH) < 0)
-		throw FormatErrno("umount('%s') failed", path);
-}
-
-static void
 MakeDirs(const char *path)
 {
 	assert(path != nullptr);
@@ -121,7 +114,7 @@ IsolatePath(const char *path)
 	PivotRootOrThrow(new_root, put_old + 1);
 
 	/* get rid of the old root */
-	LazyUmountOrThrow(put_old);
+	Umount(put_old, MNT_DETACH);
 
 	rmdir(put_old);
 

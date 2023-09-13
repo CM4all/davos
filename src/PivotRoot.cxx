@@ -37,13 +37,6 @@ PivotRootOrThrow(const char *new_root, const char *put_old)
 		throw FormatErrno("pivot_root('%s', '%s') failed", new_root, put_old);
 }
 
-static void
-LazyUmountOrThrow(const char *path)
-{
-	if (umount2(path, MNT_DETACH) < 0)
-		throw FormatErrno("umount('%s') failed", path);
-}
-
 void
 PivotRoot(const char *new_root, const char *put_old)
 {
@@ -71,5 +64,5 @@ PivotRoot(const char *new_root, const char *put_old)
 	PivotRootOrThrow(new_root, put_old);
 
 	/* get rid of the old root */
-	LazyUmountOrThrow(put_old);
+	Umount(put_old, MNT_DETACH);
 }
