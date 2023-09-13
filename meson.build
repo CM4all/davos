@@ -128,6 +128,7 @@ util_dep = declare_dependency(
 subdir('libcommon/src/time')
 subdir('libcommon/src/http')
 subdir('libcommon/src/io')
+subdir('libcommon/src/io/linux')
 subdir('libcommon/src/system')
 subdir('libcommon/src/was')
 
@@ -169,6 +170,7 @@ executable(
     time_dep,
     util_dep,
     io_dep,
+    io_linux_dep,
     system_dep,
     spawn_dep,
   ],
