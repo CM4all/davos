@@ -3,9 +3,9 @@
  */
 
 #include "PivotRoot.hxx"
+#include "lib/fmt/SystemError.hxx"
 #include "system/Mount.hxx"
 #include "system/pivot_root.h"
-#include "system/Error.hxx"
 #include "io/FileDescriptor.hxx"
 
 #include <sched.h>
@@ -20,21 +20,21 @@ static void
 UnshareOrThrow(int flags)
 {
 	if (unshare(flags) < 0)
-		throw FormatErrno("unshare(0x%x) failed", flags);
+		throw FmtErrno("unshare({:#x}) failed", flags);
 }
 
 static void
 ChdirOrThrow(const char *path)
 {
 	if (chdir(path) < 0)
-		throw FormatErrno("chdir('%s') failed", path);
+		throw FmtErrno("chdir('{}') failed", path);
 }
 
 static void
 PivotRootOrThrow(const char *new_root, const char *put_old)
 {
 	if (my_pivot_root(new_root, put_old) < 0)
-		throw FormatErrno("pivot_root('%s', '%s') failed", new_root, put_old);
+		throw FmtErrno("pivot_root('{}', '{}') failed", new_root, put_old);
 }
 
 void
