@@ -1,6 +1,6 @@
 cm4all-davos (0.21) unstable; urgency=low
 
-  * 
+  * create mount points before making the tmpfs read-only for ISOLATE_PATH
 
  --   
 

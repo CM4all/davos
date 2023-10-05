@@ -92,10 +92,6 @@ IsolatePath(const char *path)
 	   without this, the kernel would not allow an unprivileged
 	   process to pivot_root to it */
 	BindMount(new_root, new_root);
-	MountSetAttr(FileDescriptor::Undefined(), new_root,
-		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
-		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV|MOUNT_ATTR_RDONLY,
-		     0);
 
 	/* release a reference to the old root */
 	ChdirOrThrow(new_root);
@@ -104,6 +100,13 @@ IsolatePath(const char *path)
 	mkdir(put_old + 1, 0700);
 
 	MakeDirs(path);
+
+	/* make the new root tmpfs read-only */
+	MountSetAttr(FileDescriptor::Undefined(), new_root,
+		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
+		     MOUNT_ATTR_RDONLY,
+		     0);
+
 	BindMount(path, path + 1);
 	MountSetAttr(FileDescriptor{AT_FDCWD}, path + 1,
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
