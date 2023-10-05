@@ -54,7 +54,7 @@ PivotRoot(const char *new_root, const char *put_old)
 	BindMount(new_root, new_root);
 	MountSetAttr(FileDescriptor::Undefined(), new_root,
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
-		     MS_NOSUID|MS_NOEXEC|MS_NODEV,
+		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV,
 		     0);
 
 	/* release a reference to the old root */

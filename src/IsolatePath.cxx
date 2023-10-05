@@ -94,7 +94,7 @@ IsolatePath(const char *path)
 	BindMount(new_root, new_root);
 	MountSetAttr(FileDescriptor::Undefined(), new_root,
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
-		     MS_NOSUID|MS_RDONLY|MS_NOEXEC|MS_NODEV,
+		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV|MOUNT_ATTR_RDONLY,
 		     0);
 
 	/* release a reference to the old root */
@@ -107,7 +107,7 @@ IsolatePath(const char *path)
 	BindMount(path, path + 1);
 	MountSetAttr(FileDescriptor{AT_FDCWD}, path + 1,
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
-		     MS_NOSUID|MS_NOEXEC|MS_NODEV,
+		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV,
 		     0);
 
 	/* enter the new root */
@@ -120,6 +120,6 @@ IsolatePath(const char *path)
 
 	MountSetAttr(FileDescriptor::Undefined(), "/",
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
-		     MS_NODEV|MS_NOEXEC|MS_NOSUID|MS_RDONLY,
+		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV|MOUNT_ATTR_RDONLY,
 		     0);
 }
