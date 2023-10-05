@@ -2,7 +2,7 @@ cm4all-davos (0.21) unstable; urgency=low
 
   * create mount points before making the tmpfs read-only for ISOLATE_PATH
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 05 Oct 2023 11:45:06 +0200
 
 cm4all-davos (0.20) unstable; urgency=low
 
