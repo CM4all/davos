@@ -20,7 +20,7 @@ class FileResource {
 
 	int error;
 
-	struct stat st;
+	struct statx st;
 
 public:
 	explicit FileResource(std::string &&_path) noexcept;
@@ -36,37 +36,37 @@ public:
 	bool IsFile() const noexcept {
 		assert(Exists());
 
-		return S_ISREG(st.st_mode);
+		return S_ISREG(st.stx_mode);
 	}
 
 	bool IsDirectory() const noexcept {
 		assert(Exists());
 
-		return S_ISDIR(st.st_mode);
+		return S_ISDIR(st.stx_mode);
 	}
 
 	const char *GetPath() const noexcept {
 		return path.c_str();
 	}
 
-	const struct stat &GetStat() const noexcept {
+	const struct statx &GetStat() const noexcept {
 		return st;
 	}
 
-	const struct stat *GetStatIfExists() const noexcept {
+	const struct statx *GetStatIfExists() const noexcept {
 		return Exists() ? &GetStat() : nullptr;
 	}
 
 	off_t GetSize() const noexcept {
-		return st.st_size;
+		return st.stx_size;
 	}
 
 	std::chrono::system_clock::time_point GetAccessTime() const noexcept {
-		return ToSystemTime(st.st_atim);
+		return ToSystemTime(st.stx_atime);
 	}
 
 	std::chrono::system_clock::time_point GetModificationTime() const noexcept {
-		return ToSystemTime(st.st_mtim);
+		return ToSystemTime(st.stx_mtime);
 	}
 
 	/**

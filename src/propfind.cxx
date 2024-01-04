@@ -51,24 +51,24 @@ try {
 
 static void
 propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
-	      const struct stat &st,
+	      const struct statx &st,
 	      unsigned depth)
 {
 	open_response_prop(o, uri, "HTTP/1.1 200 OK");
 
-	if (S_ISDIR(st.st_mode)) {
+	if (S_ISDIR(st.stx_mode)) {
 		resourcetype_collection(o);
-	} else if (S_ISREG(st.st_mode)) {
-		wxml_fmt_element(o, "D:getcontentlength", "{}", st.st_size);
+	} else if (S_ISREG(st.stx_mode)) {
+		wxml_fmt_element(o, "D:getcontentlength", "{}", st.stx_size);
 	}
 
-	const auto mtime = ToSystemTime(st.st_mtim);
+	const auto mtime = ToSystemTime(st.stx_mtime);
 
 	wxml_string_element(o, "D:getlastmodified", http_date_format(mtime));
 
 	close_response_prop(o);
 
-	if (depth > 0 && S_ISDIR(st.st_mode)) {
+	if (depth > 0 && S_ISDIR(st.stx_mode)) {
 		--depth;
 
 		if (uri.back() != '/')
@@ -88,9 +88,11 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 			AppendUriEscape(uri, name.c_str());
 			path.append(name);
 
-			struct stat st2;
-			if (stat(path.c_str(), &st2) == 0) {
-				if (S_ISDIR(st2.st_mode))
+			struct statx st2;
+			if (statx(-1, path.c_str(), AT_STATX_SYNC_AS_STAT,
+				  STATX_TYPE|STATX_MTIME|STATX_SIZE,
+				  &st2) == 0) {
+				if (S_ISDIR(st2.stx_mode))
 					/* directory URIs should end with a slash */
 					uri.push_back('/');
 

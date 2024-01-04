@@ -6,8 +6,8 @@
 
 #include "util/StringBuffer.hxx"
 
-#include <sys/stat.h>
+struct statx;
 
 [[gnu::pure]]
-StringBuffer<32>
-MakeETag(const struct stat &st) noexcept;
+StringBuffer<64>
+MakeETag(const struct statx &st) noexcept;

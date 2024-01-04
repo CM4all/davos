@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <sys/stat.h>
-
+struct statx;
 struct was_simple;
 
 /**
@@ -16,7 +15,7 @@ struct was_simple;
  */
 [[gnu::pure]]
 bool
-CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept;
+CheckIfMatch(const struct was_simple &was, const struct statx *st) noexcept;
 
 /**
  * @return false if there is an "if-none-match" header and it matches
@@ -24,4 +23,4 @@ CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept;
  */
 [[gnu::pure]]
 bool
-CheckIfNoneMatch(const struct was_simple &was, const struct stat *st) noexcept;
+CheckIfNoneMatch(const struct was_simple &was, const struct statx *st) noexcept;

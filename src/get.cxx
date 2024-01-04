@@ -27,7 +27,7 @@
 #include <fcntl.h>
 
 static bool
-SendETagHeader(was_simple *was, const struct stat &st) noexcept
+SendETagHeader(was_simple *was, const struct statx &st) noexcept
 {
 	return was_simple_set_header(was, "etag", MakeETag(st));
 }
@@ -49,14 +49,14 @@ static_response_headers(was_simple *was, const FileResource &resource)
 }
 
 static bool
-SendNotModified(was_simple *was, const struct stat &st) noexcept
+SendNotModified(was_simple *was, const struct statx &st) noexcept
 {
 	return was_simple_status(was, HTTP_STATUS_NOT_MODIFIED) &&
 		SendETagHeader(was, st);
 }
 
 static void
-HandleIfModifiedSince(was_simple *was, const struct stat &st)
+HandleIfModifiedSince(was_simple *was, const struct statx &st)
 {
 	const char *p = was_simple_get_header(was, "if-modified-since");
 	if (p == nullptr)
@@ -68,14 +68,14 @@ HandleIfModifiedSince(was_simple *was, const struct stat &st)
 		throw Was::EndResponse{};
 	}
 
-	if (ToSystemTime(st.st_mtim) < t) {
+	if (ToSystemTime(st.stx_mtime) < t) {
 		SendNotModified(was, st);
 		throw Was::EndResponse{};
 	}
 }
 
 static void
-HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
+HandleIfUnmodifiedSince(was_simple *was, const struct statx &st)
 {
 	const char *p = was_simple_get_header(was, "if-unmodified-since");
 	if (p == nullptr)
@@ -87,14 +87,14 @@ HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
 		throw Was::EndResponse{};
 	}
 
-	if (ToSystemTime(st.st_mtim) >= t) {
+	if (ToSystemTime(st.stx_mtime) >= t) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}
 }
 
 static void
-HandleIfMatch(was_simple *was, const struct stat &st)
+HandleIfMatch(was_simple *was, const struct statx &st)
 {
 	if (!CheckIfMatch(*was, &st)) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
@@ -103,7 +103,7 @@ HandleIfMatch(was_simple *was, const struct stat &st)
 }
 
 static void
-HandleIfNoneMatch(was_simple *was, const struct stat &st)
+HandleIfNoneMatch(was_simple *was, const struct statx &st)
 {
 	if (!CheckIfNoneMatch(*was, &st)) {
 		SendNotModified(was, st);
@@ -115,14 +115,14 @@ HandleIfNoneMatch(was_simple *was, const struct stat &st)
  * Verifies the If-Range request header (RFC 2616 14.27).
  */
 static bool
-CheckIfRange(const char *if_range, const struct stat &st)
+CheckIfRange(const char *if_range, const struct statx &st)
 {
 	if (if_range == nullptr)
 		return true;
 
 	const auto t = http_date_parse(if_range);
 	if (t != std::chrono::system_clock::from_time_t(-1))
-		return std::chrono::system_clock::from_time_t(st.st_mtime) == t;
+		return std::chrono::system_clock::from_time_t(st.stx_mtime.tv_sec) == t;
 
 	return StringIsEqual(if_range, MakeETag(st));
 }
@@ -136,13 +136,15 @@ handle_get(was_simple *was, const FileResource &resource)
 		return;
 	}
 
-	struct stat st;
-	if (fstat(fd.Get(), &st) < 0) {
+	struct statx st;
+	if (statx(fd.Get(), "", AT_EMPTY_PATH|AT_STATX_SYNC_AS_STAT,
+		  STATX_TYPE|STATX_ATIME|STATX_MTIME|STATX_INO|STATX_SIZE,
+		  &st) < 0) {
 		errno_response(was);
 		return;
 	}
 
-	if (!S_ISREG(st.st_mode)) {
+	if (!S_ISREG(st.stx_mode)) {
 		was_simple_status(was, HTTP_STATUS_METHOD_NOT_ALLOWED);
 		return;
 	}
@@ -152,7 +154,7 @@ handle_get(was_simple *was, const FileResource &resource)
 	HandleIfMatch(was, st);
 	HandleIfNoneMatch(was, st);
 
-	HttpRangeRequest range(st.st_size);
+	HttpRangeRequest range(st.stx_size);
 
 	const char *p = was_simple_get_header(was, "range");
 	if (p != nullptr &&
@@ -171,7 +173,7 @@ handle_get(was_simple *was, const FileResource &resource)
 					   FmtBuffer<128>("bytes {}-{}/{}",
 							  range.skip,
 							  range.size - 1,
-							  st.st_size)))
+							  st.stx_size)))
 		    return;
 
 		break;
@@ -182,7 +184,7 @@ handle_get(was_simple *was, const FileResource &resource)
 
 		if (!was_simple_set_header(was, "content-range",
 					   FmtBuffer<128>("bytes */{}",
-							  st.st_size)))
+							  st.stx_size)))
 		    return;
 
 		static_response_headers(was, resource);

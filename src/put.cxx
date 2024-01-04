@@ -20,7 +20,7 @@ extern "C" {
 #include <exception>
 
 static void
-HandleIfMatch(struct was_simple &was, const struct stat *st)
+HandleIfMatch(struct was_simple &was, const struct statx *st)
 {
 	if (!CheckIfMatch(was, st)) {
 		was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);
@@ -29,7 +29,7 @@ HandleIfMatch(struct was_simple &was, const struct stat *st)
 }
 
 static void
-HandleIfNoneMatch(struct was_simple &was, const struct stat *st)
+HandleIfNoneMatch(struct was_simple &was, const struct statx *st)
 {
 	if (!CheckIfNoneMatch(was, st)) {
 		was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);

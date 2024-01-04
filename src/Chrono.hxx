@@ -2,11 +2,20 @@
 
 #include <chrono>
 
+#include <sys/stat.h>
 #include <sys/time.h>
 
 [[gnu::const]]
 static inline std::chrono::system_clock::time_point
 ToSystemTime(const struct timespec ts)
+{
+	return std::chrono::system_clock::from_time_t(ts.tv_sec)
+		+ std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::nanoseconds(ts.tv_nsec));
+}
+
+[[gnu::const]]
+static inline std::chrono::system_clock::time_point
+ToSystemTime(const struct statx_timestamp ts)
 {
 	return std::chrono::system_clock::from_time_t(ts.tv_sec)
 		+ std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::nanoseconds(ts.tv_nsec));

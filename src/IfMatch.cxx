@@ -12,9 +12,10 @@
 #include <was/simple.h>
 
 #include <string.h>
+#include <sys/stat.h>
 
 bool
-CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept
+CheckIfMatch(const struct was_simple &was, const struct statx *st) noexcept
 {
 	const char *p = was_simple_get_header(&was, "if-match");
 	if (p == nullptr || strcmp(p, "*") == 0)
@@ -24,7 +25,7 @@ CheckIfMatch(const struct was_simple &was, const struct stat *st) noexcept
 }
 
 bool
-CheckIfNoneMatch(const struct was_simple &was, const struct stat *st) noexcept
+CheckIfNoneMatch(const struct was_simple &was, const struct statx *st) noexcept
 {
 	const char *p = was_simple_get_header(&was, "if-none-match");
 	if (p == nullptr)
