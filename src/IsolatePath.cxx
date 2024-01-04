@@ -75,7 +75,7 @@ IsolatePath(const char *path)
 
 	DenySetGroups(0);
 	SetupGidMap(0, gid, false);
-	SetupUidMap(0, uid, false);
+	SetupUidMap(0, uid, uid, false);
 
 	/* convert all "shared" mounts to "private" mounts */
 	MountSetAttr(FileDescriptor::Undefined(), "/",
