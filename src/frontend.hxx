@@ -10,8 +10,10 @@
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/ScopeExit.hxx"
+#include "util/StringCompare.hxx"
 
 #include <string>
+#include <string_view>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,8 +30,7 @@
 
 static const char *dav_header;
 
-static const char *mountpoint;
-static size_t mountpoint_length;
+static std::string_view mountpoint;
 
 template<typename Backend>
 static void
@@ -107,10 +108,10 @@ map_uri(const Backend &backend, const char *uri)
 	if (strstr(uri, "/../") != nullptr)
 		throw MalformedUri();
 
-	if (memcmp(uri, mountpoint, mountpoint_length) == 0)
-		uri += mountpoint_length;
-	else if (memcmp(uri, mountpoint, mountpoint_length - 1) == 0 &&
-		 uri[mountpoint_length - 1] == 0)
+	if (StringStartsWith(uri, mountpoint))
+		uri += mountpoint.size();
+	else if (StringStartsWith(uri, mountpoint.substr(0, mountpoint.size() - 1)) &&
+		 uri[mountpoint.size() - 1] == 0)
 		/* special case for clients that remove the trailing slash
 		   (e.g. Microsoft) */
 		uri = "";
@@ -148,26 +149,23 @@ configure_umask(was_simple *w)
 	return true;
 }
 
-[[gnu::pure]]
-static bool
-check_mountpoint(const char *p, size_t length)
+static constexpr bool
+check_mountpoint(std::string_view s) noexcept
 {
-	assert(p != nullptr);
-
-	return p[0] == '/' && p[length - 1] == '/';
+	return !s.empty() && s.front() == '/' && s.back() == '/';
 }
 
 static bool
 configure_mapper(was_simple *w)
 {
-	mountpoint = was_simple_get_parameter(w, "DAVOS_MOUNT");
-	if (mountpoint == nullptr) {
+	const char *m = was_simple_get_parameter(w, "DAVOS_MOUNT");
+	if (m == nullptr) {
 		fprintf(stderr, "No DAVOS_MOUNT\n");
 		return false;
 	}
 
-	mountpoint_length = strlen(mountpoint);
-	if (!check_mountpoint(mountpoint, mountpoint_length)) {
+	mountpoint = m;
+	if (!check_mountpoint(mountpoint)) {
 		fprintf(stderr, "Malformed DAVOS_MOUNT\n");
 		return false;
 	}
