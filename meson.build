@@ -116,15 +116,6 @@ subdir('libcommon/src/io/linux')
 subdir('libcommon/src/system')
 subdir('libcommon/src/was')
 
-spawn = static_library('spawn',
-  'libcommon/src/spawn/UserNamespace.cxx',
-  include_directories: inc,
-  dependencies: [
-    system_dep,
-    io_dep,
-  ])
-spawn_dep = declare_dependency(link_with: spawn)
-
 executable(
   'davos-plain',
   'src/PivotRoot.cxx',
@@ -156,7 +147,6 @@ executable(
     io_dep,
     io_linux_dep,
     system_dep,
-    spawn_dep,
   ],
   install: true,
   install_dir: 'lib/cm4all/was/bin',
