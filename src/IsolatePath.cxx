@@ -11,6 +11,7 @@
 #include "util/ScopeExit.hxx"
 
 #include <assert.h>
+#include <fcntl.h> // for AT_FDCWD
 #include <sched.h>
 #include <unistd.h>
 #include <sys/mount.h>
