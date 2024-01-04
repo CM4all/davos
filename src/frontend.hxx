@@ -4,7 +4,6 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "was.hxx"
 #include "was/Loop.hxx"
 #include "was/WasOutputStream.hxx"
 #include "util/UriEscape.hxx"
@@ -331,7 +330,6 @@ try {
 } catch (OutsideUri) {
 	/* can't copy/move the file out of its site */
 	was_simple_status(was, HTTP_STATUS_FORBIDDEN);
-} catch (WasBreak) {
 }
 
 template<typename Backend>

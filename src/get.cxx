@@ -8,10 +8,10 @@
 #include "ETag.hxx"
 #include "IfMatch.hxx"
 #include "error.hxx"
-#include "was.hxx"
 #include "file.hxx"
 #include "mime_types.hxx"
 #include "Chrono.hxx"
+#include "was/ExceptionResponse.hxx"
 #include "was/Splice.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
@@ -62,12 +62,12 @@ HandleIfModifiedSince(was_simple *was, const struct stat &st)
 	const auto t = http_date_parse(p);
 	if (t < std::chrono::system_clock::time_point()) {
 		was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 
 	if (ToSystemTime(st.st_mtim) < t) {
 		SendNotModified(was, st);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 }
 
@@ -81,12 +81,12 @@ HandleIfUnmodifiedSince(was_simple *was, const struct stat &st)
 	const auto t = http_date_parse(p);
 	if (t < std::chrono::system_clock::time_point()) {
 		was_simple_status(was, HTTP_STATUS_BAD_REQUEST);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 
 	if (ToSystemTime(st.st_mtim) >= t) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 }
 
@@ -95,7 +95,7 @@ HandleIfMatch(was_simple *was, const struct stat &st)
 {
 	if (!CheckIfMatch(*was, &st)) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 }
 
@@ -104,7 +104,7 @@ HandleIfNoneMatch(was_simple *was, const struct stat &st)
 {
 	if (!CheckIfNoneMatch(*was, &st)) {
 		SendNotModified(was, st);
-		throw WasBreak();
+		throw Was::EndResponse{};
 	}
 }
 
