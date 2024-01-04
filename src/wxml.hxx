@@ -71,7 +71,7 @@ wxml_fmt_element(BufferedOutputStream &o, std::string_view name,
 		 const S &fmt, Args&&... args)
 {
 	wxml_open_element(o, name);
-	o.Fmt(fmt, fmt, std::forward<Args>(args)...);
+	o.Fmt(fmt, std::forward<Args>(args)...);
 	wxml_close_element(o, name);
 }
 
