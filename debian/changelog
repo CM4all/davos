@@ -3,7 +3,7 @@ cm4all-davos (0.22) unstable; urgency=low
   * fix malformed "getcontentlength" attributes in PROPFIND response
   * generate ETag with nanosecond granularity
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 04 Jan 2024 22:43:39 +0100
 
 cm4all-davos (0.21) unstable; urgency=low
 
