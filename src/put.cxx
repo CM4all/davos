@@ -48,8 +48,8 @@ handle_put(was_simple *w, const FileResource &resource)
 	try {
 		FileWriter fw(resource.GetPath());
 
-		int64_t remaining = was_simple_input_remaining(w);
-		if (remaining > 0)
+		if (int64_t remaining = was_simple_input_remaining(w);
+		    remaining > 0)
 			fw.Allocate(remaining);
 
 		if (!SpliceFromWas(w, fw.GetFileDescriptor())) {
