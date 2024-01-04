@@ -13,12 +13,15 @@
 #include "Chrono.hxx"
 #include "was/ExceptionResponse.hxx"
 #include "was/Splice.hxx"
+#include "lib/fmt/ToBuffer.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
 #include "util/StringAPI.hxx"
 
 #include <was/simple.h>
+
+#include <fmt/format.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -164,15 +167,12 @@ handle_get(was_simple *was, const FileResource &resource)
 		if (!was_simple_status(was, HTTP_STATUS_PARTIAL_CONTENT))
 			return;
 
-		{
-			char buffer[128];
-			snprintf(buffer, sizeof(buffer), "bytes %llu-%llu/%llu",
-				 (unsigned long long)range.skip,
-				 (unsigned long long)(range.size - 1),
-				 (unsigned long long)st.st_size);
-			if (!was_simple_set_header(was, "content-range", buffer))
-				return;
-		}
+		if (!was_simple_set_header(was, "content-range",
+					   FmtBuffer<128>("bytes {}-{}/{}",
+							  range.skip,
+							  range.size - 1,
+							  st.st_size)))
+		    return;
 
 		break;
 
@@ -180,13 +180,10 @@ handle_get(was_simple *was, const FileResource &resource)
 		if (!was_simple_status(was, HTTP_STATUS_REQUESTED_RANGE_NOT_SATISFIABLE))
 			return;
 
-		{
-			char buffer[128];
-			snprintf(buffer, sizeof(buffer), "bytes */%llu",
-				 (unsigned long long)st.st_size);
-			if (!was_simple_set_header(was, "content-range", buffer))
-				return;
-		}
+		if (!was_simple_set_header(was, "content-range",
+					   FmtBuffer<128>("bytes */{}",
+							  st.st_size)))
+		    return;
 
 		static_response_headers(was, resource);
 		return;
@@ -214,12 +211,9 @@ handle_head(was_simple *was, const FileResource &resource)
 		return;
 	}
 
-	{
-		char buffer[64];
-		sprintf(buffer, "%llu", (unsigned long long)resource.GetSize());
-		if (!was_simple_set_header(was, "content-length", buffer))
-			return;
-	}
+	if (!was_simple_set_header(was, "content-length",
+				   fmt::format_int{resource.GetSize()}.c_str()))
+		return;
 
 	static_response_headers(was, resource);
 }
