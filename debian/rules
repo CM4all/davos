@@ -3,8 +3,6 @@
 
 MESON_OPTIONS = \
 	-Ddocumentation=true \
-	-Dplain=enabled \
-	-Dod=enabled \
 	--werror
 
 %:
