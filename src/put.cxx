@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * Request handler for PUT.
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
 #include "put.hxx"

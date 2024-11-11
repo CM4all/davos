@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * expat wrapper.
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
 #include "expat.hxx"

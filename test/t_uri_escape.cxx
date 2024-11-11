@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright Max Kellermann <max.kellermann@gmail.com>
+
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
 #include "util/Compiler.h"

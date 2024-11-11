@@ -1,11 +1,12 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * Request handlers for "other" commands.
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_OTHER_HXX
-#define DAVOS_OTHER_HXX
+#pragma once
 
 struct was_simple;
 class FileResource;
@@ -18,5 +19,3 @@ handle_copy(was_simple *w, const FileResource &src, const FileResource &dest);
 
 void
 handle_move(was_simple *w, const FileResource &src, const FileResource &dest);
-
-#endif

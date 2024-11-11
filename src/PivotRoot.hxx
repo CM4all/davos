@@ -1,11 +1,8 @@
-/*
- * author: Max Kellermann <mk@cm4all.com>
- */
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
 
-#ifndef PIVOT_ROOT_HXX
-#define PIVOT_ROOT_HXX
+#pragma once
 
 void
 PivotRoot(const char *new_root, const char *put_old);
-
-#endif

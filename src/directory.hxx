@@ -1,16 +1,15 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * Request handler for directories (e.g. MKCOL).
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_DIRECTORY_HXX
-#define DAVOS_DIRECTORY_HXX
+#pragma once
 
 struct was_simple;
 class FileResource;
 
 void
 handle_mkcol(was_simple *was, const FileResource &resource);
-
-#endif

@@ -1,5 +1,5 @@
 Source: cm4all-davos
-Section: non-free/web
+Section: web
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 12~),
@@ -30,7 +30,7 @@ Description: WebDAV server for plain filesystem
  This package contains the plain local filesystem backend.
 
 Package: cm4all-davos-doc
-Section: non-free/doc
+Section: doc
 Architecture: all
 Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Description: WebDAV server for OnlineDrive, documentation

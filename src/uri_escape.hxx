@@ -1,11 +1,12 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * Escape and unescape in URI style ('%20').
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_URI_ESCAPE_HXX
-#define DAVOS_URI_ESCAPE_HXX
+#pragma once
 
 #include "util/Compiler.h"
 
@@ -13,5 +14,3 @@
 
 void
 AppendUriEscape(std::string &dest, const char *src);
-
-#endif

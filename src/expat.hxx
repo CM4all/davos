@@ -1,11 +1,12 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * expat wrapper.
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef DAVOS_EXPAT_HXX
-#define DAVOS_EXPAT_HXX
+#pragma once
 
 #include <expat.h>
 
@@ -35,5 +36,3 @@ public:
 
 	bool Parse(was_simple *w);
 };
-
-#endif

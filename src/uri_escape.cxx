@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
+
 /*
  * Escape and unescape in URI style ('%20').
- *
- * author: Max Kellermann <mk@cm4all.com>
  */
 
 #include "uri_escape.hxx"

@@ -1,8 +1,6 @@
-/*
- * WebDAV server.
- *
- * author: Max Kellermann <mk@cm4all.com>
- */
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright CM4all GmbH
+// author: Max Kellermann <max.kellermann@ionos.com>
 
 #include "was/Loop.hxx"
 #include "was/WasOutputStream.hxx"
