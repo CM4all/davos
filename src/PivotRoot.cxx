@@ -5,7 +5,7 @@
 #include "PivotRoot.hxx"
 #include "lib/fmt/SystemError.hxx"
 #include "system/Mount.hxx"
-#include "system/pivot_root.h"
+#include "system/linux/pivot_root.h"
 #include "io/FileDescriptor.hxx"
 
 #include <sched.h>
