@@ -41,7 +41,7 @@ jobs:
       - name: Configure
         run: |
           meson setup \
-            -Ddocumentation=disabled \
+            -Ddocumentation=false \
              --force-fallback-for=fmt,libcm4all-was-protocol,libcm4all-was-simple,libcm4all-http \
             -Dwrap_mode=nofallback \
             output
