@@ -4,7 +4,14 @@ project('CM4all Davos', 'cpp', version: '0.23',
     'cpp_std=c++20',
     'warning_level=3',
 
+    # This is only here to build subprojects as static libraries
+    'default_library=static',
+
     'fmt:cpp_std=c++20',
+
+    'libwas:apreq2=disabled',
+    'libwas:xios=disabled',
+    'libwas:documentation=disabled',
   ],
 )
 
