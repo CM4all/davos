@@ -24,7 +24,7 @@ FileResource::FileResource(std::string &&_path) noexcept
 int
 FileResource::CreateExclusive() const noexcept
 {
-	int fd = open(GetPath(), O_CREAT|O_EXCL|O_WRONLY|O_NOCTTY, 0666);
+	int fd = open(GetPath(), O_CREAT|O_EXCL|O_WRONLY|O_NOCTTY|O_NONBLOCK, 0666);
 	if (fd < 0)
 		return errno;
 
