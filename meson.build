@@ -1,4 +1,4 @@
-project('CM4all Davos', 'cpp', version: '0.23',
+project('CM4all Davos', 'cpp', version: '0.24',
   meson_version: '>= 1.0',
   default_options: [
     'cpp_std=c++20',
