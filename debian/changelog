@@ -3,7 +3,7 @@ cm4all-davos (0.23) unstable; urgency=low
   * all code is now covered by the Simplified BSD License (BSD-2-Clause)
   * always pass O_NONBLOCK to open()
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 20 Nov 2024 12:22:40 +0100
 
 cm4all-davos (0.22) unstable; urgency=low
 
