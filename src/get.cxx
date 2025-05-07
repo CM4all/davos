@@ -12,13 +12,13 @@
 #include "error.hxx"
 #include "file.hxx"
 #include "mime_types.hxx"
-#include "Chrono.hxx"
 #include "was/ExceptionResponse.hxx"
 #include "was/Splice.hxx"
 #include "lib/fmt/ToBuffer.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "http/Date.hxx"
 #include "http/Range.hxx"
+#include "time/StatxCast.hxx"
 #include "util/StringAPI.hxx"
 
 #include <was/simple.h>
@@ -70,7 +70,7 @@ HandleIfModifiedSince(was_simple *was, const struct statx &st)
 		throw Was::EndResponse{};
 	}
 
-	if (ToSystemTime(st.stx_mtime) < t) {
+	if (ToSystemTimePoint(st.stx_mtime) < t) {
 		SendNotModified(was, st);
 		throw Was::EndResponse{};
 	}
@@ -89,7 +89,7 @@ HandleIfUnmodifiedSince(was_simple *was, const struct statx &st)
 		throw Was::EndResponse{};
 	}
 
-	if (ToSystemTime(st.stx_mtime) >= t) {
+	if (ToSystemTimePoint(st.stx_mtime) >= t) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}

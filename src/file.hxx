@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Chrono.hxx"
+#include "time/StatxCast.hxx"
 
 #include <string>
 #include <chrono>
@@ -63,11 +63,11 @@ public:
 	}
 
 	std::chrono::system_clock::time_point GetAccessTime() const noexcept {
-		return ToSystemTime(st.stx_atime);
+		return ToSystemTimePoint(st.stx_atime);
 	}
 
 	std::chrono::system_clock::time_point GetModificationTime() const noexcept {
-		return ToSystemTime(st.stx_mtime);
+		return ToSystemTimePoint(st.stx_mtime);
 	}
 
 	/**

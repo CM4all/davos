@@ -11,10 +11,10 @@
 #include "wxml.hxx"
 #include "error.hxx"
 #include "file.hxx"
-#include "Chrono.hxx"
 #include "was/WasOutputStream.hxx"
 #include "http/Date.hxx"
 #include "io/DirectoryReader.hxx"
+#include "time/StatxCast.hxx"
 #include "util/Compiler.h"
 
 #include <was/simple.h>
@@ -64,7 +64,7 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 		wxml_fmt_element(o, "D:getcontentlength", "{}", st.stx_size);
 	}
 
-	const auto mtime = ToSystemTime(st.stx_mtime);
+	const auto mtime = ToSystemTimePoint(st.stx_mtime);
 
 	wxml_string_element(o, "D:getlastmodified", http_date_format(mtime));
 

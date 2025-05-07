@@ -14,6 +14,7 @@
 #include "file.hxx"
 #include "PivotRoot.hxx"
 #include "IsolatePath.hxx"
+#include "Chrono.hxx"
 #include "http/Date.hxx"
 #include "util/PrintException.hxx"
 
