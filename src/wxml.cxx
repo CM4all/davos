@@ -10,7 +10,6 @@
 #include "util/LightString.hxx"
 #include "util/Compiler.h"
 
-#include <assert.h>
 #include <string.h>
 
 static const char *
@@ -30,8 +29,7 @@ wxml_escape_char(char ch)
 		return "&quot;";
 	}
 
-	assert(false);
-	gcc_unreachable();
+	std::unreachable();
 }
 
 void
