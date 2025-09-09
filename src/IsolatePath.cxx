@@ -75,7 +75,7 @@ IsolatePath(const char *path)
 	UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
 	DenySetGroups(0);
-	SetupGidMap(0, gid, false);
+	SetupGidMap(0, gid);
 	SetupUidMap(0, uid, uid, 0, 0, false);
 
 	/* convert all "shared" mounts to "private" mounts */
