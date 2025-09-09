@@ -27,14 +27,14 @@ static void
 ChdirOrThrow(const char *path)
 {
 	if (chdir(path) < 0)
-		throw FmtErrno("chdir('{}') failed", path);
+		throw FmtErrno("chdir({:?}) failed", path);
 }
 
 static void
 PivotRootOrThrow(const char *new_root, const char *put_old)
 {
 	if (my_pivot_root(new_root, put_old) < 0)
-		throw FmtErrno("pivot_root('{}', '{}') failed", new_root, put_old);
+		throw FmtErrno("pivot_root({:?}, {:?}) failed", new_root, put_old);
 }
 
 void
