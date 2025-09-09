@@ -1,3 +1,5 @@
 option('documentation', type: 'boolean',
   value: true,
   description: 'Build documentation')
+
+option('test', type: 'feature', description: 'Build unit tests')

@@ -3,6 +3,7 @@
 
 MESON_OPTIONS = \
 	-Ddocumentation=true \
+	-Dtest=enabled \
 	--werror
 
 %:
