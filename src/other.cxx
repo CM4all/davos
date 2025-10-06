@@ -11,17 +11,18 @@
 #include "file.hxx"
 #include "util.hxx"
 #include "system/Error.hxx"
+#include "io/FileAt.hxx"
 #include "io/FileDescriptor.hxx"
 #include "io/RecursiveCopy.hxx"
 #include "io/RecursiveDelete.hxx"
 
-#include <fcntl.h>
+#include <fcntl.h> // for AT_FDCWD
 
 void
 handle_delete(was_simple *w, const FileResource &resource)
 {
 	try {
-		RecursiveDelete(FileDescriptor{AT_FDCWD}, resource.GetPath());
+		RecursiveDelete({FileDescriptor{AT_FDCWD}, resource.GetPath()});
 	} catch (const std::system_error &e) {
 		if (e.code().category() == ErrnoCategory())
 			errno_response(w, e.code().value());
@@ -42,8 +43,8 @@ handle_copy(was_simple *w, const FileResource &src, const FileResource &dest)
 		options |= RECURSIVE_COPY_NO_OVERWRITE;
 
 	try {
-		RecursiveCopy(FileDescriptor{AT_FDCWD}, src.GetPath(),
-			      FileDescriptor{AT_FDCWD}, dest.GetPath(),
+		RecursiveCopy({FileDescriptor{AT_FDCWD}, src.GetPath()},
+			      {FileDescriptor{AT_FDCWD}, dest.GetPath()},
 			      options);
 	} catch (const std::system_error &e) {
 		if (e.code().category() == ErrnoCategory())
