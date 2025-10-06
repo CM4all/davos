@@ -51,7 +51,7 @@ handle_put(was_simple *w, const FileResource &resource)
 		FileWriter fw(resource.GetPath());
 
 		if (int64_t remaining = was_simple_input_remaining(w);
-		    remaining > 0)
+		    remaining >= 64 * 1024)
 			fw.Allocate(remaining);
 
 		if (!SpliceFromWas(w, fw.GetFileDescriptor())) {
