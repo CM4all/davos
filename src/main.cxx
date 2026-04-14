@@ -37,7 +37,7 @@ public:
 	void TearDown() noexcept {}
 
 	[[gnu::pure]]
-	Resource Map(const char *uri) const noexcept;
+	Resource Map(std::string_view uri) const noexcept;
 
 	void HandleHead(was_simple *w, const Resource &resource) {
 		handle_head(w, resource);
@@ -91,11 +91,11 @@ SimpleBackend::Setup(was_simple *w) noexcept
 }
 
 inline SimpleBackend::Resource
-SimpleBackend::Map(const char *uri) const noexcept
+SimpleBackend::Map(std::string_view uri) const noexcept
 {
 	std::string path(document_root);
 
-	if (*uri != 0) {
+	if (!uri.empty()) {
 		path.push_back('/');
 		path.append(uri);
 	}

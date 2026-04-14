@@ -120,7 +120,7 @@ map_uri(const Backend &backend, const char *uri)
 	if (!uri2.empty() && uri2.back() == '/')
 		uri2.pop_back();
 
-	return backend.Map(uri2.c_str());
+	return backend.Map(uri2);
 }
 
 static bool
