@@ -151,10 +151,10 @@ handle_get(was_simple *was, const FileResource &resource)
 		return;
 	}
 
-	HandleIfModifiedSince(was, st);
-	HandleIfUnmodifiedSince(was, st);
 	HandleIfMatch(was, st);
 	HandleIfNoneMatch(was, st);
+	HandleIfModifiedSince(was, st);
+	HandleIfUnmodifiedSince(was, st);
 
 	HttpRangeRequest range(st.stx_size);
 
