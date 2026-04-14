@@ -77,12 +77,13 @@ LookupMimeTypeByExtension(std::string_view ext)
 {
 	LoadMimeTypesFile();
 
-	char lc_ext[32];
-	if (ext.size() >= sizeof(lc_ext))
+	char buffer[32];
+	if (ext.size() >= sizeof(buffer))
 		return nullptr;
 
-	std::transform(ext.begin(), ext.end(), lc_ext, ToLowerASCII);
-	lc_ext[ext.size()] = 0;
+	std::transform(ext.begin(), ext.end(), buffer, ToLowerASCII);
+
+	const std::string_view lc_ext{buffer, ext.size()};
 
 	auto i = mime_types.find(lc_ext);
 	if (i == mime_types.end())
