@@ -16,10 +16,16 @@ bool
 CheckIfMatch(const struct was_simple &was, const struct statx *st) noexcept
 {
 	const char *p = was_simple_get_header(&was, "if-match");
-	if (p == nullptr || strcmp(p, "*") == 0)
+	if (p == nullptr)
 		return true;
 
-	return st != nullptr && http_list_contains(p, MakeETag(*st).c_str());
+	if (st == nullptr)
+		return false;
+
+	if (strcmp(p, "*") == 0)
+		return true;
+
+	return http_list_contains(p, MakeETag(*st).c_str());
 }
 
 bool
