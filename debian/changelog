@@ -1,5 +1,6 @@
 cm4all-davos (0.25) unstable; urgency=low
 
+  * disallow URIs ending with "/.."
   * skip fallocate() for small files
   * fix build with glibc 2.43
 

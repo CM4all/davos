@@ -104,7 +104,7 @@ map_uri(const Backend &backend, const char *_uri)
 
 	std::string_view uri = unescaped.c_str();
 
-	if (uri.contains("/../"sv))
+	if (uri.contains("/../"sv) || uri.ends_with("/.."sv))
 		throw MalformedUri();
 
 	if (SkipPrefix(uri, mountpoint)) {
