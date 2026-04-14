@@ -54,20 +54,21 @@ LoadMimeTypesFile()
 		if (p == line || *p == 0)
 			continue;
 
-		*p++ = 0; /* terminate first column */
+		const std::string_view mime_type{line, p};
+
+		++p;
 
 		/* iterate through all following columns */
 
 		char *start;
 		while (*(start = StripLeft(p)) != 0) {
 			p = end_of_word(start);
-			if (*p != 0)
-				/* terminate filename extension if it isn't already at
-				   EOL */
-				*p++ = 0;
 
 			if (p > start)
-				mime_types.emplace(start, line);
+				mime_types.emplace(std::string_view{start, p}, mime_type);
+
+			if (*p != 0)
+				++p;
 		}
 	}
 }
