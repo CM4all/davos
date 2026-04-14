@@ -1,6 +1,7 @@
 cm4all-davos (0.25) unstable; urgency=low
 
   * skip fallocate() for small files
+  * fix build with glibc 2.43
 
  --   
 
