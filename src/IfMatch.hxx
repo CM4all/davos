@@ -4,21 +4,15 @@
 
 #pragma once
 
+#include "PreconditionResult.hxx"
+
 struct statx;
 struct was_simple;
 
-/**
- * @return false if there is an "if-match" header and it does not
- * match the file's ETag
- */
 [[gnu::pure]]
-bool
+PreconditionResult
 CheckIfMatch(const struct was_simple &was, const struct statx *st) noexcept;
 
-/**
- * @return false if there is an "if-none-match" header and it matches
- * the file's ETag
- */
 [[gnu::pure]]
-bool
+PreconditionResult
 CheckIfNoneMatch(const struct was_simple &was, const struct statx *st) noexcept;

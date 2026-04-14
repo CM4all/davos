@@ -98,7 +98,7 @@ HandleIfUnmodifiedSince(was_simple *was, const struct statx &st)
 static void
 HandleIfMatch(was_simple *was, const struct statx &st)
 {
-	if (!CheckIfMatch(*was, &st)) {
+	if (CheckIfMatch(*was, &st) == PreconditionResult::FAILURE) {
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}
@@ -107,7 +107,7 @@ HandleIfMatch(was_simple *was, const struct statx &st)
 static void
 HandleIfNoneMatch(was_simple *was, const struct statx &st)
 {
-	if (!CheckIfNoneMatch(*was, &st)) {
+	if (CheckIfNoneMatch(*was, &st) == PreconditionResult::FAILURE) {
 		SendNotModified(was, st);
 		throw Was::EndResponse{};
 	}

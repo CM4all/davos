@@ -24,7 +24,7 @@ extern "C" {
 static void
 HandleIfMatch(struct was_simple &was, const struct statx *st)
 {
-	if (!CheckIfMatch(was, st)) {
+	if (CheckIfMatch(was, st) == PreconditionResult::FAILURE) {
 		was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}
@@ -33,7 +33,7 @@ HandleIfMatch(struct was_simple &was, const struct statx *st)
 static void
 HandleIfNoneMatch(struct was_simple &was, const struct statx *st)
 {
-	if (!CheckIfNoneMatch(was, st)) {
+	if (CheckIfNoneMatch(was, st) == PreconditionResult::FAILURE) {
 		was_simple_status(&was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}
