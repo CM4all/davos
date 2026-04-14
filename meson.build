@@ -145,6 +145,7 @@ executable(
   'src/lock.cxx',
   'src/other.cxx',
   'src/file.cxx',
+  'src/PlainBackend.cxx',
   'src/main.cxx',
   include_directories: inc,
   dependencies: [
