@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-static std::map<std::string, std::string> mime_types;
+static std::map<std::string, std::string, std::less<>> mime_types;
 static bool mime_types_loaded = false;
 
 static char *
