@@ -25,6 +25,8 @@
 #endif
 #endif
 
+using std::string_view_literals::operator""sv;
+
 static const char *dav_header;
 
 static std::string_view mountpoint;
@@ -92,35 +94,32 @@ struct OutsideUri {};
  */
 template<class Backend>
 static typename Backend::Resource
-map_uri(const Backend &backend, const char *uri)
+map_uri(const Backend &backend, const char *_uri)
 {
-	assert(uri != nullptr);
+	assert(_uri != nullptr);
 
-	const LightString unescaped = UriUnescape(uri);
+	const LightString unescaped = UriUnescape(_uri);
 	if (unescaped.IsNull())
 		throw MalformedUri();
 
-	uri = unescaped.c_str();
+	std::string_view uri = unescaped.c_str();
 
-	if (strstr(uri, "/../") != nullptr)
+	if (uri.contains("/../"sv))
 		throw MalformedUri();
 
-	if (StringStartsWith(uri, mountpoint))
-		uri += mountpoint.size();
-	else if (StringStartsWith(uri, mountpoint.substr(0, mountpoint.size() - 1)) &&
-		 uri[mountpoint.size() - 1] == 0)
+	if (SkipPrefix(uri, mountpoint)) {
+	} else if (uri == mountpoint.substr(0, mountpoint.size() - 1))
 		/* special case for clients that remove the trailing slash
 		   (e.g. Microsoft) */
-		uri = "";
+		uri = ""sv;
 	else
 		throw OutsideUri();
 
 	/* strip trailing slash */
-	std::string_view uri2{uri};
-	if (uri2.ends_with('/'))
-		uri2 = uri2.substr(0, uri2.size() - 1);
+	if (uri.ends_with('/'))
+		uri = uri.substr(0, uri.size() - 1);
 
-	return backend.Map(uri2);
+	return backend.Map(uri);
 }
 
 static bool
