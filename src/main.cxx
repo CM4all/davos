@@ -33,11 +33,11 @@ class SimpleBackend {
 public:
 	typedef FileResource Resource;
 
-	bool Setup(was_simple *w);
-	void TearDown() {}
+	bool Setup(was_simple *w) noexcept;
+	void TearDown() noexcept {}
 
 	[[gnu::pure]]
-	Resource Map(const char *uri) const;
+	Resource Map(const char *uri) const noexcept;
 
 	void HandleHead(was_simple *w, const Resource &resource) {
 		handle_head(w, resource);
@@ -79,7 +79,7 @@ public:
 };
 
 inline bool
-SimpleBackend::Setup(was_simple *w)
+SimpleBackend::Setup(was_simple *w) noexcept
 {
 	document_root = was_simple_get_parameter(w, "DAVOS_DOCUMENT_ROOT");
 	if (document_root == nullptr) {
@@ -91,7 +91,7 @@ SimpleBackend::Setup(was_simple *w)
 }
 
 inline SimpleBackend::Resource
-SimpleBackend::Map(const char *uri) const
+SimpleBackend::Map(const char *uri) const noexcept
 {
 	std::string path(document_root);
 
@@ -241,7 +241,7 @@ MaybeIsolatePath()
 }
 
 int
-main(int, const char *const*)
+main(int, const char *const*) noexcept
 try {
 	MaybePivotRoot();
 	MaybeIsolatePath();
