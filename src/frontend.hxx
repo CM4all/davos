@@ -117,7 +117,7 @@ map_uri(const Backend &backend, const char *uri)
 
 	/* strip trailing slash */
 	std::string_view uri2{uri};
-	if (!uri2.empty() && uri2.back() == '/')
+	if (uri2.ends_with('/'))
 		uri2 = uri2.substr(0, uri2.size() - 1);
 
 	return backend.Map(uri2);
