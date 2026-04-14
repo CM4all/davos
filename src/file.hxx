@@ -50,6 +50,10 @@ public:
 		return path.c_str();
 	}
 
+	std::string_view GetPathView() const noexcept {
+		return path;
+	}
+
 	const struct statx &GetStat() const noexcept {
 		return st;
 	}

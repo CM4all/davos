@@ -8,10 +8,12 @@
 
 #pragma once
 
-[[gnu::pure]]
-const char *
-LookupMimeTypeByFileName(const char *name);
+#include <string_view>
 
 [[gnu::pure]]
 const char *
-LookupMimeTypeByFilePath(const char *path);
+LookupMimeTypeByFileName(std::string_view name);
+
+[[gnu::pure]]
+const char *
+LookupMimeTypeByFilePath(std::string_view path);

@@ -9,6 +9,7 @@
 #include "mime_types.hxx"
 #include "util/CharUtil.hxx"
 #include "util/StringStrip.hxx"
+#include "util/StringSplit.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <map>
@@ -72,17 +73,16 @@ LoadMimeTypesFile()
 }
 
 static const char *
-LookupMimeTypeByExtension(const char *ext)
+LookupMimeTypeByExtension(std::string_view ext)
 {
 	LoadMimeTypesFile();
 
-	const size_t length = strlen(ext);
 	char lc_ext[32];
-	if (length >= sizeof(lc_ext))
+	if (ext.size() >= sizeof(lc_ext))
 		return nullptr;
 
-	std::transform(ext, ext + length, lc_ext, ToLowerASCII);
-	lc_ext[length] = 0;
+	std::transform(ext.begin(), ext.end(), lc_ext, ToLowerASCII);
+	lc_ext[ext.size()] = 0;
 
 	auto i = mime_types.find(lc_ext);
 	if (i == mime_types.end())
@@ -92,21 +92,21 @@ LookupMimeTypeByExtension(const char *ext)
 }
 
 const char *
-LookupMimeTypeByFileName(const char *name)
+LookupMimeTypeByFileName(std::string_view name)
 {
-	const char *dot = strrchr(name + 1, '.');
-	if (dot == nullptr || dot[1] == 0)
+	const auto [_, suffix] = SplitLast(name, '.');
+	if (suffix.empty())
 		return nullptr;
 
-	return LookupMimeTypeByExtension(dot + 1);
+	return LookupMimeTypeByExtension(suffix);
 }
 
 const char *
-LookupMimeTypeByFilePath(const char *path)
+LookupMimeTypeByFilePath(std::string_view path)
 {
-	const char *slash = strrchr(path, '/');
-	if (slash != nullptr)
-		path = slash + 1;
+	const auto [_, base] = SplitLast(path, '/');
+	if (base.data() != nullptr)
+		path = base;
 
 	return LookupMimeTypeByFileName(path);
 }

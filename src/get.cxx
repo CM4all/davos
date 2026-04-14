@@ -37,7 +37,7 @@ SendETagHeader(was_simple *was, const struct statx &st) noexcept
 static bool
 static_response_headers(was_simple *was, const FileResource &resource)
 {
-	const char *content_type = LookupMimeTypeByFilePath(resource.GetPath());
+	const char *content_type = LookupMimeTypeByFilePath(resource.GetPathView());
 	if (content_type == nullptr)
 		content_type = "application/octet-stream";
 
