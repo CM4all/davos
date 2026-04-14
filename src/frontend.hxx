@@ -116,9 +116,9 @@ map_uri(const Backend &backend, const char *uri)
 		throw OutsideUri();
 
 	/* strip trailing slash */
-	std::string uri2(uri);
+	std::string_view uri2{uri};
 	if (!uri2.empty() && uri2.back() == '/')
-		uri2.pop_back();
+		uri2 = uri2.substr(0, uri2.size() - 1);
 
 	return backend.Map(uri2);
 }
