@@ -95,22 +95,46 @@ HandleIfUnmodifiedSince(was_simple *was, const struct statx &st)
 	}
 }
 
-static void
+/**
+ * @return false if there was no If-Match header
+ */
+static bool
 HandleIfMatch(was_simple *was, const struct statx &st)
 {
-	if (CheckIfMatch(*was, &st) == PreconditionResult::FAILURE) {
+	switch (CheckIfMatch(*was, &st)) {
+	case PreconditionResult::NONE:
+		return false;
+
+	case PreconditionResult::SUCCESS:
+		return true;
+
+	case PreconditionResult::FAILURE:
 		was_simple_status(was, HTTP_STATUS_PRECONDITION_FAILED);
 		throw Was::EndResponse{};
 	}
+
+	std::unreachable();
 }
 
-static void
+/**
+ * @return false if there was no If-None-Match header
+ */
+static bool
 HandleIfNoneMatch(was_simple *was, const struct statx &st)
 {
-	if (CheckIfNoneMatch(*was, &st) == PreconditionResult::FAILURE) {
+	switch (CheckIfNoneMatch(*was, &st)) {
+	case PreconditionResult::NONE:
+		return false;
+
+	case PreconditionResult::SUCCESS:
+		return true;
+
+	case PreconditionResult::FAILURE:
 		SendNotModified(was, st);
 		throw Was::EndResponse{};
 	}
+
+	std::unreachable();
 }
 
 /**
@@ -151,10 +175,12 @@ handle_get(was_simple *was, const FileResource &resource)
 		return;
 	}
 
-	HandleIfMatch(was, st);
-	HandleIfNoneMatch(was, st);
-	HandleIfModifiedSince(was, st);
-	HandleIfUnmodifiedSince(was, st);
+	const bool has_if_match = HandleIfMatch(was, st);
+	const bool has_if_none_match = HandleIfNoneMatch(was, st);
+	if (!has_if_none_match)
+		HandleIfModifiedSince(was, st);
+	if (!has_if_match)
+		HandleIfUnmodifiedSince(was, st);
 
 	HttpRangeRequest range(st.stx_size);
 
