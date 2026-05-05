@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <string_view>
+
 class LightString;
 
 LightString
-UriEscapePath(const char *src);
+UriEscapePath(std::string_view src);
 
 LightString
-UriUnescape(const char *src);
+UriUnescape(std::string_view src);

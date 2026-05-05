@@ -8,8 +8,6 @@
 #include "uri/Unescape.hxx"
 #include "LightString.hxx"
 
-#include <cstring>
-
 /**
  * @see RFC 3986 2.3
  */
@@ -21,11 +19,11 @@ IsUriPathUnreserved(char ch)
 }
 
 static constexpr size_t
-CountEscapePath(const char *p)
+CountEscapePath(const std::string_view s) noexcept
 {
 	size_t n = 0;
-	while (*p)
-		if (!IsUriPathUnreserved(*p++))
+	for (const char ch : s)
+		if (!IsUriPathUnreserved(ch))
 			++n;
 	return n;
 }
@@ -39,12 +37,9 @@ UriEscapeByte(char *p, uint8_t value)
 }
 
 static constexpr char *
-UriEscapePath(char *dest, const char *src)
+UriEscapePath(char *dest, const std::string_view src) noexcept
 {
-
-	while (*src) {
-		const char ch = *src++;
-
+	for (const char ch : src) {
 		if (IsUriPathUnreserved(ch))
 			*dest++ = ch;
 		else
@@ -55,25 +50,24 @@ UriEscapePath(char *dest, const char *src)
 }
 
 LightString
-UriEscapePath(const char *src)
+UriEscapePath(const std::string_view src)
 {
 	size_t n_escape = CountEscapePath(src);
 	if (n_escape == 0)
 		return LightString::Make(src);
 
-	char *dest = new char[strlen(src) + n_escape * 2];
+	char *dest = new char[src.size() + n_escape * 2];
 	char *end = UriEscapePath(dest, src);
 	return LightString::Donate(dest, end - dest);
 }
 
 LightString
-UriUnescape(const char *_src)
+UriUnescape(const std::string_view src)
 {
-	const std::string_view src{_src};
 	if (src.find('%') == src.npos)
 		/* no escape, no change required, return the existing
 		   pointer without allocating a copy */
-		return LightString::Make(_src);
+		return LightString::Make(src);
 
 	/* worst-case allocation */
 	char *dest = new char[src.size()];
