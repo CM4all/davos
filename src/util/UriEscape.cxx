@@ -13,15 +13,14 @@
 /**
  * @see RFC 3986 2.3
  */
-constexpr
-static inline bool
+static constexpr bool
 IsUriPathUnreserved(char ch)
 {
 	return IsUriUnreservedChar(ch) || IsUriSubcomponentDelimiter(ch) ||
 		ch == ':' || ch == '@' || ch == '/';
 }
 
-static size_t
+static constexpr size_t
 CountEscapePath(const char *p)
 {
 	size_t n = 0;
@@ -31,7 +30,7 @@ CountEscapePath(const char *p)
 	return n;
 }
 
-static char *
+static constexpr char *
 UriEscapeByte(char *p, uint8_t value)
 {
 	*p++ = '%';
@@ -39,7 +38,7 @@ UriEscapeByte(char *p, uint8_t value)
 	return p;
 }
 
-static char *
+static constexpr char *
 UriEscapePath(char *dest, const char *src)
 {
 
