@@ -14,52 +14,52 @@ class LightString {
 	const char *value;
 	char *allocation;
 
-	LightString():value(nullptr), allocation(nullptr) {}
+	constexpr LightString() noexcept:value(nullptr), allocation(nullptr) {}
 
-	explicit LightString(char *_allocation)
+	explicit constexpr LightString(char *_allocation) noexcept
 		:value(_allocation), allocation(_allocation) {}
 
-	explicit LightString(const char *_value)
+	explicit constexpr LightString(const char *_value) noexcept
 		:value(_value), allocation(nullptr) {}
 
 public:
-	LightString(std::nullptr_t n):value(n), allocation(n) {}
+	constexpr LightString(std::nullptr_t n) noexcept:value(n), allocation(n) {}
 
-	LightString(LightString &&src)
+	constexpr LightString(LightString &&src) noexcept
 		:value(src.value), allocation(src.Steal()) {
 	}
 
-	~LightString() {
+	constexpr ~LightString() noexcept {
 		delete[] allocation;
 	}
 
-	static LightString Donate(char *allocation) {
+	static constexpr LightString Donate(char *allocation) noexcept {
 		return LightString(allocation);
 	}
 
-	static LightString Make(const char *value) {
+	static constexpr LightString Make(const char *value) noexcept {
 		return LightString(value);
 	}
 
-	static LightString Null() {
+	static constexpr LightString Null() noexcept {
 		return nullptr;
 	}
 
-	LightString &operator=(LightString &&src) {
+	constexpr LightString &operator=(LightString &&src) noexcept {
 		value = src.value;
 		std::swap(allocation, src.allocation);
 		return *this;
 	}
 
-	bool IsNull() const {
+	constexpr bool IsNull() const noexcept {
 		return value == nullptr;
 	}
 
-	const char *c_str() const {
+	constexpr const char *c_str() const noexcept {
 		return value;
 	}
 
-	char *Steal() {
+	constexpr char *Steal() noexcept {
 		char *result = allocation;
 		allocation = nullptr;
 		return result;
