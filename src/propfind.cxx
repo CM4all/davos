@@ -15,7 +15,6 @@
 #include "http/Date.hxx"
 #include "io/DirectoryReader.hxx"
 #include "time/StatxCast.hxx"
-#include "util/Compiler.h"
 
 #include <was/simple.h>
 

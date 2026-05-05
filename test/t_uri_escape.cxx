@@ -3,7 +3,6 @@
 
 #include "util/UriEscape.hxx"
 #include "util/LightString.hxx"
-#include "util/Compiler.h"
 
 #include <gtest/gtest.h>
 

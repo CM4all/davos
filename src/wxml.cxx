@@ -8,7 +8,8 @@
 
 #include "wxml.hxx"
 #include "util/LightString.hxx"
-#include "util/Compiler.h"
+
+#include <utility> // for std::unreachable()
 
 #include <string.h>
 
