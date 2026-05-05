@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef> // for std::nullptr_t
+#include <string_view>
 #include <utility>
 
 /**
@@ -54,7 +55,7 @@ public:
 		return value == nullptr;
 	}
 
-	constexpr const char *c_str() const noexcept {
+	constexpr operator std::string_view() const noexcept {
 		return value;
 	}
 };

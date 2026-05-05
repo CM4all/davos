@@ -37,22 +37,29 @@ static constexpr TestPair pairs[] = {
 TEST(UriEscapeTest, EscapePath)
 {
 	for (auto i : literals) {
-		auto result = UriEscapePath(i);
-		ASSERT_EQ(result.c_str(), i);
+		const auto result = UriEscapePath(i);
+		ASSERT_FALSE(result.IsNull());
+		const std::string_view sv{result};
+		EXPECT_EQ(sv.data(), i);
+		EXPECT_EQ(sv.size(), strlen(i));
 	}
 
 	for (auto i : pairs) {
-		auto result = UriEscapePath(i.raw);
+		const auto result = UriEscapePath(i.raw);
 		ASSERT_FALSE(result.IsNull());
-		ASSERT_STREQ(result.c_str(), i.escaped);
+		const std::string_view sv{result};
+		EXPECT_EQ(sv, i.escaped);
 	}
 }
 
 TEST(UriEscapeTest, Unescape)
 {
 	for (auto i : literals) {
-		auto result = UriUnescape(i);
-		assert(result.c_str() == i);
+		const auto result = UriUnescape(i);
+		ASSERT_FALSE(result.IsNull());
+		const std::string_view sv{result};
+		EXPECT_EQ(sv.data(), i);
+		EXPECT_EQ(sv.size(), strlen(i));
 	}
 
 	for (auto i : malformed) {
@@ -61,8 +68,9 @@ TEST(UriEscapeTest, Unescape)
 	}
 
 	for (auto i : pairs) {
-		auto result = UriUnescape(i.escaped);
+		const auto result = UriUnescape(i.escaped);
 		assert(!result.IsNull());
-		assert(strcmp(result.c_str(), i.raw) == 0);
+		const std::string_view sv{result};
+		EXPECT_EQ(sv, i.raw);
 	}
 }

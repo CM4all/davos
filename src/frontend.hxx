@@ -102,7 +102,7 @@ map_uri(const Backend &backend, const char *_uri)
 	if (unescaped.IsNull())
 		throw MalformedUri();
 
-	std::string_view uri = unescaped.c_str();
+	std::string_view uri = unescaped;
 
 	if (uri.contains("/../"sv) || uri.ends_with("/.."sv))
 		throw MalformedUri();
