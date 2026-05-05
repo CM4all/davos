@@ -61,9 +61,9 @@ UriEscapePath(const char *src)
 	if (n_escape == 0)
 		return LightString::Make(src);
 
-	char *dest = new char[strlen(src) + n_escape * 2 + 1];
-	*UriEscapePath(dest, src) = 0;
-	return LightString::Donate(dest);
+	char *dest = new char[strlen(src) + n_escape * 2];
+	char *end = UriEscapePath(dest, src);
+	return LightString::Donate(dest, end - dest);
 }
 
 LightString
@@ -76,7 +76,7 @@ UriUnescape(const char *_src)
 		return LightString::Make(_src);
 
 	/* worst-case allocation */
-	char *dest = new char[src.size() + 1];
+	char *dest = new char[src.size()];
 
 	char *end = UriUnescape(dest, src);
 	if (end == nullptr) {
@@ -84,7 +84,5 @@ UriUnescape(const char *_src)
 		return nullptr;
 	}
 
-	*end = 0;
-
-	return LightString::Donate(dest);
+	return LightString::Donate(dest, end - dest);
 }

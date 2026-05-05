@@ -14,19 +14,19 @@
  * class.
  */
 class LightString {
-	const char *value;
+	std::string_view value;
 	char *allocation;
 
-	constexpr LightString() noexcept:value(nullptr), allocation(nullptr) {}
+	constexpr LightString() noexcept:allocation(nullptr) {}
 
-	explicit constexpr LightString(AdoptTag, char *_allocation) noexcept
-		:value(_allocation), allocation(_allocation) {}
+	explicit constexpr LightString(AdoptTag, char *_allocation, std::size_t size) noexcept
+		:value(_allocation, size), allocation(_allocation) {}
 
-	explicit constexpr LightString(const char *_value) noexcept
+	explicit constexpr LightString(std::string_view _value) noexcept
 		:value(_value), allocation(nullptr) {}
 
 public:
-	constexpr LightString(std::nullptr_t n) noexcept:value(n), allocation(n) {}
+	constexpr LightString(std::nullptr_t n) noexcept:allocation(n) {}
 
 	constexpr LightString(LightString &&src) noexcept
 		:value(src.value), allocation(std::exchange(src.allocation, nullptr)) {}
@@ -35,11 +35,11 @@ public:
 		delete[] allocation;
 	}
 
-	static constexpr LightString Donate(char *allocation) noexcept {
-		return LightString{AdoptTag{}, allocation};
+	static constexpr LightString Donate(char *allocation, std::size_t size) noexcept {
+		return LightString{AdoptTag{}, allocation, size};
 	}
 
-	static constexpr LightString Make(const char *value) noexcept {
+	static constexpr LightString Make(std::string_view value) noexcept {
 		return LightString(value);
 	}
 
@@ -54,7 +54,7 @@ public:
 	}
 
 	constexpr bool IsNull() const noexcept {
-		return value == nullptr;
+		return value.data() == nullptr;
 	}
 
 	constexpr operator std::string_view() const noexcept {
