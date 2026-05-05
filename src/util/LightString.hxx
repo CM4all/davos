@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "util/TagStructs.hxx"
+
 #include <cstddef> // for std::nullptr_t
 #include <string_view>
 #include <utility>
@@ -17,7 +19,7 @@ class LightString {
 
 	constexpr LightString() noexcept:value(nullptr), allocation(nullptr) {}
 
-	explicit constexpr LightString(char *_allocation) noexcept
+	explicit constexpr LightString(AdoptTag, char *_allocation) noexcept
 		:value(_allocation), allocation(_allocation) {}
 
 	explicit constexpr LightString(const char *_value) noexcept
@@ -34,7 +36,7 @@ public:
 	}
 
 	static constexpr LightString Donate(char *allocation) noexcept {
-		return LightString(allocation);
+		return LightString{AdoptTag{}, allocation};
 	}
 
 	static constexpr LightString Make(const char *value) noexcept {
