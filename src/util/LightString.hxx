@@ -26,8 +26,7 @@ public:
 	constexpr LightString(std::nullptr_t n) noexcept:value(n), allocation(n) {}
 
 	constexpr LightString(LightString &&src) noexcept
-		:value(src.value), allocation(src.Steal()) {
-	}
+		:value(src.value), allocation(std::exchange(src.allocation, nullptr)) {}
 
 	constexpr ~LightString() noexcept {
 		delete[] allocation;
@@ -57,11 +56,5 @@ public:
 
 	constexpr const char *c_str() const noexcept {
 		return value;
-	}
-
-	constexpr char *Steal() noexcept {
-		char *result = allocation;
-		allocation = nullptr;
-		return result;
 	}
 };
