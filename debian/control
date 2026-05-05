@@ -10,6 +10,7 @@ Build-Depends: debhelper (>= 12~),
  libfmt-dev (>= 7),
  libcm4all-was-simple-dev (>= 1.20),
  libgtest-dev,
+ pkg-config,
  python3-sphinx
 Build-Conflicts: libcm4all-inline-dev (<< 0.3.6)
 Standards-Version: 3.9.1

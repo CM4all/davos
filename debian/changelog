@@ -5,6 +5,7 @@ cm4all-davos (0.25) unstable; urgency=low
   * check "If-Match" before "If-Modified-Since"
   * skip fallocate() for small files
   * fix build with glibc 2.43
+  * debian: add missing build-dependency on pkg-config
 
  --   
 
