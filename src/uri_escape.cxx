@@ -11,7 +11,7 @@
 #include "util/LightString.hxx"
 
 void
-AppendUriEscape(std::string &dest, const char *src)
+AppendUriEscape(std::string &dest, std::string_view src) noexcept
 {
 	const auto escaped = UriEscapePath(src);
 	dest.append(escaped);

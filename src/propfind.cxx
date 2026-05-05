@@ -85,8 +85,8 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 		path.push_back('/');
 		const auto path_length = path.length();
 
-		for (const std::string &name : children) {
-			AppendUriEscape(uri, name.c_str());
+		for (const std::string_view name : children) {
+			AppendUriEscape(uri, name);
 			path.append(name);
 
 			struct statx st2;
