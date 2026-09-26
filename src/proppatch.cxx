@@ -10,6 +10,7 @@
 #include "wxml.hxx"
 #include "expat.hxx"
 #include "error.hxx"
+#include "http/Status.hxx"
 #include "was/WasOutputStream.hxx"
 #include "util/StringSplit.hxx"
 
@@ -157,7 +158,7 @@ ProppatchMethod::SendResponse(was_simple *w, std::string_view uri)
 
 	for (auto prop : data.props)
 		propstat(bos, prop.name,
-			 http_status_to_string(prop.status));
+			 http_status_to_string(static_cast<HttpStatus>(prop.status)));
 
 	wxml_close_element(bos, "D:response");
 	end_multistatus(bos);

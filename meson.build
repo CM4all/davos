@@ -10,7 +10,6 @@ project('CM4all Davos', 'cpp', version: '0.26',
     'fmt:cpp_std=c++23',
 
     'libwas:apreq2=disabled',
-    'libwas:xios=disabled',
     'libwas:documentation=disabled',
   ],
 )
@@ -154,6 +153,7 @@ executable(
     http_dep,
     time_dep,
     util_dep,
+    http_dep,
     io_dep,
     io_linux_dep,
     system_dep,
