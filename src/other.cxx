@@ -37,10 +37,10 @@ handle_copy(was_simple *w, const FileResource &src, const FileResource &dest)
 	// TODO: support "Depth: 0"
 	// TODO: overwriting an existing directory?
 
-	unsigned options = RECURSIVE_COPY_ONE_FILESYSTEM;
-
-	if (!get_overwrite_header(w))
-		options |= RECURSIVE_COPY_NO_OVERWRITE;
+	const RecursiveCopyOptions options{
+		.overwrite = get_overwrite_header(w),
+		.one_filesystem = true,
+	};
 
 	try {
 		RecursiveCopy({FileDescriptor{AT_FDCWD}, src.GetPath()},
