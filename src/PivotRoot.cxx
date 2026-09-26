@@ -6,6 +6,7 @@
 #include "lib/fmt/SystemError.hxx"
 #include "system/linux/Mount.hxx"
 #include "system/linux/pivot_root.h"
+#include "io/FileAt.hxx"
 #include "io/FileDescriptor.hxx"
 
 #include <fcntl.h> // for AT_*
@@ -44,7 +45,7 @@ PivotRoot(const char *new_root, const char *put_old)
 	UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
 	/* convert all "shared" mounts to "private" mounts */
-	MountSetAttr(FileDescriptor::Undefined(), "/",
+	MountSetAttr({FileDescriptor::Undefined(), "/"},
 		     AT_RECURSIVE|AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
 		     0, 0, MS_PRIVATE);
 
@@ -53,7 +54,7 @@ PivotRoot(const char *new_root, const char *put_old)
 	   without this, the kernel would not allow an unprivileged
 	   process to pivot_root to it */
 	BindMount(new_root, new_root);
-	MountSetAttr(FileDescriptor::Undefined(), new_root,
+	MountSetAttr({FileDescriptor::Undefined(), new_root},
 		     AT_SYMLINK_NOFOLLOW|AT_NO_AUTOMOUNT,
 		     MOUNT_ATTR_NOSUID|MOUNT_ATTR_NOEXEC|MOUNT_ATTR_NODEV,
 		     0);
