@@ -122,6 +122,7 @@ subdir('libcommon/src/http')
 subdir('libcommon/src/io')
 subdir('libcommon/src/io/linux')
 subdir('libcommon/src/system')
+subdir('libcommon/src/system/linux')
 subdir('libcommon/src/was')
 
 executable(
@@ -157,6 +158,7 @@ executable(
     io_dep,
     io_linux_dep,
     system_dep,
+    system_linux_dep,
   ],
   install: true,
   install_dir: 'lib/cm4all/was/bin',

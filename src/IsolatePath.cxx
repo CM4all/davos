@@ -4,7 +4,7 @@
 
 #include "IsolatePath.hxx"
 #include "lib/fmt/SystemError.hxx"
-#include "system/Mount.hxx"
+#include "system/linux/Mount.hxx"
 #include "system/linux/pivot_root.h"
 #include "io/UniqueFileDescriptor.hxx"
 #include "io/linux/ProcPid.hxx"

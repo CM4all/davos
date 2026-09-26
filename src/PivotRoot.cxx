@@ -4,10 +4,11 @@
 
 #include "PivotRoot.hxx"
 #include "lib/fmt/SystemError.hxx"
-#include "system/Mount.hxx"
+#include "system/linux/Mount.hxx"
 #include "system/linux/pivot_root.h"
 #include "io/FileDescriptor.hxx"
 
+#include <fcntl.h> // for AT_*
 #include <sched.h>
 #include <unistd.h>
 #include <sys/mount.h>
