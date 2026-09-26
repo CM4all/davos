@@ -70,7 +70,7 @@ wxml_string_element(BufferedOutputStream &o, std::string_view name,
 }
 
 template<typename S, typename... Args>
-static void
+inline void
 wxml_fmt_element(BufferedOutputStream &o, std::string_view name,
 		 const S &fmt, Args&&... args)
 {
