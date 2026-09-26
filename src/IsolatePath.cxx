@@ -6,7 +6,8 @@
 #include "lib/fmt/SystemError.hxx"
 #include "system/Mount.hxx"
 #include "system/linux/pivot_root.h"
-#include "io/FileDescriptor.hxx"
+#include "io/UniqueFileDescriptor.hxx"
+#include "io/linux/ProcPid.hxx"
 #include "io/linux/UserNamespace.hxx"
 #include "util/ScopeExit.hxx"
 
@@ -74,9 +75,12 @@ IsolatePath(const char *path)
 
 	UnshareOrThrow(CLONE_NEWUSER|CLONE_NEWNS);
 
-	DenySetGroups(0);
-	SetupGidMap(0, gid);
-	SetupUidMap(0, uid);
+	{
+		const auto proc_self = OpenProcPid(0);
+		DenySetGroups(proc_self);
+		SetupGidMap(proc_self, gid);
+		SetupUidMap(proc_self, uid);
+	}
 
 	/* convert all "shared" mounts to "private" mounts */
 	MountSetAttr(FileDescriptor::Undefined(), "/",
