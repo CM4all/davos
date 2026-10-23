@@ -2,6 +2,7 @@ cm4all-davos (0.26) unstable; urgency=low
 
   * COPY does not follow symlinks at the destination
   * limit the COPY directory nesting depth
+  * limit the DELETE directory nesting depth
   * support libwas 1.32 without libhttp
   * support libfmt 12.2.0
 
