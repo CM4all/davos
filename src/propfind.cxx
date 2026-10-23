@@ -50,10 +50,22 @@ try {
 	return {};
 }
 
-static void
-propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
-	      const struct statx &st,
-	      unsigned depth)
+namespace {
+
+class PropfindWalker {
+	BufferedOutputStream &o;
+	std::string uri, path;
+
+public:
+	PropfindWalker(BufferedOutputStream &_o,
+		       std::string_view _uri, std::string_view _path) noexcept
+		:o(_o), uri(_uri), path(_path) {}
+
+	void Walk(const struct statx &st, unsigned depth);
+};
+
+void
+PropfindWalker::Walk(const struct statx &st, unsigned depth)
 {
 	open_response_prop(o, uri, "HTTP/1.1 200 OK");
 
@@ -97,7 +109,7 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 					/* directory URIs should end with a slash */
 					uri.push_back('/');
 
-				propfind_file(o, uri, path, st2, depth);
+				Walk(st2, depth);
 			}
 
 			uri.erase(uri_length);
@@ -105,6 +117,8 @@ propfind_file(BufferedOutputStream &o, std::string &uri, std::string &path,
 		}
 	}
 }
+
+} // anonymous namespace
 
 void
 handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
@@ -131,9 +145,8 @@ handle_propfind(was_simple *was, const char *uri, const FileResource &resource)
 
 	begin_multistatus(bos);
 
-	std::string uri2(uri);
-	std::string path2(resource.GetPath());
-	propfind_file(bos, uri2, path2, resource.GetStat(), depth);
+	PropfindWalker{bos, uri, resource.GetPathView()}
+		.Walk(resource.GetStat(), depth);
 	end_multistatus(bos);
 
 	bos.Flush();
