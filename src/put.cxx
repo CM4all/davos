@@ -22,6 +22,8 @@ extern "C" {
 
 #include <exception>
 
+static constexpr int64_t MIN_FALLOCATE = 64_KiB;
+
 static void
 HandleIfMatch(struct was_simple &was, const struct statx *st)
 {
@@ -52,7 +54,7 @@ handle_put(was_simple *w, const FileResource &resource)
 		FileWriter fw(resource.GetPath());
 
 		if (int64_t remaining = was_simple_input_remaining(w);
-		    remaining >= (int64_t)64_KiB)
+		    remaining >= MIN_FALLOCATE)
 			fw.Allocate(remaining);
 
 		if (!SpliceFromWas(w, fw.GetFileDescriptor())) {
