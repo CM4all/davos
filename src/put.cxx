@@ -13,6 +13,7 @@
 #include "was/ExceptionResponse.hxx"
 #include "was/Splice.hxx"
 #include "io/FileWriter.hxx"
+#include "util/ByteSizes.hxx"
 #include "util/PrintException.hxx"
 
 extern "C" {
@@ -51,7 +52,7 @@ handle_put(was_simple *w, const FileResource &resource)
 		FileWriter fw(resource.GetPath());
 
 		if (int64_t remaining = was_simple_input_remaining(w);
-		    remaining >= 64 * 1024)
+		    remaining >= (int64_t)64_KiB)
 			fw.Allocate(remaining);
 
 		if (!SpliceFromWas(w, fw.GetFileDescriptor())) {

@@ -7,6 +7,7 @@
  */
 
 #include "expat.hxx"
+#include "util/ByteSizes.hxx"
 
 extern "C" {
 #include <was/simple.h>
@@ -24,7 +25,7 @@ ExpatParser::Parse(was_simple *w)
 		return false;
 
 	while (true) {
-		char buffer[4096];
+		char buffer[4_KiB];
 		ssize_t nbytes = was_simple_read(w, buffer, sizeof(buffer));
 		if (nbytes < 0) {
 			fprintf(stderr, "Error reading HTTP request body\n");
