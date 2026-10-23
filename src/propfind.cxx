@@ -34,19 +34,29 @@
 static std::size_t MAX_FILES = 2000;
 static unsigned MAX_DEPTH = 3;
 
+/**
+ * The request-wide budget: each listed directory entry and each
+ * statx() attempt consumes one unit.
+ */
+static constexpr std::size_t MAX_OPERATIONS = 16384;
+
 static std::forward_list<std::string>
-ListDirectory(const char *path)
+ListDirectory(const char *path, std::size_t &budget)
 try {
 	std::forward_list<std::string> result;
 	std::size_t n = 0;
 	DirectoryReader r{path};
-	while (const char *name = r.Read()) {
+	while (n < MAX_FILES && budget > 0) {
+		const char *name = r.Read();
+		if (name == nullptr)
+			break;
+
 		if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
 			continue;
 
 		result.emplace_front(name);
-		if (++n >= MAX_FILES)
-			break;
+		++n;
+		--budget;
 	}
 
 	return result;
@@ -80,6 +90,12 @@ class PropfindWalker {
 	 */
 	std::set<FileId> visited;
 
+	/**
+	 * The remaining request-wide budget (see #MAX_OPERATIONS).
+	 * The walk stops when it is exhausted.
+	 */
+	std::size_t budget = MAX_OPERATIONS;
+
 public:
 	PropfindWalker(BufferedOutputStream &_o,
 		       std::string_view _uri, std::string_view _path) noexcept
@@ -105,7 +121,7 @@ PropfindWalker::Walk(const struct statx &st, unsigned depth)
 
 	close_response_prop(o);
 
-	if (depth > 0 && S_ISDIR(st.stx_mode) &&
+	if (depth > 0 && budget > 0 && S_ISDIR(st.stx_mode) &&
 	    visited.emplace(st).second) {
 		--depth;
 
@@ -117,12 +133,17 @@ PropfindWalker::Walk(const struct statx &st, unsigned depth)
 
 		const auto uri_length = uri.length();
 
-		const auto &children = ListDirectory(path.c_str());
+		const auto &children = ListDirectory(path.c_str(), budget);
 
 		path.push_back('/');
 		const auto path_length = path.length();
 
 		for (const std::string_view name : children) {
+			if (budget == 0)
+				break;
+
+			--budget;
+
 			AppendUriEscape(uri, name);
 			path.append(name);
 
