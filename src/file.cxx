@@ -16,7 +16,7 @@ FileResource::FileResource(std::string &&_path) noexcept
 	:path(std::move(_path)), error(0)
 {
 	if (statx(-1, path.c_str(),  AT_STATX_SYNC_AS_STAT,
-		  STATX_TYPE|STATX_MTIME|STATX_SIZE,
+		  STATX_TYPE|STATX_MTIME|STATX_SIZE|STATX_INO,
 		  &st) < 0)
 		error = errno;
 }

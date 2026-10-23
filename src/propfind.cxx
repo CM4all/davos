@@ -18,8 +18,12 @@
 
 #include <was/simple.h>
 
-#include <string>
+#include <cassert>
+#include <compare>
+#include <cstdint>
 #include <forward_list>
+#include <set>
+#include <string>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,9 +56,29 @@ try {
 
 namespace {
 
+struct FileId {
+	uint_least32_t dev_major, dev_minor;
+	uint_least64_t ino;
+
+	explicit FileId(const struct statx &st) noexcept
+		:dev_major(st.stx_dev_major), dev_minor(st.stx_dev_minor),
+		 ino(st.stx_ino)
+	{
+		assert(st.stx_mask & STATX_INO);
+	}
+
+	constexpr auto operator<=>(const FileId &) const noexcept = default;
+};
+
 class PropfindWalker {
 	BufferedOutputStream &o;
 	std::string uri, path;
+
+	/**
+	 * Directories which have already been listed.  This
+	 * prevents symlink loops from multiplying the work.
+	 */
+	std::set<FileId> visited;
 
 public:
 	PropfindWalker(BufferedOutputStream &_o,
@@ -81,7 +105,8 @@ PropfindWalker::Walk(const struct statx &st, unsigned depth)
 
 	close_response_prop(o);
 
-	if (depth > 0 && S_ISDIR(st.stx_mode)) {
+	if (depth > 0 && S_ISDIR(st.stx_mode) &&
+	    visited.emplace(st).second) {
 		--depth;
 
 		if (uri.back() != '/')
@@ -103,7 +128,7 @@ PropfindWalker::Walk(const struct statx &st, unsigned depth)
 
 			struct statx st2;
 			if (statx(-1, path.c_str(), AT_STATX_SYNC_AS_STAT,
-				  STATX_TYPE|STATX_MTIME|STATX_SIZE,
+				  STATX_TYPE|STATX_MTIME|STATX_SIZE|STATX_INO,
 				  &st2) == 0) {
 				if (S_ISDIR(st2.stx_mode))
 					/* directory URIs should end with a slash */
