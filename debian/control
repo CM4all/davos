@@ -18,7 +18,7 @@ Vcs-Git: https://github.com/CM4all/davos
 
 Package: cm4all-davos-plain
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: mime-support
 Enhances: cm4all-beng-proxy
 Description: WebDAV server for plain filesystem
