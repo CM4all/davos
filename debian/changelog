@@ -7,6 +7,8 @@ cm4all-davos (0.26) unstable; urgency=low
   * PROPFIND: detect symlink loops
   * PROPFIND: add a request-wide budget
   * GET: fix 416 response for a "Range" whose end is past the end of the file
+  * GET: ignore unparsable and multi-range "Range" headers instead of 416
+  * GET: fix "Range" suffix covering the whole file
   * support libwas 1.32 without libhttp
   * support libfmt 12.2.0
   * debian: add source/format file
