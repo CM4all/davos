@@ -14,8 +14,8 @@ Build-Depends: debhelper-compat (= 13),
  python3-sphinx
 Build-Conflicts: libcm4all-inline-dev (<< 0.3.6)
 Standards-Version: 4.7.4
-Vcs-Browser: https://github.com/CM4all/beng-proxy
-Vcs-Git: https://github.com/CM4all/beng-proxy
+Vcs-Browser: https://github.com/CM4all/davos
+Vcs-Git: https://github.com/CM4all/davos
 
 Package: cm4all-davos-plain
 Architecture: any
