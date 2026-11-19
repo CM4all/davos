@@ -10,6 +10,7 @@ cm4all-davos (0.26) unstable; urgency=low
   * support libfmt 12.2.0
   * debian: add source/format file
   * debian: add copyright file
+  * debian: use "debhelper-compat" instead of "debian/compat"
   * debian/control: build-depend on pkgconf instead of pkg-config
   * debian/control: set "Priority: optional"
 
