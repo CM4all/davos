@@ -8,6 +8,8 @@ cm4all-davos (0.26) unstable; urgency=low
   * PROPFIND: add a request-wide budget
   * support libwas 1.32 without libhttp
   * support libfmt 12.2.0
+  * debian: add source/format file
+  * debian/control: set "Priority: optional"
 
  --   
 
