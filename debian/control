@@ -13,7 +13,7 @@ Build-Depends: debhelper-compat (= 13),
  pkgconf,
  python3-sphinx
 Build-Conflicts: libcm4all-inline-dev (<< 0.3.6)
-Standards-Version: 3.9.1
+Standards-Version: 4.7.4
 XS-Python-Standards-Version: 0.4
 XS-Python-Version: all
 Vcs-Browser: https://github.com/CM4all/beng-proxy
